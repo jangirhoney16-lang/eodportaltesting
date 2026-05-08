@@ -60,28 +60,48 @@
     .submit-btn { width: 100%; height: 48px; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
     .submit-btn:hover:not(:disabled) { background: var(--accent2); }
     .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .history-layout { display: grid; grid-template-columns: 200px 1fr; gap: 16px; }
-    .history-list { display: flex; flex-direction: column; gap: 6px; max-height: 500px; overflow-y: auto; }
-    .history-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all 0.15s; }
-    .history-item:hover, .history-item.active { background: var(--accent); border-color: var(--accent); }
-    .history-item:hover .hi-date, .history-item.active .hi-date { color: rgba(255,255,255,0.7); }
-    .history-item:hover .hi-total, .history-item.active .hi-total { color: #fff; }
-    .hi-date { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
-    .hi-total { font-size: 18px; font-weight: 700; color: var(--text); font-family: 'DM Mono', monospace; }
+    .toast { display: none; align-items: center; gap: 8px; margin-top: 12px; padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; }
+    .toast.show { display: flex; }
+    .toast.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+    .toast.error { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+    .chart-wrap { position: relative; height: 260px; }
+
+    /* ── CALENDAR ── */
+    .history-layout { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+    .calendar-wrap { background: var(--bg); border-radius: 10px; padding: 16px; }
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .cal-nav { background: none; border: 1px solid var(--border); border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--text); }
+    .cal-nav:hover { background: var(--border); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-day-label { text-align: center; font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; padding: 4px 0; }
+    .cal-day { text-align: center; font-size: 12px; font-weight: 500; padding: 6px 4px; border-radius: 6px; cursor: pointer; transition: all 0.15s; position: relative; }
+    .cal-day.empty { cursor: default; }
+    .cal-day.submitted { background: #dcfce7; color: #15803d; font-weight: 700; }
+    .cal-day.submitted:hover { background: #bbf7d0; }
+    .cal-day.missed { background: #fee2e2; color: #dc2626; }
+    .cal-day.missed:hover { background: #fecaca; }
+    .cal-day.sunday { background: #f3f4f6; color: #9ca3af; font-style: italic; cursor: default; }
+    .cal-day.future { color: #d1d5db; cursor: default; }
+    .cal-day.selected { outline: 2.5px solid var(--accent); outline-offset: 1px; }
+    .cal-day.today { font-weight: 700; }
+
+    /* legend */
+    .cal-legend { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    /* detail panel */
     .history-detail { background: var(--bg); border-radius: 10px; padding: 20px; }
     .detail-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0; }
     .detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
     .detail-card { background: var(--card); border-radius: 8px; padding: 12px; text-align: center; }
     .detail-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
     .detail-val { font-size: 22px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); }
-    .toast { display: none; align-items: center; gap: 8px; margin-top: 12px; padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; }
-    .toast.show { display: flex; }
-    .toast.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
-    .toast.error { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
-    .chart-wrap { position: relative; height: 260px; }
-    @media (max-width: 600px) {
-      .form-grid { grid-template-columns: 1fr; }
+
+    @media (max-width: 650px) {
       .history-layout { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
       .detail-grid { grid-template-columns: repeat(2, 1fr); }
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -194,15 +214,33 @@
       <div class="card">
         <div class="card-title">Entry History</div>
         <div class="history-layout">
-          <div class="history-list" id="historyList">
-            <div style="font-size:13px;color:var(--muted);text-align:center;padding:20px;">Loading...</div>
+
+          <!-- LEFT: CALENDAR -->
+          <div>
+            <div class="calendar-wrap">
+              <div class="cal-header">
+                <button class="cal-nav" onclick="calNav(-1)">&#8249;</button>
+                <div class="cal-title" id="calTitle">—</div>
+                <button class="cal-nav" onclick="calNav(1)">&#8250;</button>
+              </div>
+              <div class="cal-grid" id="calGrid"></div>
+              <div class="cal-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#dcfce7;border:1px solid #16a34a;"></div> Submitted</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#fee2e2;border:1px solid #dc2626;"></div> Missed</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#f3f4f6;border:1px solid #d1d5db;"></div> Sunday</div>
+              </div>
+            </div>
           </div>
+
+          <!-- RIGHT: DETAIL -->
           <div class="history-detail" id="historyDetail">
-            <div class="detail-empty">← Select a date to see details</div>
+            <div class="detail-empty">← Click on a date to see details</div>
           </div>
+
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -232,6 +270,11 @@
   let barChart      = null;
   let doughnutChart = null;
 
+  // calendar state
+  let calYear  = new Date().getFullYear();
+  let calMonth = new Date().getMonth();
+  let selectedDate = null;
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
@@ -243,11 +286,8 @@
   });
 
   window.loginWithGoogle = async function() {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch(e) {
-      alert("Login failed: " + e.message);
-    }
+    try { await signInWithPopup(auth, provider); }
+    catch(e) { alert("Login failed: " + e.message); }
   };
 
   window.logout = async function() {
@@ -262,37 +302,19 @@
 
   async function loadUserDetails(email) {
     try {
-      const url  = APPS_SCRIPT_URL + "?action=getUser&email=" + encodeURIComponent(email);
-      const res  = await fetch(url);
-      const text = await res.text();
-      const data = JSON.parse(text);
-
-      console.log("getUser response:", data);
-
-      if (data.role === "Admin") {
-        window.location.href = "admin.html";
-        return;
-      }
-
-      if (!data.valid) {
-        alert("Your email is not registered. Contact admin.");
-        await signOut(auth);
-        showLogin();
-        return;
-      }
-
+      const res  = await fetch(APPS_SCRIPT_URL + "?action=getUser&email=" + encodeURIComponent(email));
+      const data = await res.json();
+      if (data.role === "Admin") { window.location.href = "admin.html"; return; }
+      if (!data.valid) { alert("Your email is not registered. Contact admin."); await signOut(auth); showLogin(); return; }
       userDetails = data;
       document.getElementById('userName').textContent   = data.name   || email;
       document.getElementById('userTeam').textContent   = data.team   || "—";
       document.getElementById('userTarget').textContent = data.target || "0";
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('app').style.display         = 'block';
-
       setTodayDate();
       await loadMyEntries(email);
-    } catch(e) {
-      alert("Failed to load user: " + e.message);
-    }
+    } catch(e) { alert("Failed to load user: " + e.message); }
   }
 
   async function loadMyEntries(email) {
@@ -300,11 +322,9 @@
       const res  = await fetch(APPS_SCRIPT_URL + "?action=getEntries&email=" + encodeURIComponent(email));
       const data = await res.json();
       myEntries  = data.entries || [];
-      renderHistory();
+      renderCalendar();
       renderDashboard();
-    } catch(e) {
-      console.log("Entries error:", e);
-    }
+    } catch(e) { console.log("Entries error:", e); }
   }
 
   window.submitEOD = async function() {
@@ -312,46 +332,32 @@
     const rework = document.getElementById('rework').value.trim();
     const date   = document.getElementById('date').value;
     const reason = document.getElementById('reason').value.trim();
-
     if (fresh === '' && rework === '') return showToast('Enter fresh or rework count', 'error');
-    const f = parseInt(fresh)  || 0;
+    const f = parseInt(fresh) || 0;
     const r = parseInt(rework) || 0;
-    if (f < 0 || r < 0)      return showToast('Counts cannot be negative', 'error');
+    if (f < 0 || r < 0) return showToast('Counts cannot be negative', 'error');
     if (date > getTodayStr()) return showToast('Future date not allowed', 'error');
-
     const target  = parseInt(userDetails?.target) || 0;
     const deficit = Math.max(0, target - (f + r));
     if (deficit > 0 && !reason) return showToast('Please enter reason for deficit', 'error');
-
     const btn = document.getElementById('submitBtn');
-    btn.disabled    = true;
-    btn.textContent = 'Submitting...';
-
+    btn.disabled = true; btn.textContent = 'Submitting...';
     try {
-      const params = new URLSearchParams({
-        action: 'saveEntry',
-        email:  currentUser.email,
-        date:   date,
-        fresh:  f,
-        rework: r,
-        reason: reason
-      });
-
+      const params = new URLSearchParams({ action:'saveEntry', email:currentUser.email, date, fresh:f, rework:r, reason });
       const res  = await fetch(APPS_SCRIPT_URL + "?" + params.toString());
       const data = await res.json();
-
-      btn.disabled    = false;
-      btn.textContent = 'Submit EOD';
-
-      if      (data.result === 'SUCCESS')   { showToast('Submitted successfully! ✓', 'success'); resetForm(); await loadMyEntries(currentUser.email); }
+      btn.disabled = false; btn.textContent = 'Submit EOD';
+      if (data.result === 'SUCCESS') {
+        showToast('Submitted successfully! ✓', 'success');
+        resetForm();
+        await loadMyEntries(currentUser.email);
+      }
       else if (data.result === 'EXISTS')    showToast('Already submitted for this date', 'error');
       else if (data.result === 'NO_REASON') showToast('Please enter reason for deficit', 'error');
       else if (data.result === 'INVALID')   showToast('Email not found in system', 'error');
       else showToast('Error: ' + data.result, 'error');
-
     } catch(e) {
-      btn.disabled    = false;
-      btn.textContent = 'Submit EOD';
+      btn.disabled = false; btn.textContent = 'Submit EOD';
       showToast('Network error: ' + e.message, 'error');
     }
   };
@@ -367,8 +373,8 @@
   }
 
   window.calc = function() {
-    const f      = Math.max(0, parseInt(document.getElementById('fresh').value)  || 0);
-    const r      = Math.max(0, parseInt(document.getElementById('rework').value) || 0);
+    const f = Math.max(0, parseInt(document.getElementById('fresh').value)  || 0);
+    const r = Math.max(0, parseInt(document.getElementById('rework').value) || 0);
     const total  = f + r;
     const target = parseInt(userDetails?.target) || 0;
     const deficit = Math.max(0, target - total);
@@ -379,47 +385,124 @@
     document.getElementById('reasonBox').classList.toggle('show', deficit > 0);
   };
 
-  function renderHistory() {
-    const list = document.getElementById('historyList');
-    if (!myEntries.length) {
-      list.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:20px;">No entries yet</div>';
-      return;
+  // ── CALENDAR ──
+  window.calNav = function(dir) {
+    calMonth += dir;
+    if (calMonth > 11) { calMonth = 0;  calYear++; }
+    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    renderCalendar();
+  };
+
+  function renderCalendar() {
+    const today     = getTodayStr();
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('calTitle').textContent = monthNames[calMonth] + ' ' + calYear;
+
+    const submittedDates = new Set(myEntries.map(e => String(e.date).substring(0,10)));
+
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    // day headers
+    ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'cal-day-label';
+      el.textContent = d;
+      grid.appendChild(el);
+    });
+
+    const firstDay = new Date(calYear, calMonth, 1);
+    // Monday=0 offset
+    let startOffset = firstDay.getDay() - 1;
+    if (startOffset < 0) startOffset = 6;
+
+    // empty cells
+    for (let i = 0; i < startOffset; i++) {
+      const el = document.createElement('div');
+      el.className = 'cal-day empty';
+      grid.appendChild(el);
     }
-    list.innerHTML = myEntries.map((e, i) => `
-      <div class="history-item" onclick="showDetail(${i})" id="hi-${i}">
-        <div class="hi-date">${formatDate(e.date)}</div>
-        <div class="hi-total">${e.total}</div>
-      </div>`).join('');
+
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const mm    = String(calMonth + 1).padStart(2, '0');
+      const dd    = String(day).padStart(2, '0');
+      const dateStr = `${calYear}-${mm}-${dd}`;
+      const dateObj = new Date(calYear, calMonth, day);
+      const dow     = dateObj.getDay(); // 0=Sun, 6=Sat
+      const isSun   = dow === 0;
+      const isFuture = dateStr > today;
+
+      const el = document.createElement('div');
+      el.className = 'cal-day';
+      el.textContent = day;
+
+      if (isSun) {
+        el.classList.add('sunday');
+        el.title = 'Sunday';
+      } else if (isFuture) {
+        el.classList.add('future');
+      } else if (submittedDates.has(dateStr)) {
+        el.classList.add('submitted');
+        el.title = 'Submitted ✓';
+        el.onclick = () => showDayDetail(dateStr);
+      } else {
+        el.classList.add('missed');
+        el.title = 'Not submitted';
+        el.onclick = () => showMissedDay(dateStr);
+      }
+
+      if (dateStr === today) el.classList.add('today');
+      if (dateStr === selectedDate) el.classList.add('selected');
+
+      grid.appendChild(el);
+    }
   }
 
-  window.showDetail = function(i) {
-    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
-    document.getElementById('hi-' + i)?.classList.add('active');
-    const e      = myEntries[i];
+  function showDayDetail(dateStr) {
+    selectedDate = dateStr;
+    renderCalendar();
+    const entry  = myEntries.find(e => String(e.date).substring(0,10) === dateStr);
+    if (!entry) return;
     const target = parseInt(userDetails?.target) || 0;
-    const deficit = Math.max(0, target - parseInt(e.total));
-    const status  = parseInt(e.total) > target ? 'Above Target 🎯' : deficit === 0 ? 'Met ✓' : 'Deficit ✗';
-    const color   = parseInt(e.total) >= target ? 'var(--green)' : 'var(--red)';
+    const deficit = Math.max(0, target - parseInt(entry.total));
+    const status  = parseInt(entry.total) > target ? 'Above Target 🎯' : deficit === 0 ? 'Met ✓' : 'Deficit ✗';
+    const color   = parseInt(entry.total) >= target ? 'var(--green)' : 'var(--red)';
     document.getElementById('historyDetail').innerHTML = `
-      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">${formatDate(e.date)}</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">${formatDate(dateStr)}</div>
       <div class="detail-grid">
-        <div class="detail-card"><div class="detail-label">Fresh</div><div class="detail-val" style="color:var(--blue)">${e.fresh}</div></div>
-        <div class="detail-card"><div class="detail-label">Rework</div><div class="detail-val" style="color:var(--yellow)">${e.rework}</div></div>
-        <div class="detail-card"><div class="detail-label">Total</div><div class="detail-val">${e.total}</div></div>
+        <div class="detail-card"><div class="detail-label">Fresh</div><div class="detail-val" style="color:var(--blue)">${entry.fresh}</div></div>
+        <div class="detail-card"><div class="detail-label">Rework</div><div class="detail-val" style="color:var(--yellow)">${entry.rework}</div></div>
+        <div class="detail-card"><div class="detail-label">Total</div><div class="detail-val">${entry.total}</div></div>
         <div class="detail-card"><div class="detail-label">Target</div><div class="detail-val">${target}</div></div>
         <div class="detail-card"><div class="detail-label">Deficit</div><div class="detail-val" style="color:${deficit>0?'var(--red)':'var(--green)'}">${deficit}</div></div>
         <div class="detail-card"><div class="detail-label">Status</div><div class="detail-val" style="font-size:13px;color:${color}">${status}</div></div>
       </div>
-      ${e.reason ? `<div style="background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);"><strong style="color:var(--text);">Reason:</strong> ${e.reason}</div>` : ''}`;
-  };
+      ${entry.reason ? `<div style="background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);"><strong style="color:var(--text);">Reason:</strong> ${entry.reason}</div>` : ''}
+    `;
+  }
 
+  function showMissedDay(dateStr) {
+    selectedDate = dateStr;
+    renderCalendar();
+    document.getElementById('historyDetail').innerHTML = `
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(dateStr)}</div>
+      <div style="background:#fee2e2;border-radius:10px;padding:20px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">❌</div>
+        <div style="font-size:14px;font-weight:600;color:#dc2626;">No Entry Submitted</div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:4px;">EOD count was not submitted for this day</div>
+      </div>
+    `;
+  }
+
+  // ── DASHBOARD ──
   function renderDashboard() {
     if (!myEntries.length) return;
     const target = parseInt(userDetails?.target) || 0;
     const now    = new Date();
     const thisMonth = myEntries.filter(e => { const d = new Date(e.date); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); });
     const thisWeek  = myEntries.filter(e => (now - new Date(e.date)) / 86400000 <= 7);
-
     document.getElementById('statMonth').textContent   = thisMonth.reduce((s,e)=>s+parseInt(e.total),0);
     document.getElementById('statWeek').textContent    = thisWeek.reduce((s,e)=>s+parseInt(e.total),0);
     document.getElementById('statAvg').textContent     = myEntries.length ? Math.round(myEntries.reduce((s,e)=>s+parseInt(e.total),0)/myEntries.length) : 0;
@@ -427,52 +510,20 @@
 
     const last14  = myEntries.slice(0,14).reverse();
     const actuals = last14.map(e => parseInt(e.total));
-
     if (barChart) barChart.destroy();
     barChart = new Chart(document.getElementById('chartBar'), {
       type: 'bar',
       data: {
         labels: last14.map(e => formatDate(e.date)),
         datasets: [
-          {
-            label: 'Cases Done',
-            data: actuals,
-            backgroundColor: actuals.map(v => v >= target ? '#4ade80' : '#f87171'),
-            borderRadius: 6,
-            order: 2
-          },
-          {
-            label: 'Target (' + target + ')',
-            data: last14.map(() => target),
-            type: 'line',
-            borderColor: '#1a1a2e',
-            borderWidth: 2.5,
-            borderDash: [6, 3],
-            pointRadius: 0,
-            fill: false,
-            order: 1
-          }
+          { label:'Cases Done', data:actuals, backgroundColor:actuals.map(v=>v>=target?'#4ade80':'#f87171'), borderRadius:6, order:2 },
+          { label:'Target ('+target+')', data:last14.map(()=>target), type:'line', borderColor:'#1a1a2e', borderWidth:2.5, borderDash:[6,3], pointRadius:0, fill:false, order:1 }
         ]
       },
       options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { display: true },
-          tooltip: {
-            callbacks: {
-              afterBody: function(context) {
-                const val  = context[0].raw;
-                const diff = val - target;
-                if (diff >= 0) return '✓ Above target by ' + diff;
-                return '✗ Short by ' + Math.abs(diff);
-              }
-            }
-          }
-        },
-        scales: {
-          y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
-          x: { grid: { display: false } }
-        }
+        responsive:true, maintainAspectRatio:false,
+        plugins: { legend:{display:true}, tooltip:{ callbacks:{ afterBody:function(ctx){ const v=ctx[0].raw; const d=v-target; return d>=0?'✓ Above by '+d:'✗ Short by '+Math.abs(d); } } } },
+        scales: { y:{beginAtZero:true,grid:{color:'#f0f0f0'}}, x:{grid:{display:false}} }
       }
     });
 
@@ -480,9 +531,9 @@
     const tR = myEntries.reduce((s,e)=>s+parseInt(e.rework),0);
     if (doughnutChart) doughnutChart.destroy();
     doughnutChart = new Chart(document.getElementById('chartDoughnut'), {
-      type: 'doughnut',
-      data: { labels:['Fresh','Rework'], datasets:[{ data:[tF,tR], backgroundColor:['#4ade80','#f87171'], borderWidth:0 }] },
-      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
+      type:'doughnut',
+      data:{ labels:['Fresh','Rework'], datasets:[{ data:[tF,tR], backgroundColor:['#4ade80','#f87171'], borderWidth:0 }] },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
     });
 
     const rc = {};
@@ -497,6 +548,7 @@
     ['submit','dashboard','history'].forEach(t => { document.getElementById('tab-'+t).style.display = t===tab?'block':'none'; });
     document.querySelectorAll('.tab').forEach((el,i) => { el.classList.toggle('active', ['submit','dashboard','history'][i]===tab); });
     if (tab==='dashboard') renderDashboard();
+    if (tab==='history')   renderCalendar();
   };
 
   function setTodayDate() {
@@ -523,12 +575,12 @@
     t._timer = setTimeout(()=>{ t.className='toast'; }, 3500);
   }
 
-// Auto refresh every 30 seconds
-setInterval(async () => {
-  if (currentUser && userDetails) {
-    await loadMyEntries(currentUser.email);
-  }
-}, 30000);
+  // Auto refresh every 30 seconds
+  setInterval(async () => {
+    if (currentUser && userDetails) {
+      await loadMyEntries(currentUser.email);
+    }
+  }, 30000);
 
 </script>
 </body>
