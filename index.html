@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EOD Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f0f2f5; --card: #fff; --border: #e4e7ec;
+      --text: #111827; --muted: #6b7280;
+      --accent: #1a1a2e; --accent2: #16213e;
+      --green: #16a34a; --red: #dc2626;
+      --blue: #2563eb; --yellow: #d97706;
+      --radius: 12px; --input-h: 46px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; }
+    .login-screen { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 24px; }
+    .login-card { background: var(--card); border-radius: 20px; border: 1px solid var(--border); width: 100%; max-width: 380px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+    .login-banner { background: var(--accent); padding: 32px 28px; text-align: center; }
+    .login-banner h1 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .login-banner p { font-size: 13px; color: rgba(255,255,255,0.5); }
+    .login-body { padding: 28px; }
+    .google-btn { width: 100%; height: 48px; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; color: var(--text); cursor: pointer; transition: box-shadow 0.15s; }
+    .google-btn:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .google-btn img { width: 20px; height: 20px; }
+    .app { display: none; }
+    .navbar { background: var(--accent); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .navbar-brand { font-size: 15px; font-weight: 600; color: #fff; }
+    .navbar-right { display: flex; align-items: center; gap: 12px; }
+    .navbar-email { font-size: 12px; color: rgba(255,255,255,0.6); }
+    .logout-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer; }
+    .main-content { padding: 24px; max-width: 900px; margin: 0 auto; }
+    .tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 24px; width: fit-content; }
+    .tab { padding: 8px 20px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--muted); border: none; background: none; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+    .tab.active { background: var(--accent); color: #fff; }
+    .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+    .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .stat-card { background: var(--bg); border-radius: 10px; padding: 14px 16px; }
+    .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .stat-val { font-size: 26px; font-weight: 700; color: var(--text); font-family: 'DM Mono', monospace; }
+    .stat-val.red { color: var(--red); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    input[type="date"], input[type="number"], input[type="text"] { width: 100%; height: var(--input-h); padding: 0 13px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: #fafafa; border: 1px solid var(--border); border-radius: 8px; outline: none; transition: border-color 0.15s; }
+    input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,26,46,0.08); background: #fff; }
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .total-box { background: var(--accent); border-radius: 10px; padding: 16px; text-align: center; margin: 16px 0; }
+    .total-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+    .total-num { font-family: 'DM Mono', monospace; font-size: 48px; font-weight: 700; color: #fff; line-height: 1; }
+    .total-num.over { color: #4ade80; }
+    .total-num.under { color: #f87171; }
+    .deficit-line { font-size: 13px; font-weight: 500; color: #f87171; margin-top: 6px; min-height: 20px; }
+    .reason-box { display: none; margin-bottom: 14px; }
+    .reason-box.show { display: block; }
+    .submit-btn { width: 100%; height: 48px; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+    .submit-btn:hover:not(:disabled) { background: var(--accent2); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .history-layout { display: grid; grid-template-columns: 200px 1fr; gap: 16px; }
+    .history-list { display: flex; flex-direction: column; gap: 6px; max-height: 500px; overflow-y: auto; }
+    .history-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all 0.15s; }
+    .history-item:hover, .history-item.active { background: var(--accent); border-color: var(--accent); }
+    .history-item:hover .hi-date, .history-item.active .hi-date { color: rgba(255,255,255,0.7); }
+    .history-item:hover .hi-total, .history-item.active .hi-total { color: #fff; }
+    .hi-date { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+    .hi-total { font-size: 18px; font-weight: 700; color: var(--text); font-family: 'DM Mono', monospace; }
+    .history-detail { background: var(--bg); border-radius: 10px; padding: 20px; }
+    .detail-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0; }
+    .detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .detail-card { background: var(--card); border-radius: 8px; padding: 12px; text-align: center; }
+    .detail-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
+    .detail-val { font-size: 22px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); }
+    .toast { display: none; align-items: center; gap: 8px; margin-top: 12px; padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; }
+    .toast.show { display: flex; }
+    .toast.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+    .toast.error { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+    .chart-wrap { position: relative; height: 260px; }
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .history-layout { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-banner">
+      <h1>EOD Portal</h1>
+      <p>Daily work entry system</p>
+    </div>
+    <div class="login-body">
+      <button class="google-btn" onclick="loginWithGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Continue with Google
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="app">
+  <nav class="navbar">
+    <span class="navbar-brand">EOD Portal</span>
+    <div class="navbar-right">
+      <span class="navbar-email" id="navEmail"></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:18px;font-weight:700;color:var(--text);" id="userName">—</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="userTeam">—</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Daily Target</div>
+        <div style="font-size:28px;font-weight:700;color:var(--accent);font-family:'DM Mono',monospace;" id="userTarget">—</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('submit')">Submit EOD</button>
+      <button class="tab" onclick="switchTab('dashboard')">My Dashboard</button>
+      <button class="tab" onclick="switchTab('history')">History</button>
+    </div>
+
+    <!-- SUBMIT TAB -->
+    <div id="tab-submit">
+      <div class="card">
+        <div class="card-title">Today's Entry</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="date">
+          </div>
+          <div style="display:flex;align-items:flex-end;">
+            <div class="total-box" style="width:100%;margin:0;">
+              <div class="total-label">Total Cases</div>
+              <div class="total-num" id="totalNum">0</div>
+              <div class="deficit-line" id="deficitLine"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Fresh Count</label>
+            <input type="number" id="fresh" min="0" placeholder="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Rework Count</label>
+            <input type="number" id="rework" min="0" placeholder="0" oninput="calc()">
+          </div>
+        </div>
+        <div class="reason-box" id="reasonBox">
+          <label>Reason for Deficit <span style="color:var(--red);">*</span></label>
+          <input type="text" id="reason" placeholder="e.g. System down, training...">
+        </div>
+        <button class="submit-btn" id="submitBtn" onclick="submitEOD()">Submit EOD</button>
+        <div class="toast" id="toast"><span id="toastIcon"></span><span id="toastMsg"></span></div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD TAB -->
+    <div id="tab-dashboard" style="display:none;">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-val" id="statMonth">—</div></div>
+        <div class="stat-card"><div class="stat-label">This Week</div><div class="stat-val" id="statWeek">—</div></div>
+        <div class="stat-card"><div class="stat-label">Avg Daily</div><div class="stat-val" id="statAvg">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Deficit</div><div class="stat-val red" id="statDeficit">—</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Daily Performance vs Target</div>
+        <div class="chart-wrap"><canvas id="chartBar"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Fresh vs Rework Distribution</div>
+        <div class="chart-wrap"><canvas id="chartDoughnut"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Repeat Deficit Reasons</div>
+        <div id="reasonsList" style="font-size:13px;color:var(--muted);">No deficit reasons yet ✓</div>
+      </div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="tab-history" style="display:none;">
+      <div class="card">
+        <div class="card-title">Entry History</div>
+        <div class="history-layout">
+          <div class="history-list" id="historyList">
+            <div style="font-size:13px;color:var(--muted);text-align:center;padding:20px;">Loading...</div>
+          </div>
+          <div class="history-detail" id="historyDetail">
+            <div class="detail-empty">← Select a date to see details</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyB53EbCi3m1n5L1xReV8JExc_zoaQFe21Y",
+    authDomain:        "daily-eod--count-portal.firebaseapp.com",
+    projectId:         "daily-eod--count-portal",
+    storageBucket:     "daily-eod--count-portal.firebasestorage.app",
+    messagingSenderId: "665878833615",
+    appId:             "1:665878833615:web:3ef734d845a531b7874aba",
+    measurementId:     "G-9DTPC5WSN3"
+  };
+
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpIetd36Y_iUqfV6Sx0gNuxaXvm6yi_xORmgFEIo15G6YxJkVVPcMOBPfiPEu0H4qZ8A/exec";
+
+  const app      = initializeApp(firebaseConfig);
+  const auth     = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  let currentUser   = null;
+  let userDetails   = null;
+  let myEntries     = [];
+  let barChart      = null;
+  let doughnutChart = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('navEmail').textContent = user.email;
+      await loadUserDetails(user.email);
+    } else {
+      showLogin();
+    }
+  });
+
+  window.loginWithGoogle = async function() {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch(e) {
+      alert("Login failed: " + e.message);
+    }
+  };
+
+  window.logout = async function() {
+    await signOut(auth);
+    showLogin();
+  };
+
+  function showLogin() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('app').style.display         = 'none';
+  }
+
+  async function loadUserDetails(email) {
+    try {
+      const url  = APPS_SCRIPT_URL + "?action=getUser&email=" + encodeURIComponent(email);
+      const res  = await fetch(url);
+      const text = await res.text();
+      const data = JSON.parse(text);
+
+      console.log("getUser response:", data);
+
+      if (data.role === "Admin") {
+        window.location.href = "admin.html";
+        return;
+      }
+
+      if (!data.valid) {
+        alert("Your email is not registered. Contact admin.");
+        await signOut(auth);
+        showLogin();
+        return;
+      }
+
+      userDetails = data;
+      document.getElementById('userName').textContent   = data.name   || email;
+      document.getElementById('userTeam').textContent   = data.team   || "—";
+      document.getElementById('userTarget').textContent = data.target || "0";
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display         = 'block';
+
+      setTodayDate();
+      await loadMyEntries(email);
+    } catch(e) {
+      alert("Failed to load user: " + e.message);
+    }
+  }
+
+  async function loadMyEntries(email) {
+    try {
+      const res  = await fetch(APPS_SCRIPT_URL + "?action=getEntries&email=" + encodeURIComponent(email));
+      const data = await res.json();
+      myEntries  = data.entries || [];
+      renderHistory();
+      renderDashboard();
+    } catch(e) {
+      console.log("Entries error:", e);
+    }
+  }
+
+  window.submitEOD = async function() {
+    const fresh  = document.getElementById('fresh').value.trim();
+    const rework = document.getElementById('rework').value.trim();
+    const date   = document.getElementById('date').value;
+    const reason = document.getElementById('reason').value.trim();
+
+    if (fresh === '' && rework === '') return showToast('Enter fresh or rework count', 'error');
+    const f = parseInt(fresh)  || 0;
+    const r = parseInt(rework) || 0;
+    if (f < 0 || r < 0)      return showToast('Counts cannot be negative', 'error');
+    if (date > getTodayStr()) return showToast('Future date not allowed', 'error');
+
+    const target  = parseInt(userDetails?.target) || 0;
+    const deficit = Math.max(0, target - (f + r));
+    if (deficit > 0 && !reason) return showToast('Please enter reason for deficit', 'error');
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled    = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      const params = new URLSearchParams({
+        action: 'saveEntry',
+        email:  currentUser.email,
+        date:   date,
+        fresh:  f,
+        rework: r,
+        reason: reason
+      });
+
+      const res  = await fetch(APPS_SCRIPT_URL + "?" + params.toString());
+      const data = await res.json();
+
+      btn.disabled    = false;
+      btn.textContent = 'Submit EOD';
+
+      if      (data.result === 'SUCCESS')   { showToast('Submitted successfully! ✓', 'success'); resetForm(); await loadMyEntries(currentUser.email); }
+      else if (data.result === 'EXISTS')    showToast('Already submitted for this date', 'error');
+      else if (data.result === 'NO_REASON') showToast('Please enter reason for deficit', 'error');
+      else if (data.result === 'INVALID')   showToast('Email not found in system', 'error');
+      else showToast('Error: ' + data.result, 'error');
+
+    } catch(e) {
+      btn.disabled    = false;
+      btn.textContent = 'Submit EOD';
+      showToast('Network error: ' + e.message, 'error');
+    }
+  };
+
+  function resetForm() {
+    document.getElementById('fresh').value             = '';
+    document.getElementById('rework').value            = '';
+    document.getElementById('reason').value            = '';
+    document.getElementById('totalNum').textContent    = '0';
+    document.getElementById('totalNum').className      = 'total-num';
+    document.getElementById('deficitLine').textContent = '';
+    document.getElementById('reasonBox').classList.remove('show');
+  }
+
+  window.calc = function() {
+    const f      = Math.max(0, parseInt(document.getElementById('fresh').value)  || 0);
+    const r      = Math.max(0, parseInt(document.getElementById('rework').value) || 0);
+    const total  = f + r;
+    const target = parseInt(userDetails?.target) || 0;
+    const deficit = Math.max(0, target - total);
+    const numEl  = document.getElementById('totalNum');
+    numEl.textContent = total;
+    numEl.className   = 'total-num' + (total >= target ? ' over' : ' under');
+    document.getElementById('deficitLine').textContent = deficit > 0 ? 'Deficit: ' + deficit : (total > target ? 'Above target ✓' : '');
+    document.getElementById('reasonBox').classList.toggle('show', deficit > 0);
+  };
+
+  function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (!myEntries.length) {
+      list.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:20px;">No entries yet</div>';
+      return;
+    }
+    list.innerHTML = myEntries.map((e, i) => `
+      <div class="history-item" onclick="showDetail(${i})" id="hi-${i}">
+        <div class="hi-date">${formatDate(e.date)}</div>
+        <div class="hi-total">${e.total}</div>
+      </div>`).join('');
+  }
+
+  window.showDetail = function(i) {
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('hi-' + i)?.classList.add('active');
+    const e      = myEntries[i];
+    const target = parseInt(userDetails?.target) || 0;
+    const deficit = Math.max(0, target - parseInt(e.total));
+    const status  = parseInt(e.total) > target ? 'Above Target 🎯' : deficit === 0 ? 'Met ✓' : 'Deficit ✗';
+    const color   = parseInt(e.total) >= target ? 'var(--green)' : 'var(--red)';
+    document.getElementById('historyDetail').innerHTML = `
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">${formatDate(e.date)}</div>
+      <div class="detail-grid">
+        <div class="detail-card"><div class="detail-label">Fresh</div><div class="detail-val" style="color:var(--blue)">${e.fresh}</div></div>
+        <div class="detail-card"><div class="detail-label">Rework</div><div class="detail-val" style="color:var(--yellow)">${e.rework}</div></div>
+        <div class="detail-card"><div class="detail-label">Total</div><div class="detail-val">${e.total}</div></div>
+        <div class="detail-card"><div class="detail-label">Target</div><div class="detail-val">${target}</div></div>
+        <div class="detail-card"><div class="detail-label">Deficit</div><div class="detail-val" style="color:${deficit>0?'var(--red)':'var(--green)'}">${deficit}</div></div>
+        <div class="detail-card"><div class="detail-label">Status</div><div class="detail-val" style="font-size:13px;color:${color}">${status}</div></div>
+      </div>
+      ${e.reason ? `<div style="background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);"><strong style="color:var(--text);">Reason:</strong> ${e.reason}</div>` : ''}`;
+  };
+
+  function renderDashboard() {
+    if (!myEntries.length) return;
+    const target = parseInt(userDetails?.target) || 0;
+    const now    = new Date();
+    const thisMonth = myEntries.filter(e => { const d = new Date(e.date); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); });
+    const thisWeek  = myEntries.filter(e => (now - new Date(e.date)) / 86400000 <= 7);
+
+    document.getElementById('statMonth').textContent   = thisMonth.reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statWeek').textContent    = thisWeek.reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statAvg').textContent     = myEntries.length ? Math.round(myEntries.reduce((s,e)=>s+parseInt(e.total),0)/myEntries.length) : 0;
+    document.getElementById('statDeficit').textContent = myEntries.reduce((s,e)=>s+Math.max(0,target-parseInt(e.total)),0);
+
+    const last14  = myEntries.slice(0,14).reverse();
+    const actuals = last14.map(e => parseInt(e.total));
+
+    if (barChart) barChart.destroy();
+    barChart = new Chart(document.getElementById('chartBar'), {
+      type: 'bar',
+      data: {
+        labels: last14.map(e => formatDate(e.date)),
+        datasets: [
+          {
+            label: 'Cases Done',
+            data: actuals,
+            backgroundColor: actuals.map(v => v >= target ? '#4ade80' : '#f87171'),
+            borderRadius: 6,
+            order: 2
+          },
+          {
+            label: 'Target (' + target + ')',
+            data: last14.map(() => target),
+            type: 'line',
+            borderColor: '#1a1a2e',
+            borderWidth: 2.5,
+            borderDash: [6, 3],
+            pointRadius: 0,
+            fill: false,
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true },
+          tooltip: {
+            callbacks: {
+              afterBody: function(context) {
+                const val  = context[0].raw;
+                const diff = val - target;
+                if (diff >= 0) return '✓ Above target by ' + diff;
+                return '✗ Short by ' + Math.abs(diff);
+              }
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    const tF = myEntries.reduce((s,e)=>s+parseInt(e.fresh),0);
+    const tR = myEntries.reduce((s,e)=>s+parseInt(e.rework),0);
+    if (doughnutChart) doughnutChart.destroy();
+    doughnutChart = new Chart(document.getElementById('chartDoughnut'), {
+      type: 'doughnut',
+      data: { labels:['Fresh','Rework'], datasets:[{ data:[tF,tR], backgroundColor:['#4ade80','#f87171'], borderWidth:0 }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
+    });
+
+    const rc = {};
+    myEntries.filter(e=>e.reason&&e.reason.trim()).forEach(e=>{ const r=e.reason.trim().toLowerCase(); rc[r]=(rc[r]||0)+1; });
+    const sorted = Object.entries(rc).sort((a,b)=>b[1]-a[1]);
+    document.getElementById('reasonsList').innerHTML = sorted.length
+      ? sorted.map(([r,c])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text);text-transform:capitalize;">${r}</span><span style="background:var(--red);color:#fff;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">${c}x</span></div>`).join('')
+      : '<div style="font-size:13px;color:var(--green);">No deficit reasons yet ✓</div>';
+  }
+
+  window.switchTab = function(tab) {
+    ['submit','dashboard','history'].forEach(t => { document.getElementById('tab-'+t).style.display = t===tab?'block':'none'; });
+    document.querySelectorAll('.tab').forEach((el,i) => { el.classList.toggle('active', ['submit','dashboard','history'][i]===tab); });
+    if (tab==='dashboard') renderDashboard();
+  };
+
+  function setTodayDate() {
+    const today = getTodayStr();
+    document.getElementById('date').value = today;
+    document.getElementById('date').max   = today;
+  }
+
+  function getTodayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function formatDate(ds) {
+    return new Date(ds).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent  = msg;
+    document.getElementById('toastIcon').textContent = type==='success'?'✓':'✕';
+    t.className = 'toast show ' + type;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(()=>{ t.className='toast'; }, 3500);
+  }
+
+// Auto refresh every 30 seconds
+setInterval(async () => {
+  if (currentUser && userDetails) {
+    await loadMyEntries(currentUser.email);
+  }
+}, 30000);
+
+</script>
+</body>
+</html>
