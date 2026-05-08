@@ -71,27 +71,23 @@
     .calendar-wrap { background: var(--bg); border-radius: 10px; padding: 16px; }
     .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .cal-title { font-size: 14px; font-weight: 600; color: var(--text); }
-    .cal-nav { background: none; border: 1px solid var(--border); border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--text); }
+    .cal-nav { background: none; border: 1px solid var(--border); border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--text); }
     .cal-nav:hover { background: var(--border); }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
     .cal-day-label { text-align: center; font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; padding: 4px 0; }
-    .cal-day { text-align: center; font-size: 12px; font-weight: 500; padding: 6px 4px; border-radius: 6px; cursor: pointer; transition: all 0.15s; position: relative; }
+    .cal-day { text-align: center; font-size: 12px; font-weight: 500; padding: 7px 4px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
     .cal-day.empty { cursor: default; }
     .cal-day.submitted { background: #dcfce7; color: #15803d; font-weight: 700; }
     .cal-day.submitted:hover { background: #bbf7d0; }
     .cal-day.missed { background: #fee2e2; color: #dc2626; }
     .cal-day.missed:hover { background: #fecaca; }
-    .cal-day.sunday { background: #f3f4f6; color: #9ca3af; font-style: italic; cursor: default; }
-    .cal-day.future { color: #d1d5db; cursor: default; }
+    .cal-day.sunday { background: #f3f4f6; color: #9ca3af; cursor: default; }
+    .cal-day.future { color: #d1d5db; cursor: default; background: none; }
     .cal-day.selected { outline: 2.5px solid var(--accent); outline-offset: 1px; }
-    .cal-day.today { font-weight: 700; }
-
-    /* legend */
+    .cal-day.today-marker { font-weight: 800; text-decoration: underline; }
     .cal-legend { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
     .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
-
-    /* detail panel */
     .history-detail { background: var(--bg); border-radius: 10px; padding: 20px; }
     .detail-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0; }
     .detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
@@ -271,9 +267,43 @@
   let doughnutChart = null;
 
   // calendar state
-  let calYear  = new Date().getFullYear();
-  let calMonth = new Date().getMonth();
+  let calYear      = new Date().getFullYear();
+  let calMonth     = new Date().getMonth();
   let selectedDate = null;
+
+  // ─────────────────────────────────────────────────────────────────────
+  // THE FIX: normalizeDate
+  // Google Sheets can send dates in many formats depending on locale:
+  //   "2025-05-07"          ← ISO (already correct)
+  //   "2025-05-07T00:00:00Z" ← ISO with time
+  //   "7/5/2025"            ← DD/MM/YYYY (Indian locale)
+  //   "07/05/2025"          ← DD/MM/YYYY zero-padded
+  // This function always returns "YYYY-MM-DD" so comparisons always work.
+  // ─────────────────────────────────────────────────────────────────────
+  function normalizeDate(raw) {
+    if (!raw) return "";
+    const s = String(raw).trim();
+
+    // ISO format already: "2025-05-07" or "2025-05-07T..."
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0, 10);
+
+    // Indian/Sheets DD/MM/YYYY: "7/5/2025" or "07/05/2025"
+    const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (dmy) {
+      const [, dd, mm, yyyy] = dmy;
+      return `${yyyy}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}`;
+    }
+
+    // Fallback: JS Date parse
+    try {
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) {
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      }
+    } catch(_) {}
+
+    return s.substring(0, 10);
+  }
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -321,7 +351,11 @@
     try {
       const res  = await fetch(APPS_SCRIPT_URL + "?action=getEntries&email=" + encodeURIComponent(email));
       const data = await res.json();
-      myEntries  = data.entries || [];
+      // Normalize ALL dates at ingestion time — this is the core fix
+      myEntries = (data.entries || []).map(e => ({
+        ...e,
+        date: normalizeDate(e.date)
+      }));
       renderCalendar();
       renderDashboard();
     } catch(e) { console.log("Entries error:", e); }
@@ -375,10 +409,10 @@
   window.calc = function() {
     const f = Math.max(0, parseInt(document.getElementById('fresh').value)  || 0);
     const r = Math.max(0, parseInt(document.getElementById('rework').value) || 0);
-    const total  = f + r;
-    const target = parseInt(userDetails?.target) || 0;
+    const total   = f + r;
+    const target  = parseInt(userDetails?.target) || 0;
     const deficit = Math.max(0, target - total);
-    const numEl  = document.getElementById('totalNum');
+    const numEl   = document.getElementById('totalNum');
     numEl.textContent = total;
     numEl.className   = 'total-num' + (total >= target ? ' over' : ' under');
     document.getElementById('deficitLine').textContent = deficit > 0 ? 'Deficit: ' + deficit : (total > target ? 'Above target ✓' : '');
@@ -394,16 +428,17 @@
   };
 
   function renderCalendar() {
-    const today     = getTodayStr();
+    const today = getTodayStr();
     const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('calTitle').textContent = monthNames[calMonth] + ' ' + calYear;
 
-    const submittedDates = new Set(myEntries.map(e => String(e.date).substring(0,10)));
+    // All dates in myEntries are already normalized to YYYY-MM-DD
+    const submittedDates = new Set(myEntries.map(e => e.date));
 
     const grid = document.getElementById('calGrid');
     grid.innerHTML = '';
 
-    // day headers
+    // Day headers — Mon first
     ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
       const el = document.createElement('div');
       el.className = 'cal-day-label';
@@ -411,12 +446,11 @@
       grid.appendChild(el);
     });
 
-    const firstDay = new Date(calYear, calMonth, 1);
-    // Monday=0 offset
-    let startOffset = firstDay.getDay() - 1;
+    // Empty cells before month start (Mon=0 offset)
+    const firstDay   = new Date(calYear, calMonth, 1);
+    let startOffset  = firstDay.getDay() - 1;
     if (startOffset < 0) startOffset = 6;
 
-    // empty cells
     for (let i = 0; i < startOffset; i++) {
       const el = document.createElement('div');
       el.className = 'cal-day empty';
@@ -426,11 +460,10 @@
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
 
     for (let day = 1; day <= daysInMonth; day++) {
-      const mm    = String(calMonth + 1).padStart(2, '0');
-      const dd    = String(day).padStart(2, '0');
+      const mm      = String(calMonth + 1).padStart(2, '0');
+      const dd      = String(day).padStart(2, '0');
       const dateStr = `${calYear}-${mm}-${dd}`;
-      const dateObj = new Date(calYear, calMonth, day);
-      const dow     = dateObj.getDay(); // 0=Sun, 6=Sat
+      const dow     = new Date(calYear, calMonth, day).getDay(); // 0=Sun
       const isSun   = dow === 0;
       const isFuture = dateStr > today;
 
@@ -453,7 +486,7 @@
         el.onclick = () => showMissedDay(dateStr);
       }
 
-      if (dateStr === today) el.classList.add('today');
+      if (dateStr === today)        el.classList.add('today-marker');
       if (dateStr === selectedDate) el.classList.add('selected');
 
       grid.appendChild(el);
@@ -463,9 +496,10 @@
   function showDayDetail(dateStr) {
     selectedDate = dateStr;
     renderCalendar();
-    const entry  = myEntries.find(e => String(e.date).substring(0,10) === dateStr);
+    // Direct equality works because both sides are normalized YYYY-MM-DD
+    const entry = myEntries.find(e => e.date === dateStr);
     if (!entry) return;
-    const target = parseInt(userDetails?.target) || 0;
+    const target  = parseInt(userDetails?.target) || 0;
     const deficit = Math.max(0, target - parseInt(entry.total));
     const status  = parseInt(entry.total) > target ? 'Above Target 🎯' : deficit === 0 ? 'Met ✓' : 'Deficit ✗';
     const color   = parseInt(entry.total) >= target ? 'var(--green)' : 'var(--red)';
@@ -488,10 +522,10 @@
     renderCalendar();
     document.getElementById('historyDetail').innerHTML = `
       <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(dateStr)}</div>
-      <div style="background:#fee2e2;border-radius:10px;padding:20px;text-align:center;">
-        <div style="font-size:28px;margin-bottom:8px;">❌</div>
-        <div style="font-size:14px;font-weight:600;color:#dc2626;">No Entry Submitted</div>
-        <div style="font-size:12px;color:#9ca3af;margin-top:4px;">EOD count was not submitted for this day</div>
+      <div style="background:#fee2e2;border-radius:10px;padding:28px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:10px;">❌</div>
+        <div style="font-size:15px;font-weight:600;color:#dc2626;">No Entry Submitted</div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:6px;">EOD count was not submitted for this day</div>
       </div>
     `;
   }
@@ -522,7 +556,10 @@
       },
       options: {
         responsive:true, maintainAspectRatio:false,
-        plugins: { legend:{display:true}, tooltip:{ callbacks:{ afterBody:function(ctx){ const v=ctx[0].raw; const d=v-target; return d>=0?'✓ Above by '+d:'✗ Short by '+Math.abs(d); } } } },
+        plugins: {
+          legend:{display:true},
+          tooltip:{ callbacks:{ afterBody:function(ctx){ const v=ctx[0].raw; const d=v-target; return d>=0?'✓ Above by '+d:'✗ Short by '+Math.abs(d); } } }
+        },
         scales: { y:{beginAtZero:true,grid:{color:'#f0f0f0'}}, x:{grid:{display:false}} }
       }
     });
@@ -563,7 +600,9 @@
   }
 
   function formatDate(ds) {
-    return new Date(ds).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+    // ds is always YYYY-MM-DD here, split to avoid timezone shift
+    const [y, m, d] = ds.split('-').map(Number);
+    return new Date(y, m-1, d).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
   }
 
   function showToast(msg, type) {
@@ -577,9 +616,7 @@
 
   // Auto refresh every 30 seconds
   setInterval(async () => {
-    if (currentUser && userDetails) {
-      await loadMyEntries(currentUser.email);
-    }
+    if (currentUser && userDetails) await loadMyEntries(currentUser.email);
   }, 30000);
 
 </script>
