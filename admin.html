@@ -14,6 +14,7 @@
       --accent: #1a1a2e; --accent2: #16213e;
       --green: #16a34a; --red: #dc2626;
       --blue: #2563eb; --yellow: #d97706;
+      --orange: #ea580c;
       --radius: 12px;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; }
@@ -23,6 +24,9 @@
     .navbar-email { font-size: 12px; color: rgba(255,255,255,0.6); }
     .logout-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer; }
     .main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+    .tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 24px; width: fit-content; flex-wrap: wrap; }
+    .tab { padding: 8px 20px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--muted); border: none; background: none; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+    .tab.active { background: var(--accent); color: #fff; }
     .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
     .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
     .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
@@ -34,17 +38,50 @@
     th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
     td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
     tr:hover td { background: var(--bg); }
-    .badge-green { background: #f0fdf4; color: var(--green); padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-    .badge-red { background: #fef2f2; color: var(--red); padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-green  { background: #f0fdf4; color: var(--green);  padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-red    { background: #fef2f2; color: var(--red);    padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-leave  { background: #fef9c3; color: #854d0e;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-satoff { background: #ffedd5; color: #9a3412;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-compoff{ background: #ede9fe; color: #5b21b6;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-halfday{ background: #dbeafe; color: #1e40af;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-absent { background: #450a0a; color: #fca5a5;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
-    select, input[type="date"] { height: 38px; padding: 0 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); outline: none; }
+    select, input[type="date"], input[type="text"] { height: 38px; padding: 0 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); outline: none; }
+    select:focus, input:focus { border-color: var(--accent); }
     .range-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 8px; width: fit-content; margin-bottom: 12px; }
     .range-btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
     .range-btn.active { background: var(--accent); color: #fff; }
     .range-btn:hover:not(.active) { background: var(--border); color: var(--text); }
     .custom-range { display: none; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
     .custom-range.show { display: flex; }
-    .chart-section-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+
+    /* ── ROSTER ── */
+    .roster-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { margin-bottom: 0; }
+    label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .roster-type-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 16px; }
+    .rtype-btn { padding: 12px 6px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; transition: all 0.15s; }
+    .rtype-btn:hover { border-color: var(--accent); color: var(--text); }
+    .rtype-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .rtype-btn .rtype-label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; margin-bottom: 3px; }
+    .rtype-btn .rtype-name { display: block; font-size: 12px; font-weight: 700; }
+    .date-range-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .preview-bar { background: var(--bg); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); min-height: 42px; }
+    .preview-bar span { color: var(--text); font-weight: 600; }
+    .btn-primary { height: 44px; padding: 0 24px; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+    .btn-primary:hover:not(:disabled) { background: var(--accent2); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+    .toast { display: none; align-items: center; gap: 8px; margin-top: 12px; padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; }
+    .toast.show { display: flex; }
+    .toast.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+    .toast.error   { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
+
+    .roster-log-entry { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
+
+    @media (max-width: 700px) {
+      .roster-type-row { grid-template-columns: repeat(3, 1fr); }
+      .date-range-row { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -59,81 +96,160 @@
 
 <div class="main">
 
-  <!-- STATS -->
-  <div class="stat-grid">
-    <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-val" id="statEmp">—</div></div>
-    <div class="stat-card"><div class="stat-label">Today's Submissions</div><div class="stat-val" id="statToday">—</div></div>
-    <div class="stat-card"><div class="stat-label">Cases Today</div><div class="stat-val" id="statCasesToday">—</div></div>
-    <div class="stat-card"><div class="stat-label">Pending Today</div><div class="stat-val" style="color:var(--red)" id="statPending">—</div></div>
-    <div class="stat-card"><div class="stat-label">Technical Today</div><div class="stat-val" style="color:var(--blue)" id="statTech">—</div></div>
-    <div class="stat-card"><div class="stat-label">Medical Today</div><div class="stat-val" style="color:var(--green)" id="statMed">—</div></div>
-    <div class="stat-card"><div class="stat-label">Cashless Today</div><div class="stat-val" style="color:var(--yellow)" id="statCash">—</div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab" onclick="switchTab('entries')">All Entries</button>
+    <button class="tab" onclick="switchTab('roster')">Roster</button>
   </div>
 
-  <!-- CHART CARD -->
-  <div class="card">
-    <div class="card-title">Team Performance</div>
-
-    <!-- Range Tabs -->
-    <div class="range-tabs">
-      <button class="range-btn active" onclick="setRange('week', this)">This Week</button>
-      <button class="range-btn" onclick="setRange('month', this)">This Month</button>
-      <button class="range-btn" onclick="setRange('year',  this)">This Year</button>
-      <button class="range-btn" onclick="setRange('custom',this)">Custom</button>
+  <!-- ══════════════ OVERVIEW TAB ══════════════ -->
+  <div id="tab-overview">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-val" id="statEmp">—</div></div>
+      <div class="stat-card"><div class="stat-label">Today Submitted</div><div class="stat-val" id="statToday">—</div></div>
+      <div class="stat-card"><div class="stat-label">Cases Today</div><div class="stat-val" id="statCasesToday">—</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Today</div><div class="stat-val" style="color:var(--red)" id="statPending">—</div></div>
+      <div class="stat-card"><div class="stat-label">Technical</div><div class="stat-val" style="color:var(--blue)" id="statTech">—</div></div>
+      <div class="stat-card"><div class="stat-label">Medical</div><div class="stat-val" style="color:var(--green)" id="statMed">—</div></div>
+      <div class="stat-card"><div class="stat-label">Cashless</div><div class="stat-val" style="color:var(--yellow)" id="statCash">—</div></div>
     </div>
 
-    <!-- Custom Range -->
-    <div class="custom-range" id="customRange">
-      <span style="font-size:13px;color:var(--muted);">From</span>
-      <input type="date" id="chartFrom" onchange="renderChart()">
-      <span style="font-size:13px;color:var(--muted);">To</span>
-      <input type="date" id="chartTo" onchange="renderChart()">
-    </div>
-
-    <!-- View Toggle -->
-    <div style="display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:8px;width:fit-content;margin-bottom:16px;">
-      <button class="range-btn active" id="view-total"   onclick="setView('total',   this)">Total</button>
-      <button class="range-btn"        id="view-distrib" onclick="setView('distrib', this)">Fresh & Rework</button>
-    </div>
-
-    <!-- Total Chart -->
-    <div id="chartTotalWrap">
-      <div class="chart-wrap"><canvas id="adminChart"></canvas></div>
-    </div>
-
-    <!-- Fresh & Rework Charts -->
-    <div id="chartDistribWrap" style="display:none;">
-      <div class="chart-section-label">Fresh Cases</div>
-      <div class="chart-wrap"><canvas id="chartFresh"></canvas></div>
-      <div style="height:24px;"></div>
-      <div class="chart-section-label">Rework Cases</div>
-      <div class="chart-wrap"><canvas id="chartRework"></canvas></div>
+    <div class="card">
+      <div class="card-title">Team Performance</div>
+      <div class="range-tabs">
+        <button class="range-btn active" onclick="setRange('week',this)">This Week</button>
+        <button class="range-btn" onclick="setRange('month',this)">This Month</button>
+        <button class="range-btn" onclick="setRange('year',this)">This Year</button>
+        <button class="range-btn" onclick="setRange('custom',this)">Custom</button>
+      </div>
+      <div class="custom-range" id="customRange">
+        <span style="font-size:13px;color:var(--muted);">From</span>
+        <input type="date" id="chartFrom" onchange="renderChart()">
+        <span style="font-size:13px;color:var(--muted);">To</span>
+        <input type="date" id="chartTo" onchange="renderChart()">
+      </div>
+      <div style="display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:8px;width:fit-content;margin-bottom:16px;">
+        <button class="range-btn active" id="view-total"   onclick="setView('total',this)">Total</button>
+        <button class="range-btn"        id="view-distrib" onclick="setView('distrib',this)">Fresh & Rework</button>
+      </div>
+      <div id="chartTotalWrap"><div class="chart-wrap"><canvas id="adminChart"></canvas></div></div>
+      <div id="chartDistribWrap" style="display:none;">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Fresh Cases</div>
+        <div class="chart-wrap"><canvas id="chartFresh"></canvas></div>
+        <div style="height:20px;"></div>
+        <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Rework Cases</div>
+        <div class="chart-wrap"><canvas id="chartRework"></canvas></div>
+      </div>
     </div>
   </div>
 
-  <!-- TABLE -->
-  <div class="card">
-    <div class="card-title">All Entries</div>
-    <div class="filter-row">
-      <select id="filterEmployee" onchange="renderTable()"><option value="">All Employees</option></select>
-      <select id="filterTeam" onchange="renderTable()">
-        <option value="">All Teams</option>
-        <option value="technical">Technical</option>
-        <option value="medical">Medical</option>
-        <option value="cashless">Cashless</option>
-      </select>
-      <input type="date" id="filterFrom" onchange="renderTable()">
-      <input type="date" id="filterTo"   onchange="renderTable()">
+  <!-- ══════════════ ENTRIES TAB ══════════════ -->
+  <div id="tab-entries" style="display:none;">
+    <div class="card">
+      <div class="card-title">All Entries</div>
+      <div class="filter-row">
+        <select id="filterEmployee" onchange="renderTable()"><option value="">All Employees</option></select>
+        <select id="filterTeam" onchange="renderTable()">
+          <option value="">All Teams</option>
+          <option value="technical">Technical</option>
+          <option value="medical">Medical</option>
+          <option value="cashless">Cashless</option>
+        </select>
+        <input type="date" id="filterFrom" onchange="renderTable()">
+        <input type="date" id="filterTo"   onchange="renderTable()">
+      </div>
+      <div style="overflow-x:auto;overflow-y:auto;max-height:520px;">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Name</th><th>Team</th><th>Fresh</th><th>Rework</th><th>Total</th><th>Target</th><th>Deficit</th><th>Type / Reason</th></tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div style="overflow-x:auto; overflow-y:auto; max-height:500px;">
-      <table>
-        <thead>
-          <tr><th>Date</th><th>Name</th><th>Team</th><th>Fresh</th><th>Rework</th><th>Total</th><th>Target</th><th>Deficit</th><th>Reason</th></tr>
-        </thead>
-        <tbody id="tableBody">
-          <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>
-        </tbody>
-      </table>
+  </div>
+
+  <!-- ══════════════ ROSTER TAB ══════════════ -->
+  <div id="tab-roster" style="display:none;">
+    <div class="card">
+      <div class="card-title">Roster Management — Mark Leave / Attendance</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">
+        Mark leave, week-offs, comp-offs, half-days, or absences for any employee across a date range. All marked dates auto-record a zero count entry with the selected type.
+      </p>
+
+      <!-- Employee selector -->
+      <div style="margin-bottom:16px;">
+        <label>Employee</label>
+        <select id="rosterEmployee" style="width:100%;height:46px;font-size:14px;">
+          <option value="">Select Employee</option>
+        </select>
+      </div>
+
+      <!-- Type selection — Admin gets all 5 types -->
+      <label style="margin-bottom:10px;">Type</label>
+      <div class="roster-type-row" id="adminRosterTypeRow">
+        <button class="rtype-btn" onclick="selectAdminRosterType('Leave')" id="art-Leave">
+          <span class="rtype-label">Planned</span>
+          <span class="rtype-name">Leave</span>
+        </button>
+        <button class="rtype-btn" onclick="selectAdminRosterType('Sat Off')" id="art-Sat Off">
+          <span class="rtype-label">Weekly Off</span>
+          <span class="rtype-name">Sat Off</span>
+        </button>
+        <button class="rtype-btn" onclick="selectAdminRosterType('Comp Off')" id="art-Comp Off">
+          <span class="rtype-label">Compensation</span>
+          <span class="rtype-name">Comp Off</span>
+        </button>
+        <button class="rtype-btn" onclick="selectAdminRosterType('Half Day')" id="art-Half Day">
+          <span class="rtype-label">Partial</span>
+          <span class="rtype-name">Half Day</span>
+        </button>
+        <button class="rtype-btn" onclick="selectAdminRosterType('Absent')" id="art-Absent">
+          <span class="rtype-label">Unplanned</span>
+          <span class="rtype-name">Absent</span>
+        </button>
+      </div>
+
+      <!-- Date range -->
+      <div class="date-range-row">
+        <div>
+          <label>From Date</label>
+          <input type="date" id="adminRosterFrom" style="width:100%;height:46px;font-size:14px;" oninput="updateAdminPreview()">
+        </div>
+        <div>
+          <label>To Date</label>
+          <input type="date" id="adminRosterTo" style="width:100%;height:46px;font-size:14px;" oninput="updateAdminPreview()">
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="preview-bar" id="adminRosterPreview">Select an employee, type, and date range to preview</div>
+
+      <button class="btn-primary" id="adminRosterBtn" onclick="submitAdminRoster()">Apply to Roster</button>
+      <div class="toast" id="adminRosterToast" style="margin-top:10px;"><span id="adminRosterToastMsg"></span></div>
+    </div>
+
+    <!-- Roster Log -->
+    <div class="card">
+      <div class="card-title">Roster Entries</div>
+      <div class="filter-row">
+        <select id="rosterFilterEmp" onchange="renderRosterLog()"><option value="">All Employees</option></select>
+        <select id="rosterFilterType" onchange="renderRosterLog()">
+          <option value="">All Types</option>
+          <option value="Leave">Leave</option>
+          <option value="Sat Off">Sat Off</option>
+          <option value="Comp Off">Comp Off</option>
+          <option value="Half Day">Half Day</option>
+          <option value="Absent">Absent</option>
+        </select>
+        <input type="date" id="rosterFilterFrom" onchange="renderRosterLog()">
+        <input type="date" id="rosterFilterTo"   onchange="renderRosterLog()">
+      </div>
+      <div id="rosterLog" style="max-height:420px;overflow-y:auto;">
+        <div style="font-size:13px;color:var(--muted);padding:16px 0;">No roster entries found.</div>
+      </div>
     </div>
   </div>
 
@@ -144,166 +260,209 @@
   import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
 
   const firebaseConfig = {
-    apiKey:            "AIzaSyB53EbCi3m1n5L1xReV8JExc_zoaQFe21Y",
-    authDomain:        "daily-eod--count-portal.firebaseapp.com",
-    projectId:         "daily-eod--count-portal",
-    storageBucket:     "daily-eod--count-portal.firebasestorage.app",
+    apiKey: "AIzaSyB53EbCi3m1n5L1xReV8JExc_zoaQFe21Y",
+    authDomain: "daily-eod--count-portal.firebaseapp.com",
+    projectId: "daily-eod--count-portal",
+    storageBucket: "daily-eod--count-portal.firebasestorage.app",
     messagingSenderId: "665878833615",
-    appId:             "1:665878833615:web:3ef734d845a531b7874aba",
-    measurementId:     "G-9DTPC5WSN3"
+    appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
-
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpIetd36Y_iUqfV6Sx0gNuxaXvm6yi_xORmgFEIo15G6YxJkVVPcMOBPfiPEu0H4qZ8A/exec";
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  let currentUser  = null;
-  let allEntries   = [];
-  let allEmployees = [];
-  let adminChart   = null;
-  let chartFresh   = null;
-  let chartRework  = null;
-  let currentRange = 'week';
-  let currentView  = 'total';
+  let currentUser      = null;
+  let allEntries       = [];
+  let allEmployees     = [];
+  let adminChart       = null;
+  let chartFresh       = null;
+  let chartRework      = null;
+  let currentRange     = 'week';
+  let currentView      = 'total';
+  let adminRosterType  = null;
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) { window.location.href = "index.html"; return; }
-    currentUser = user;
-    document.getElementById('navEmail').textContent = user.email;
+  const ROSTER_TYPES = ['Leave','Sat Off','Comp Off','Half Day','Absent'];
+  const BADGE_CLASS  = {'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent'};
+
+  /* ── UTILS ── */
+  function normalizeDate(raw) {
+    if(!raw) return "";
+    const s=String(raw).trim();
+    if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
+    const dmy=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if(dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
+    try{const d=new Date(s);if(!isNaN(d))return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}catch(_){}
+    return s.substring(0,10);
+  }
+  function getTodayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  function formatDate(ds) {
+    if(!ds) return '—';
+    const [y,m,d]=ds.split('-').map(Number);
+    return new Date(y,m-1,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  }
+  function matchTeam(e,t) { return String(e.team).toLowerCase().includes(t.toLowerCase()); }
+  function getDaysBetween(from,to) {
+    const dates=[]; let cur=new Date(from); const end=new Date(to);
+    while(cur<=end){dates.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}
+    return dates;
+  }
+  function isSunday(ds){const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).getDay()===0;}
+
+  async function apiFetch(action,params={}) {
+    const url=APPS_SCRIPT_URL+"?"+new URLSearchParams({action,...params}).toString();
+    const r=await fetch(url); return r.json();
+  }
+
+  /* ── AUTH ── */
+  onAuthStateChanged(auth, async(user)=>{
+    if(!user){window.location.href="index.html";return;}
+    currentUser=user;
+    document.getElementById('navEmail').textContent=user.email;
     await loadAdminData();
   });
 
-  window.logout = async function() {
-    await signOut(auth);
-    window.location.href = "index.html";
-  };
+  window.logout=async()=>{await signOut(auth);window.location.href="index.html";};
 
   async function loadAdminData() {
     try {
-      const url1  = APPS_SCRIPT_URL + "?action=getUser&email=" + encodeURIComponent(currentUser.email);
-      const res1  = await fetch(url1);
-      const user  = await res1.json();
-      if (user.role !== "Admin") { alert("Access denied"); window.location.href = "index.html"; return; }
-
-      const url2  = APPS_SCRIPT_URL + "?action=getAllEntries&email=" + encodeURIComponent(currentUser.email);
-      const res2  = await fetch(url2);
-      const data2 = await res2.json();
-      allEntries   = data2.entries   || [];
-      allEmployees = data2.employees || [];
-
-      renderStats();
-      renderChart();
-      renderTable();
-      populateFilter();
-    } catch(e) {
-      alert("Error: " + e.message);
-    }
+      const user=await apiFetch('getUser',{email:currentUser.email});
+      if(user.role!=="Admin"){alert("Access denied");window.location.href="index.html";return;}
+      const data=await apiFetch('getAllEntries',{email:currentUser.email});
+      allEntries  =(data.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+      allEmployees=data.employees||[];
+      renderStats(); renderChart(); renderTable(); populateFilters();
+    } catch(e){alert("Error: "+e.message);}
   }
 
-  function getTodayStr() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  /* ── TABS ── */
+  window.switchTab=function(tab){
+    ['overview','entries','roster'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
+    document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['overview','entries','roster'][i]===tab);});
+    if(tab==='overview') renderChart();
+    if(tab==='roster')   renderRosterLog();
+  };
+
+  /* ── STATS ── */
+  function renderStats() {
+    const today=getTodayStr();
+    // Only count actual work entries for "submitted today" (not roster/leave entries)
+    const todayWork=allEntries.filter(e=>e.date===today&&!ROSTER_TYPES.includes(String(e.reason||'').trim()));
+    const todayAll =allEntries.filter(e=>e.date===today);
+    const empCount =allEmployees.filter(e=>String(e.role)!=='Admin').length;
+    document.getElementById('statEmp').textContent       =empCount;
+    document.getElementById('statToday').textContent     =todayWork.length;
+    document.getElementById('statCasesToday').textContent=todayWork.reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statPending').textContent   =Math.max(0,empCount-todayAll.length);
+    document.getElementById('statTech').textContent      =todayWork.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statMed').textContent       =todayWork.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statCash').textContent      =todayWork.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0);
   }
 
-  function matchTeam(entry, team) {
-    return String(entry.team).toLowerCase().includes(team.toLowerCase());
-  }
-
+  /* ── TABLE ── */
   function getFilteredEntries() {
-    const empFilter  = document.getElementById('filterEmployee').value;
-    const teamFilter = document.getElementById('filterTeam').value;
-    const fromFilter = document.getElementById('filterFrom').value;
-    const toFilter   = document.getElementById('filterTo').value;
-    return allEntries.filter(e => {
-      const d = String(e.date).substring(0,10);
-      if (empFilter  && e.name !== empFilter)      return false;
-      if (teamFilter && !matchTeam(e, teamFilter)) return false;
-      if (fromFilter && d < fromFilter)            return false;
-      if (toFilter   && d > toFilter)              return false;
+    const emp =document.getElementById('filterEmployee').value;
+    const team=document.getElementById('filterTeam').value;
+    const from=document.getElementById('filterFrom').value;
+    const to  =document.getElementById('filterTo').value;
+    return allEntries.filter(e=>{
+      const d=e.date;
+      if(emp  && e.name!==emp)           return false;
+      if(team && !matchTeam(e,team))     return false;
+      if(from && d<from)                 return false;
+      if(to   && d>to)                   return false;
       return true;
     });
   }
 
-  function renderStats() {
-    const today    = getTodayStr();
-    const todayEnt = allEntries.filter(e => String(e.date).substring(0,10) === today);
-    const empCount = allEmployees.filter(e => String(e.role) !== 'Admin').length;
-    document.getElementById('statEmp').textContent        = empCount;
-    document.getElementById('statToday').textContent      = todayEnt.length;
-    document.getElementById('statCasesToday').textContent = todayEnt.reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statPending').textContent    = Math.max(0, empCount - todayEnt.length);
-    document.getElementById('statTech').textContent       = todayEnt.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statMed').textContent        = todayEnt.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statCash').textContent       = todayEnt.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0);
-  }
-
-  window.setRange = function(range, btn) {
-    currentRange = range;
-    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    // restore view toggle active state
-    document.getElementById('view-' + currentView).classList.add('active');
-    const cd = document.getElementById('customRange');
-    if (range === 'custom') {
-      cd.classList.add('show');
-      const now  = new Date();
-      const from = new Date(now);
-      from.setDate(from.getDate() - 30);
-      document.getElementById('chartFrom').value = from.toISOString().split('T')[0];
-      document.getElementById('chartTo').value   = now.toISOString().split('T')[0];
-    } else {
-      cd.classList.remove('show');
-    }
+  window.renderTable=function() {
+    const filtered=getFilteredEntries().sort((a,b)=>b.date.localeCompare(a.date));
+    const tbody=document.getElementById('tableBody');
+    if(!filtered.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No entries found</td></tr>';renderChart();return;}
+    tbody.innerHTML=filtered.map(e=>{
+      const deficit=parseInt(e.deficit)||0;
+      const teamColor=matchTeam(e,'technical')?'var(--blue)':matchTeam(e,'medical')?'var(--green)':'var(--yellow)';
+      const reason=String(e.reason||'');
+      const isRoster=ROSTER_TYPES.includes(reason.trim());
+      const reasonBadge=isRoster?`<span class="${BADGE_CLASS[reason.trim()]||'badge-green'}">${reason}</span>`:reason||'—';
+      return `<tr>
+        <td>${formatDate(e.date)}</td>
+        <td><strong>${e.name}</strong></td>
+        <td><span style="color:${teamColor};font-weight:500;">${e.team}</span></td>
+        <td>${e.fresh}</td><td>${e.rework}</td>
+        <td><strong>${e.total}</strong></td>
+        <td>${e.target||'—'}</td>
+        <td>${isRoster?'—':deficit>0?`<span class="badge-red">${deficit}</span>`:`<span class="badge-green">0</span>`}</td>
+        <td>${reasonBadge}</td>
+      </tr>`;
+    }).join('');
     renderChart();
   };
 
-  window.setView = function(view, btn) {
-    currentView = view;
+  function populateFilters() {
+    const sel1=document.getElementById('filterEmployee');
+    const sel2=document.getElementById('rosterFilterEmp');
+    const sel3=document.getElementById('rosterEmployee');
+    const names=[...new Set(allEntries.map(e=>e.name))].sort();
+    names.forEach(n=>{
+      [sel1,sel2].forEach(s=>{const o=document.createElement('option');o.value=n;o.textContent=n;s.appendChild(o);});
+    });
+    allEmployees.filter(e=>e.role!=='Admin').forEach(emp=>{
+      const o=document.createElement('option');
+      o.value=emp.email;
+      o.textContent=emp.name+(emp.team?' ('+emp.team+')':'');
+      sel3.appendChild(o);
+    });
+    // Set today as default for admin roster
+    const today=getTodayStr();
+    document.getElementById('adminRosterFrom').value=today;
+    document.getElementById('adminRosterTo').value=today;
+  }
+
+  /* ── CHART ── */
+  window.setRange=function(range,btn){
+    currentRange=range;
+    document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+currentView).classList.add('active');
+    const cd=document.getElementById('customRange');
+    if(range==='custom'){
+      cd.classList.add('show');
+      const now=new Date(),from=new Date(now);from.setDate(from.getDate()-30);
+      document.getElementById('chartFrom').value=from.toISOString().split('T')[0];
+      document.getElementById('chartTo').value=now.toISOString().split('T')[0];
+    }else{cd.classList.remove('show');}
+    renderChart();
+  };
+
+  window.setView=function(view,btn){
+    currentView=view;
     document.getElementById('view-total').classList.remove('active');
     document.getElementById('view-distrib').classList.remove('active');
     btn.classList.add('active');
-    document.getElementById('chartTotalWrap').style.display   = view === 'total'   ? 'block' : 'none';
-    document.getElementById('chartDistribWrap').style.display = view === 'distrib' ? 'block' : 'none';
+    document.getElementById('chartTotalWrap').style.display  =view==='total'  ?'block':'none';
+    document.getElementById('chartDistribWrap').style.display=view==='distrib'?'block':'none';
     renderChart();
   };
 
-  function buildDateRange() {
-    const now = new Date();
-    let fromDate, toDate;
-    if (currentRange === 'week') {
-      const diff = now.getDay() === 0 ? 6 : now.getDay() - 1;
-      fromDate = new Date(now); fromDate.setDate(now.getDate() - diff);
-      toDate   = new Date(now);
-    } else if (currentRange === 'month') {
-      fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      toDate   = new Date(now);
-    } else if (currentRange === 'year') {
-      fromDate = new Date(now.getFullYear(), 0, 1);
-      toDate   = new Date(now);
-    } else {
-      const f = document.getElementById('chartFrom').value;
-      const t = document.getElementById('chartTo').value;
-      if (!f || !t) return null;
-      fromDate = new Date(f); toDate = new Date(t);
-    }
-    const days = [];
-    const cur  = new Date(fromDate);
-    while (cur <= toDate) { days.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
+  function buildDateRange(){
+    const now=new Date(); let from,to;
+    if(currentRange==='week'){const diff=now.getDay()===0?6:now.getDay()-1;from=new Date(now);from.setDate(now.getDate()-diff);to=new Date(now);}
+    else if(currentRange==='month'){from=new Date(now.getFullYear(),now.getMonth(),1);to=new Date(now);}
+    else if(currentRange==='year'){from=new Date(now.getFullYear(),0,1);to=new Date(now);}
+    else{const f=document.getElementById('chartFrom').value,t=document.getElementById('chartTo').value;if(!f||!t)return null;from=new Date(f);to=new Date(t);}
+    const days=[]; let cur=new Date(from);
+    while(cur<=to){days.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}
     return days;
   }
 
-  function buildChartData(days, filteredEntries) {
-    let labels=[];
-    let techTotal=[], medTotal=[], cashTotal=[];
-    let techFresh=[], medFresh=[], cashFresh=[];
-    let techRework=[], medRework=[], cashRework=[];
-    let targetData=[];
-
-    if (days.length <= 35) {
-      labels = days.map(d => new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
-      days.forEach(d => {
-        const de = filteredEntries.filter(e => String(e.date).substring(0,10) === d);
+  function buildChartData(days,entries){
+    const labels=[],techTotal=[],medTotal=[],cashTotal=[],techFresh=[],medFresh=[],cashFresh=[],techRework=[],medRework=[],cashRework=[],targetData=[];
+    const group=days.length<=31?'day':'month';
+    if(group==='day'){
+      days.forEach(d=>{
+        labels.push(new Date(...d.split('-').map((v,i)=>i===1?Number(v)-1:Number(v))).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
+        const de=entries.filter(e=>e.date===d&&!ROSTER_TYPES.includes(String(e.reason||'').trim()));
         techTotal.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
         medTotal.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
         cashTotal.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
@@ -313,18 +472,14 @@
         techRework.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.rework),0));
         medRework.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
         cashRework.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.rework),0));
-        const emails = [...new Set(de.map(e=>e.email))];
-        targetData.push(emails.reduce((sum,email) => {
-          const emp = allEmployees.find(em=>String(em.email).toLowerCase()===String(email).toLowerCase());
-          return sum + (parseInt(emp?.target)||0);
-        }, 0));
+        const emails=[...new Set(de.map(e=>e.email))];
+        targetData.push(emails.reduce((s,email)=>{const emp=allEmployees.find(em=>String(em.email).toLowerCase()===email.toLowerCase());return s+(parseInt(emp?.target)||0);},0));
       });
-    } else {
-      const months = {};
-      days.forEach(d => { const k=d.substring(0,7); if(!months[k]) months[k]=[]; months[k].push(d); });
-      Object.entries(months).forEach(([key, mDays]) => {
+    }else{
+      const months={};days.forEach(d=>{const k=d.substring(0,7);if(!months[k])months[k]=[];months[k].push(d);});
+      Object.entries(months).forEach(([key,mDays])=>{
         labels.push(new Date(key+'-01').toLocaleDateString('en-IN',{month:'short',year:'numeric'}));
-        const me = filteredEntries.filter(e=>mDays.includes(String(e.date).substring(0,10)));
+        const me=entries.filter(e=>mDays.includes(e.date)&&!ROSTER_TYPES.includes(String(e.reason||'').trim()));
         techTotal.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
         medTotal.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
         cashTotal.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
@@ -334,162 +489,157 @@
         techRework.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.rework),0));
         medRework.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
         cashRework.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.rework),0));
-        const mt = mDays.reduce((total,d) => {
-          const de = filteredEntries.filter(e=>String(e.date).substring(0,10)===d);
-          const emails = [...new Set(de.map(e=>e.email))];
-          return total + emails.reduce((sum,email) => {
-            const emp = allEmployees.find(em=>String(em.email).toLowerCase()===String(email).toLowerCase());
-            return sum+(parseInt(emp?.target)||0);
-          },0);
-        },0);
+        const mt=mDays.reduce((tot,d)=>{const de=me.filter(e=>e.date===d);const emails=[...new Set(de.map(e=>e.email))];return tot+emails.reduce((s,email)=>{const emp=allEmployees.find(em=>String(em.email).toLowerCase()===email.toLowerCase());return s+(parseInt(emp?.target)||0);},0);},0);
         targetData.push(mt);
       });
     }
-
-    return { labels, techTotal, medTotal, cashTotal, techFresh, medFresh, cashFresh, techRework, medRework, cashRework, targetData };
+    return{labels,techTotal,medTotal,cashTotal,techFresh,medFresh,cashFresh,techRework,medRework,cashRework,targetData};
   }
 
-  function renderChart() {
-    const filteredEntries = getFilteredEntries();
-    const days = buildDateRange();
-    if (!days) return;
-    const d = buildChartData(days, filteredEntries);
-
-    const targetDataset = {
-      label: 'Team Target',
-      data: d.targetData,
-      type: 'line',
-      borderColor: '#dc2626',
-      borderWidth: 2.5,
-      borderDash: [6,3],
-      pointRadius: 4,
-      pointBackgroundColor: '#dc2626',
-      fill: false,
-      order: 1,
-      stack: undefined
-    };
-
-    const commonOptions = {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display:true, labels:{ usePointStyle:true, font:{size:12} } } },
-      scales: {
-        x: { stacked:true, grid:{display:false}, ticks:{font:{size:11}} },
-        y: { stacked:true, beginAtZero:true, grid:{color:'#f0f0f0'}, ticks:{font:{size:11}} }
-      }
-    };
-
-    if (currentView === 'total') {
-      if (adminChart) adminChart.destroy();
-      adminChart = new Chart(document.getElementById('adminChart'), {
-        type: 'bar',
-        data: {
-          labels: d.labels,
-          datasets: [
-            { label:'Technical', data:d.techTotal, backgroundColor:'#3b82f6', borderRadius:4, stack:'cases', order:2 },
-            { label:'Medical',   data:d.medTotal,  backgroundColor:'#4ade80', borderRadius:4, stack:'cases', order:2 },
-            { label:'Cashless',  data:d.cashTotal, backgroundColor:'#f59e0b', borderRadius:4, stack:'cases', order:2 },
-            targetDataset
-          ]
-        },
-        options: {
-          ...commonOptions,
-          plugins: {
-            ...commonOptions.plugins,
-            tooltip: {
-              callbacks: {
-                afterBody: function(context) {
-                  const idx   = context[0].dataIndex;
-                  const total = (d.techTotal[idx]||0)+(d.medTotal[idx]||0)+(d.cashTotal[idx]||0);
-                  const tgt   = d.targetData[idx];
-                  if (tgt===0) return 'Total: '+total;
-                  const diff  = total-tgt;
-                  if (diff>=0) return 'Total: '+total+'\n✓ Above by '+diff;
-                  return 'Total: '+total+'\n✗ Short by '+Math.abs(diff);
-                }
-              }
-            }
-          }
-        }
-      });
-
-    } else {
-      if (chartFresh) chartFresh.destroy();
-      chartFresh = new Chart(document.getElementById('chartFresh'), {
-        type: 'bar',
-        data: {
-          labels: d.labels,
-          datasets: [
-            { label:'Technical Fresh', data:d.techFresh, backgroundColor:'#3b82f6', borderRadius:4, stack:'fresh', order:2 },
-            { label:'Medical Fresh',   data:d.medFresh,  backgroundColor:'#4ade80', borderRadius:4, stack:'fresh', order:2 },
-            { label:'Cashless Fresh',  data:d.cashFresh, backgroundColor:'#f59e0b', borderRadius:4, stack:'fresh', order:2 },
-            targetDataset
-          ]
-        },
-        options: commonOptions
-      });
-
-      if (chartRework) chartRework.destroy();
-      chartRework = new Chart(document.getElementById('chartRework'), {
-        type: 'bar',
-        data: {
-          labels: d.labels,
-          datasets: [
-            { label:'Technical Rework', data:d.techRework, backgroundColor:'#93c5fd', borderRadius:4, stack:'rework', order:2 },
-            { label:'Medical Rework',   data:d.medRework,  backgroundColor:'#86efac', borderRadius:4, stack:'rework', order:2 },
-            { label:'Cashless Rework',  data:d.cashRework, backgroundColor:'#fcd34d', borderRadius:4, stack:'rework', order:2 }
-          ]
-        },
-        options: commonOptions
-      });
+  window.renderChart=function(){
+    const days=buildDateRange(); if(!days)return;
+    const d=buildChartData(days,allEntries);
+    const tgt={label:'Team Target',data:d.targetData,type:'line',borderColor:'#dc2626',borderWidth:2,borderDash:[6,3],pointRadius:3,pointBackgroundColor:'#dc2626',fill:false,order:1,stack:undefined};
+    const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{usePointStyle:true,font:{size:12}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f0f0f0'}}}};
+    if(currentView==='total'){
+      if(adminChart)adminChart.destroy();
+      adminChart=new Chart(document.getElementById('adminChart'),{type:'bar',data:{labels:d.labels,datasets:[
+        {label:'Technical',data:d.techTotal,backgroundColor:'#3b82f6',borderRadius:4,stack:'s',order:2},
+        {label:'Medical',data:d.medTotal,backgroundColor:'#4ade80',borderRadius:4,stack:'s',order:2},
+        {label:'Cashless',data:d.cashTotal,backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},
+        tgt
+      ]},options:opts});
+    }else{
+      if(chartFresh)chartFresh.destroy();
+      chartFresh=new Chart(document.getElementById('chartFresh'),{type:'bar',data:{labels:d.labels,datasets:[
+        {label:'Technical Fresh',data:d.techFresh,backgroundColor:'#3b82f6',borderRadius:4,stack:'s',order:2},
+        {label:'Medical Fresh',data:d.medFresh,backgroundColor:'#4ade80',borderRadius:4,stack:'s',order:2},
+        {label:'Cashless Fresh',data:d.cashFresh,backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},tgt
+      ]},options:opts});
+      if(chartRework)chartRework.destroy();
+      chartRework=new Chart(document.getElementById('chartRework'),{type:'bar',data:{labels:d.labels,datasets:[
+        {label:'Technical Rework',data:d.techRework,backgroundColor:'#93c5fd',borderRadius:4,stack:'s',order:2},
+        {label:'Medical Rework',data:d.medRework,backgroundColor:'#86efac',borderRadius:4,stack:'s',order:2},
+        {label:'Cashless Rework',data:d.cashRework,backgroundColor:'#fcd34d',borderRadius:4,stack:'s',order:2}
+      ]},options:opts});
     }
-  }
+  };
 
-  function renderTable() {
-    const filtered = getFilteredEntries();
-    const tbody = document.getElementById('tableBody');
-    if (!filtered.length) {
-      tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No entries found</td></tr>';
-      renderChart();
-      return;
+  /* ── ADMIN ROSTER ── */
+  window.selectAdminRosterType=function(type){
+    adminRosterType=type;
+    document.querySelectorAll('#adminRosterTypeRow .rtype-btn').forEach(b=>b.classList.remove('active'));
+    const btn=document.getElementById('art-'+type);
+    if(btn) btn.classList.add('active');
+    updateAdminPreview();
+  };
+
+  window.updateAdminPreview=function(){
+    const from=document.getElementById('adminRosterFrom').value;
+    const to  =document.getElementById('adminRosterTo').value;
+    const empSel=document.getElementById('rosterEmployee');
+    const empName=empSel.options[empSel.selectedIndex]?.text||'';
+    const prev=document.getElementById('adminRosterPreview');
+    if(!adminRosterType||!from||!to){prev.innerHTML='Select an employee, type, and date range to preview';return;}
+    if(from>to){prev.innerHTML='<span style="color:var(--red)">To date must be after From date</span>';return;}
+    const days=getDaysBetween(from,to);
+    const valid=days.filter(d=>!isSunday(d));
+    const skipped=days.length-valid.length;
+    const empTxt=empSel.value?`for <span>${empName}</span> `:'';
+    prev.innerHTML=`<span>${adminRosterType}</span> will be applied to <span>${valid.length} day(s)</span> `+
+      empTxt+`from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`+
+      (skipped?` <span style="color:var(--muted);font-weight:400;">(${skipped} Sunday(s) skipped)</span>`:'');
+  };
+
+  window.submitAdminRoster=async function(){
+    const empEmail=document.getElementById('rosterEmployee').value;
+    const from=document.getElementById('adminRosterFrom').value;
+    const to  =document.getElementById('adminRosterTo').value;
+    if(!empEmail)        return showAdminRosterToast('Please select an employee','error');
+    if(!adminRosterType) return showAdminRosterToast('Please select a type','error');
+    if(!from||!to)       return showAdminRosterToast('Please select a date range','error');
+    if(from>to)          return showAdminRosterToast('From date must be before To date','error');
+
+    const days=getDaysBetween(from,to).filter(d=>!isSunday(d));
+    if(!days.length) return showAdminRosterToast('No valid days (all Sundays)','error');
+
+    const btn=document.getElementById('adminRosterBtn');
+    btn.disabled=true; btn.textContent='Applying...';
+
+    let success=0,skipped=0,failed=0;
+    for(const date of days){
+      try{
+        const data=await apiFetch('saveEntry',{
+          email:  empEmail,
+          date,
+          fresh:  0,
+          rework: 0,
+          reason: adminRosterType,
+          entryType: adminRosterType
+        });
+        if(data.result==='SUCCESS') success++;
+        else if(data.result==='EXISTS') skipped++;
+        else failed++;
+      }catch(_){failed++;}
     }
-    tbody.innerHTML = filtered.map(e => {
-      const deficit   = parseInt(e.deficit)||0;
-      const teamColor = matchTeam(e,'technical')?'var(--blue)':matchTeam(e,'medical')?'var(--green)':'var(--yellow)';
-      return `<tr>
-        <td>${new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</td>
-        <td><strong>${e.name}</strong></td>
-        <td><span style="color:${teamColor};font-weight:500;">${e.team}</span></td>
-        <td>${e.fresh}</td><td>${e.rework}</td>
-        <td><strong>${e.total}</strong></td>
-        <td>${e.target||'—'}</td>
-        <td>${deficit>0?`<span class="badge-red">${deficit}</span>`:`<span class="badge-green">0</span>`}</td>
-        <td style="color:var(--muted)">${e.reason||'—'}</td>
-      </tr>`;
-    }).join('');
-    renderChart();
+
+    btn.disabled=false; btn.textContent='Apply to Roster';
+    const msg=`Applied: ${success} day(s)`+(skipped?` | Already existed: ${skipped}`:'')+( failed?` | Failed: ${failed}`:'');
+    showAdminRosterToast(msg,failed?'error':'success');
+    // Reload data
+    const data=await apiFetch('getAllEntries',{email:currentUser.email});
+    allEntries=(data.entries||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+    allEmployees=data.employees||[];
+    renderStats(); renderRosterLog();
+  };
+
+  window.renderRosterLog=function(){
+    const empF =document.getElementById('rosterFilterEmp')?.value||'';
+    const typeF=document.getElementById('rosterFilterType')?.value||'';
+    const fromF=document.getElementById('rosterFilterFrom')?.value||'';
+    const toF  =document.getElementById('rosterFilterTo')?.value||'';
+
+    const entries=allEntries.filter(e=>{
+      const r=String(e.reason||'').trim();
+      if(!ROSTER_TYPES.includes(r)) return false;
+      if(empF  && e.name!==empF)   return false;
+      if(typeF && r!==typeF)        return false;
+      if(fromF && e.date<fromF)     return false;
+      if(toF   && e.date>toF)       return false;
+      return true;
+    }).sort((a,b)=>b.date.localeCompare(a.date));
+
+    const el=document.getElementById('rosterLog');
+    if(!entries.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:12px 0;">No roster entries found.</div>';return;}
+    el.innerHTML=`
+      <table>
+        <thead><tr><th>Date</th><th>Employee</th><th>Team</th><th>Type</th></tr></thead>
+        <tbody>
+          ${entries.map(e=>`<tr>
+            <td>${formatDate(e.date)}</td>
+            <td><strong>${e.name}</strong></td>
+            <td style="color:var(--muted)">${e.team}</td>
+            <td><span class="${BADGE_CLASS[e.reason?.trim()]||'badge-leave'}">${e.reason}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  };
+
+  function showAdminRosterToast(msg,type){
+    const t=document.getElementById('adminRosterToast');
+    document.getElementById('adminRosterToastMsg').textContent=msg;
+    t.className='toast show '+type;
+    clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',4000);
   }
 
-  window.renderTable = renderTable;
-
-  function populateFilter() {
-    const sel   = document.getElementById('filterEmployee');
-    const names = [...new Set(allEntries.map(e=>e.name))].sort();
-    names.forEach(n => { const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
-  }
-
-  // Auto refresh every 30 seconds
-  setInterval(async () => {
-    if (currentUser) {
-      const url2  = APPS_SCRIPT_URL + "?action=getAllEntries&email=" + encodeURIComponent(currentUser.email);
-      const res2  = await fetch(url2);
-      const data2 = await res2.json();
-      allEntries   = data2.entries   || [];
-      allEmployees = data2.employees || [];
-      renderStats();
-      renderChart();
-      renderTable();
-    }
-  }, 30000);
+  // Auto refresh
+  setInterval(async()=>{
+    if(!currentUser) return;
+    const data=await apiFetch('getAllEntries',{email:currentUser.email});
+    allEntries=(data.entries||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+    allEmployees=data.employees||[];
+    renderStats(); renderChart(); renderTable();
+  },30000);
 
 </script>
 </body>
