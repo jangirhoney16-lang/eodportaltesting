@@ -753,10 +753,10 @@
 
   function setTodayDate() {
     const t=getTodayStr();
+    // Submit EOD — future dates blocked
     document.getElementById('date').value=t;
     document.getElementById('date').max=t;
-    document.getElementById('rosterFrom').max=t;
-    document.getElementById('rosterTo').max=t;
+    // Roster — NO max, future dates allowed for planned leave/sat-off
     document.getElementById('rosterFrom').value=t;
     document.getElementById('rosterTo').value=t;
   }
