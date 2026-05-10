@@ -14,12 +14,9 @@
       --accent: #1a1a2e; --accent2: #16213e;
       --green: #16a34a; --red: #dc2626;
       --blue: #2563eb; --yellow: #ca8a04;
-      --orange: #ea580c; --dark-red: #7f1d1d;
       --radius: 12px; --input-h: 46px;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; }
-
-    /* LOGIN */
     .login-screen { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 24px; }
     .login-card { background: var(--card); border-radius: 20px; border: 1px solid var(--border); width: 100%; max-width: 380px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
     .login-banner { background: var(--accent); padding: 32px 28px; text-align: center; }
@@ -29,8 +26,6 @@
     .google-btn { width: 100%; height: 48px; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; color: var(--text); cursor: pointer; transition: box-shadow 0.15s; }
     .google-btn:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .google-btn img { width: 20px; height: 20px; }
-
-    /* APP */
     .app { display: none; }
     .navbar { background: var(--accent); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
     .navbar-brand { font-size: 15px; font-weight: 600; color: #fff; }
@@ -38,32 +33,20 @@
     .navbar-email { font-size: 12px; color: rgba(255,255,255,0.6); }
     .logout-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer; }
     .main-content { padding: 24px; max-width: 960px; margin: 0 auto; }
-
-    /* TABS */
     .tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 24px; width: fit-content; flex-wrap: wrap; }
     .tab { padding: 8px 20px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--muted); border: none; background: none; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
     .tab.active { background: var(--accent); color: #fff; }
-
-    /* CARD */
     .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
     .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
-
-    /* STATS */
     .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .stat-card { background: var(--bg); border-radius: 10px; padding: 14px 16px; }
     .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
     .stat-val { font-size: 26px; font-weight: 700; color: var(--text); font-family: 'DM Mono', monospace; }
     .stat-val.red { color: var(--red); }
-
-    /* FORM */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .field { margin-bottom: 14px; }
     label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-    input[type="date"], input[type="number"], input[type="text"], select {
-      width: 100%; height: var(--input-h); padding: 0 13px; font-family: 'DM Sans', sans-serif;
-      font-size: 14px; color: var(--text); background: #fafafa; border: 1px solid var(--border);
-      border-radius: 8px; outline: none; transition: border-color 0.15s;
-    }
+    input[type="date"], input[type="number"], input[type="text"], select { width: 100%; height: var(--input-h); padding: 0 13px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: #fafafa; border: 1px solid var(--border); border-radius: 8px; outline: none; transition: border-color 0.15s; }
     input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,26,46,0.08); background: #fff; }
     input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
     .total-box { background: var(--accent); border-radius: 10px; padding: 16px; text-align: center; }
@@ -74,24 +57,16 @@
     .deficit-line { font-size: 12px; font-weight: 500; color: #f87171; margin-top: 6px; min-height: 18px; }
     .reason-box { display: none; margin-bottom: 14px; }
     .reason-box.show { display: block; }
-
-    /* BUTTONS */
     .btn-primary { width: 100%; height: 48px; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
     .btn-primary:hover:not(:disabled) { background: var(--accent2); }
     .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
-    .btn-outline { height: 42px; padding: 0 20px; background: var(--card); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; }
-    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* TOAST */
     .toast { display: none; align-items: center; gap: 8px; margin-top: 12px; padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; }
     .toast.show { display: flex; }
     .toast.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
     .toast.error   { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
-    .toast.info    { background: #eff6ff; color: var(--blue);  border: 1px solid #bfdbfe; }
     .chart-wrap { position: relative; height: 260px; }
-    hr.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
-    /* ── ROSTER STYLES ── */
+    /* ROSTER */
     .roster-type-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
     .rtype-btn { padding: 14px 8px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); text-align: center; transition: all 0.15s; }
     .rtype-btn:hover { border-color: var(--accent); color: var(--text); }
@@ -101,8 +76,6 @@
     .date-range-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
     .preview-bar { background: var(--bg); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); min-height: 42px; }
     .preview-bar span { color: var(--text); font-weight: 600; }
-    .roster-log { margin-top: 16px; }
-    .roster-log-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 10px; }
     .roster-entry { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
     .roster-badge { padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
     .badge-leave    { background: #fef9c3; color: #854d0e; }
@@ -110,8 +83,9 @@
     .badge-compoff  { background: #ede9fe; color: #5b21b6; }
     .badge-halfday  { background: #dbeafe; color: #1e40af; }
     .badge-absent   { background: #fee2e2; color: #7f1d1d; }
+    .badge-holiday  { background: #fce7f3; color: #9d174d; }
 
-    /* ── CALENDAR ── */
+    /* CALENDAR */
     .history-layout { display: grid; grid-template-columns: 300px 1fr; gap: 16px; }
     .calendar-wrap { background: var(--bg); border-radius: 10px; padding: 14px; }
     .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
@@ -122,22 +96,17 @@
     .cal-day-label { text-align: center; font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; padding: 3px 0; }
     .cal-day { text-align: center; font-size: 11px; font-weight: 500; padding: 6px 2px; border-radius: 5px; cursor: pointer; transition: all 0.12s; }
     .cal-day.empty   { cursor: default; }
-    .cal-day.sunday  { background: #f3f4f6; color: #9ca3af; cursor: default; font-style: italic; }
-    .cal-day.future  { color: #d1d5db; cursor: default; background: none; }
+    .cal-day.sunday  { background: #f3f4f6; color: #9ca3af; font-style: italic; }
+    .cal-day.future  { color: #d1d5db; cursor: default; }
     .cal-day.work    { background: #dcfce7; color: #14532d; font-weight: 700; }
     .cal-day.work:hover { background: #bbf7d0; }
     .cal-day.leave   { background: #fef9c3; color: #713f12; font-weight: 700; }
-    .cal-day.leave:hover { background: #fef08a; }
     .cal-day.satoff  { background: #ffedd5; color: #7c2d12; font-weight: 700; }
-    .cal-day.satoff:hover { background: #fed7aa; }
     .cal-day.compoff { background: #ede9fe; color: #4c1d95; font-weight: 700; }
-    .cal-day.compoff:hover { background: #ddd6fe; }
     .cal-day.halfday { background: #dbeafe; color: #1e3a8a; font-weight: 700; }
-    .cal-day.halfday:hover { background: #bfdbfe; }
     .cal-day.absent  { background: #450a0a; color: #fca5a5; font-weight: 700; }
-    .cal-day.absent:hover { background: #7f1d1d; }
+    .cal-day.holiday { background: #fce7f3; color: #9d174d; font-weight: 700; }
     .cal-day.missed  { background: #fef2f2; color: #ef4444; }
-    .cal-day.missed:hover { background: #fee2e2; }
     .cal-day.selected { outline: 2.5px solid var(--accent); outline-offset: 1px; }
     .cal-day.today-marker { text-decoration: underline; font-weight: 800; }
     .cal-legend { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
@@ -189,7 +158,6 @@
 
   <div class="main-content">
 
-    <!-- Profile Card -->
     <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
       <div>
         <div style="font-size:18px;font-weight:700;color:var(--text);" id="userName">—</div>
@@ -201,7 +169,6 @@
       </div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab active" onclick="switchTab('submit')">Submit EOD</button>
       <button class="tab" onclick="switchTab('dashboard')">Dashboard</button>
@@ -209,7 +176,7 @@
       <button class="tab" onclick="switchTab('roster')">Roster</button>
     </div>
 
-    <!-- ══════════════ SUBMIT TAB ══════════════ -->
+    <!-- SUBMIT TAB -->
     <div id="tab-submit">
       <div class="card">
         <div class="card-title">Submit EOD Count</div>
@@ -243,7 +210,7 @@
       </div>
     </div>
 
-    <!-- ══════════════ DASHBOARD TAB ══════════════ -->
+    <!-- DASHBOARD TAB -->
     <div id="tab-dashboard" style="display:none;">
       <div class="stat-grid">
         <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-val" id="statMonth">—</div></div>
@@ -265,7 +232,7 @@
       </div>
     </div>
 
-    <!-- ══════════════ HISTORY TAB ══════════════ -->
+    <!-- HISTORY TAB -->
     <div id="tab-history" style="display:none;">
       <div class="card">
         <div class="card-title">Attendance &amp; Entry History</div>
@@ -285,6 +252,7 @@
                 <div class="legend-item"><div class="legend-dot" style="background:#ede9fe;"></div> Comp Off</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#dbeafe;"></div> Half Day</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#450a0a;"></div> Absent</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#fce7f3;"></div> Holiday</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#fef2f2;"></div> Missed</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#f3f4f6;"></div> Sunday</div>
               </div>
@@ -297,15 +265,12 @@
       </div>
     </div>
 
-    <!-- ══════════════ ROSTER TAB ══════════════ -->
+    <!-- ROSTER TAB -->
     <div id="tab-roster" style="display:none;">
       <div class="card">
         <div class="card-title">Roster — Leave &amp; Attendance</div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">
-          Mark planned or past leave, week-offs, or half-days. All marked dates will auto-record a zero count with the selected type.
-        </p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Mark leave, week-offs, or half-days. All marked dates record zero count with the selected type.</p>
 
-        <!-- Type selection -->
         <label style="margin-bottom:10px;">Select Type</label>
         <div class="roster-type-row" id="rosterTypeRow">
           <button class="rtype-btn" onclick="selectRosterType('Leave')" id="rt-Leave">
@@ -322,7 +287,6 @@
           </button>
         </div>
 
-        <!-- Date range -->
         <div class="date-range-row">
           <div class="field" style="margin:0;">
             <label>From Date</label>
@@ -334,16 +298,11 @@
           </div>
         </div>
 
-        <!-- Preview -->
         <div class="preview-bar" id="rosterPreview">Select a type and date range to preview</div>
-
-        <button class="btn-primary" id="rosterSubmitBtn" onclick="submitRoster()" style="margin-bottom:0;">
-          Apply to Roster
-        </button>
+        <button class="btn-primary" id="rosterSubmitBtn" onclick="submitRoster()">Apply to Roster</button>
         <div class="toast" id="rosterToast" style="margin-top:10px;"><span id="rosterToastMsg"></span></div>
       </div>
 
-      <!-- Roster log -->
       <div class="card">
         <div class="card-title">My Roster Entries</div>
         <div id="rosterLog"><div style="font-size:13px;color:var(--muted);">No roster entries yet.</div></div>
@@ -366,27 +325,28 @@
     messagingSenderId: "665878833615",
     appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
+
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpIetd36Y_iUqfV6Sx0gNuxaXvm6yi_xORmgFEIo15G6YxJkVVPcMOBPfiPEu0H4qZ8A/exec";
+
+  const ROSTER_TYPES      = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
+  const ZERO_TARGET_TYPES = ['Leave','Sat Off','Comp Off','Absent','Holiday'];
+  const BADGE_CLASS       = { 'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent','Holiday':'badge-holiday' };
+  const CAL_CLASS         = { 'Leave':'leave','Sat Off':'satoff','Comp Off':'compoff','Half Day':'halfday','Absent':'absent','Holiday':'holiday' };
 
   const app      = initializeApp(firebaseConfig);
   const auth     = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  let currentUser      = null;
-  let userDetails      = null;
-  let myEntries        = [];
-  let barChart         = null;
-  let doughnutChart    = null;
-  let calYear          = new Date().getFullYear();
-  let calMonth         = new Date().getMonth();
-  let selectedDate     = null;
+  let currentUser        = null;
+  let userDetails        = null;
+  let myEntries          = [];
+  let holidays           = [];
+  let barChart           = null;
+  let doughnutChart      = null;
+  let calYear            = new Date().getFullYear();
+  let calMonth           = new Date().getMonth();
+  let selectedDate       = null;
   let selectedRosterType = null;
-
-  // Types whose reason field identifies them
-  const ROSTER_TYPES   = ['Leave','Sat Off','Comp Off','Half Day','Absent'];
-  const NON_WORK_TYPES = ['Leave','Sat Off','Comp Off','Absent']; // Zero count, no real work
-  const BADGE_CLASS    = { 'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent' };
-  const CAL_CLASS      = { 'Leave':'leave','Sat Off':'satoff','Comp Off':'compoff','Half Day':'halfday','Absent':'absent' };
 
   /* ── UTILS ── */
   function normalizeDate(raw) {
@@ -395,7 +355,7 @@
     if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
     const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
     if (dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
-    try { const d=new Date(s); if(!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; } catch(_){}
+    try { const d=new Date(s); if(!isNaN(d)) return d.toISOString().split('T')[0]; } catch(_){}
     return s.substring(0,10);
   }
   function getTodayStr() {
@@ -403,47 +363,24 @@
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   }
   function formatDate(ds) {
-    const [y,m,d]=ds.split('-').map(Number);
+    if (!ds) return '—';
+    const [y,m,d] = ds.split('-').map(Number);
     return new Date(y,m-1,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
   }
   function getDaysBetween(from, to) {
-    const dates=[]; let cur=new Date(from);
-    const end=new Date(to);
+    const dates=[]; let cur=new Date(from); const end=new Date(to);
     while(cur<=end){ dates.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
     return dates;
   }
-  function isSunday(ds) { const [y,m,d]=ds.split('-').map(Number); return new Date(y,m-1,d).getDay()===0; }
-
-  function getEntryCalClass(entry) {
-    const r = String(entry.reason||'').trim();
-    if (CAL_CLASS[r]) return CAL_CLASS[r];
-    // work entry
-    return 'work';
+  function isSunday(ds) {
+    const [y,m,d]=ds.split('-').map(Number);
+    return new Date(y,m-1,d).getDay()===0;
   }
-
-  /* ── AUTH ── */
-  onAuthStateChanged(auth, async (user) => {
-    if (user) { currentUser=user; document.getElementById('navEmail').textContent=user.email; await loadUserDetails(user.email); }
-    else showLogin();
-  });
-  window.loginWithGoogle = async()=>{ try{await signInWithPopup(auth,provider);}catch(e){alert("Login failed: "+e.message);} };
-  window.logout = async()=>{ await signOut(auth); showLogin(); };
-  function showLogin() { document.getElementById('loginScreen').style.display='flex'; document.getElementById('app').style.display='none'; }
-
-  async function loadUserDetails(email) {
-    try {
-      const data = await apiFetch('getUser', {email});
-      if (data.role==="Admin") { window.location.href="admin.html"; return; }
-      if (!data.valid) { alert("Your email is not registered. Contact admin."); await signOut(auth); showLogin(); return; }
-      userDetails=data;
-      document.getElementById('userName').textContent   = data.name||email;
-      document.getElementById('userTeam').textContent   = data.team||"—";
-      document.getElementById('userTarget').textContent = data.target||"0";
-      document.getElementById('loginScreen').style.display='none';
-      document.getElementById('app').style.display='block';
-      setTodayDate();
-      await loadMyEntries(email);
-    } catch(e) { alert("Failed to load user: "+e.message); }
+  function getEffectiveTarget(baseTarget, reason) {
+    const r = String(reason||'').trim();
+    if (ZERO_TARGET_TYPES.includes(r)) return 0;
+    if (r==='Half Day') return Math.ceil(baseTarget/2);
+    return baseTarget;
   }
 
   async function apiFetch(action, params={}) {
@@ -452,10 +389,43 @@
     return res.json();
   }
 
-  async function loadMyEntries(email) {
+  /* ── AUTH ── */
+  onAuthStateChanged(auth, async (user) => {
+    if (user) { currentUser=user; document.getElementById('navEmail').textContent=user.email; await loadAll(); }
+    else showLogin();
+  });
+  window.loginWithGoogle = async () => { try { await signInWithPopup(auth,provider); } catch(e) { alert("Login failed: "+e.message); } };
+  window.logout = async () => { await signOut(auth); showLogin(); };
+  function showLogin() { document.getElementById('loginScreen').style.display='flex'; document.getElementById('app').style.display='none'; }
+
+  async function loadAll() {
     try {
-      const data = await apiFetch('getEntries', {email});
-      myEntries = (data.entries||[]).map(e=>({...e, date:normalizeDate(e.date)}));
+      const [userData, holidayData] = await Promise.all([
+        apiFetch('getUser', {email: currentUser.email}),
+        apiFetch('getHolidays')
+      ]);
+
+      if (userData.role==="Admin") { window.location.href="admin.html"; return; }
+      if (!userData.valid) { alert("Your email is not registered. Contact admin."); await signOut(auth); showLogin(); return; }
+
+      userDetails = userData;
+      holidays    = (holidayData.holidays || []).map(h => ({...h, date: normalizeDate(h.date)}));
+
+      document.getElementById('userName').textContent   = userData.name   || currentUser.email;
+      document.getElementById('userTeam').textContent   = userData.team   || "—";
+      document.getElementById('userTarget').textContent = userData.target || "0";
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display         = 'block';
+
+      setTodayDate();
+      await loadMyEntries();
+    } catch(e) { alert("Failed to load: "+e.message); }
+  }
+
+  async function loadMyEntries() {
+    try {
+      const data = await apiFetch('getEntries', {email: currentUser.email});
+      myEntries  = (data.entries||[]).map(e=>({...e, date: normalizeDate(e.date)}));
       renderCalendar();
       renderDashboard();
       renderRosterLog();
@@ -468,22 +438,30 @@
     const rework = document.getElementById('rework').value.trim();
     const date   = document.getElementById('date').value;
     const reason = document.getElementById('reason').value.trim();
+
     if (fresh===''&&rework==='') return showToast('Enter fresh or rework count','error');
     const f=parseInt(fresh)||0, r=parseInt(rework)||0;
     if (f<0||r<0) return showToast('Counts cannot be negative','error');
-    if (date>getTodayStr()) return showToast('Future date not allowed','error');
 
+    // Check if holiday
+    const isHoliday = holidays.some(h=>h.date===date);
+    // Check if half day
     const halfEntry = myEntries.find(e=>e.date===date&&e.reason==='Half Day');
-    const effectiveTarget = halfEntry ? Math.ceil((parseInt(userDetails?.target)||0)/2) : (parseInt(userDetails?.target)||0);
-    const deficit = Math.max(0, effectiveTarget-(f+r));
-    if (deficit>0&&!reason) return showToast(`Reason required. Target today: ${effectiveTarget}${halfEntry?' (Half Day)':''}`, 'error');
+    const baseTarget = parseInt(userDetails?.target)||0;
+    const effectiveTarget = isHoliday ? 0 : getEffectiveTarget(baseTarget, halfEntry?.reason||'');
+    const total   = f+r;
+    const deficit = Math.max(0, effectiveTarget-total);
 
-    const btn=document.getElementById('submitBtn');
+    if (!isHoliday && deficit>0 && !reason) {
+      return showToast(`Reason required. Target today: ${effectiveTarget}${halfEntry?' (Half Day)':''}`, 'error');
+    }
+
+    const btn = document.getElementById('submitBtn');
     btn.disabled=true; btn.textContent='Submitting...';
     try {
-      const data = await apiFetch('saveEntry',{email:currentUser.email,date,fresh:f,rework:r,reason});
+      const data = await apiFetch('saveEntry', {email:currentUser.email, date, fresh:f, rework:r, reason: isHoliday?'Holiday Work':reason});
       btn.disabled=false; btn.textContent='Submit EOD';
-      if (data.result==='SUCCESS') { showToast('Submitted successfully','success'); resetForm(); await loadMyEntries(currentUser.email); }
+      if (data.result==='SUCCESS') { showToast('Submitted successfully ✓','success'); resetForm(); await loadMyEntries(); }
       else if (data.result==='EXISTS')    showToast('Entry already exists for this date','error');
       else if (data.result==='NO_REASON') showToast('Please enter reason for deficit','error');
       else if (data.result==='INVALID')   showToast('Email not found in system','error');
@@ -500,72 +478,69 @@
   }
 
   window.calc = function() {
-    const date=document.getElementById('date').value;
-    const f=Math.max(0,parseInt(document.getElementById('fresh').value)||0);
-    const r=Math.max(0,parseInt(document.getElementById('rework').value)||0);
-    const total=f+r;
-    const halfEntry=myEntries.find(e=>e.date===date&&e.reason==='Half Day');
-    const eff=halfEntry?Math.ceil((parseInt(userDetails?.target)||0)/2):(parseInt(userDetails?.target)||0);
-    const deficit=Math.max(0,eff-total);
-    const el=document.getElementById('totalNum');
-    el.textContent=total;
-    el.className='total-num'+(total>=eff?' over':' under');
-    document.getElementById('deficitLine').textContent=deficit>0?`Deficit: ${deficit} | Target: ${eff}${halfEntry?' (Half Day)':''}`:(total>eff?'Above target':'');
-    document.getElementById('reasonBox').classList.toggle('show',deficit>0);
+    const date = document.getElementById('date').value;
+    const f = Math.max(0,parseInt(document.getElementById('fresh').value)||0);
+    const r = Math.max(0,parseInt(document.getElementById('rework').value)||0);
+    const total = f+r;
+    const isHoliday   = holidays.some(h=>h.date===date);
+    const halfEntry   = myEntries.find(e=>e.date===date&&e.reason==='Half Day');
+    const baseTarget  = parseInt(userDetails?.target)||0;
+    const eff         = isHoliday ? 0 : getEffectiveTarget(baseTarget, halfEntry?.reason||'');
+    const deficit     = Math.max(0,eff-total);
+    const el = document.getElementById('totalNum');
+    el.textContent = total;
+    el.className   = 'total-num'+(total>=eff?' over':' under');
+    let defText = '';
+    if (isHoliday) defText = 'Holiday — no target today 🎉';
+    else if (deficit>0) defText = `Deficit: ${deficit} | Target: ${eff}${halfEntry?' (Half Day)':''}`;
+    else if (total>eff) defText = 'Above target ✓';
+    document.getElementById('deficitLine').textContent = defText;
+    document.getElementById('reasonBox').classList.toggle('show', !isHoliday && deficit>0);
   };
 
   /* ── ROSTER ── */
   window.selectRosterType = function(type) {
-    selectedRosterType=type;
+    selectedRosterType = type;
     document.querySelectorAll('.rtype-btn').forEach(b=>b.classList.remove('active'));
-    const btn=document.getElementById('rt-'+type);
-    if(btn) btn.classList.add('active');
+    const btn = document.getElementById('rt-'+type);
+    if (btn) btn.classList.add('active');
     updateRosterPreview();
   };
 
   function updateRosterPreview() {
-    const from=document.getElementById('rosterFrom').value;
-    const to  =document.getElementById('rosterTo').value;
-    const prev=document.getElementById('rosterPreview');
+    const from = document.getElementById('rosterFrom').value;
+    const to   = document.getElementById('rosterTo').value;
+    const prev = document.getElementById('rosterPreview');
     if (!selectedRosterType||!from||!to) { prev.innerHTML='Select a type and date range to preview'; return; }
     if (from>to) { prev.innerHTML='<span style="color:var(--red)">To date must be after From date</span>'; return; }
-    const days=getDaysBetween(from,to);
-    const valid=days.filter(d=>!isSunday(d));
-    const skipped=days.length-valid.length;
-    prev.innerHTML=`<span>${selectedRosterType}</span> will be applied to <span>${valid.length} day(s)</span> `+
-      `from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`+
-      (skipped>0?` &nbsp;<span style="color:var(--muted);font-weight:400;">(${skipped} Sunday(s) skipped)</span>`:'');
+    const days  = getDaysBetween(from,to);
+    const valid = days.filter(d=>!isSunday(d));
+    const skip  = days.length-valid.length;
+    prev.innerHTML = `<span>${selectedRosterType}</span> will be applied to <span>${valid.length} day(s)</span> from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`+(skip>0?` <span style="color:var(--muted);font-weight:400;">(${skip} Sunday(s) skipped)</span>`:'');
   }
 
-  document.addEventListener('DOMContentLoaded', ()=>{
+  document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('rosterFrom').addEventListener('change', updateRosterPreview);
     document.getElementById('rosterTo').addEventListener('change',   updateRosterPreview);
   });
 
   window.submitRoster = async function() {
-    const from=document.getElementById('rosterFrom').value;
-    const to  =document.getElementById('rosterTo').value;
+    const from = document.getElementById('rosterFrom').value;
+    const to   = document.getElementById('rosterTo').value;
     if (!selectedRosterType) return showRosterToast('Please select a type','error');
     if (!from||!to)          return showRosterToast('Please select a date range','error');
     if (from>to)             return showRosterToast('From date must be before To date','error');
 
-    const days=getDaysBetween(from,to).filter(d=>!isSunday(d));
+    const days = getDaysBetween(from,to).filter(d=>!isSunday(d));
     if (!days.length) return showRosterToast('No valid days (all Sundays)','error');
 
-    const btn=document.getElementById('rosterSubmitBtn');
+    const btn = document.getElementById('rosterSubmitBtn');
     btn.disabled=true; btn.textContent='Applying...';
 
     let success=0, skipped=0, failed=0;
     for (const date of days) {
       try {
-        const data = await apiFetch('saveEntry',{
-          email:  currentUser.email,
-          date,
-          fresh:  0,
-          rework: 0,
-          reason: selectedRosterType,
-          entryType: selectedRosterType
-        });
+        const data = await apiFetch('saveEntry',{email:currentUser.email, date, fresh:0, rework:0, reason:selectedRosterType});
         if (data.result==='SUCCESS') success++;
         else if (data.result==='EXISTS') skipped++;
         else failed++;
@@ -573,17 +548,16 @@
     }
 
     btn.disabled=false; btn.textContent='Apply to Roster';
-    const msg=`Applied: ${success} day(s)`+(skipped?` | Already existed: ${skipped}`:'')+(failed?` | Failed: ${failed}`:'');
-    showRosterToast(msg, failed?'error':'success');
-    await loadMyEntries(currentUser.email);
+    showRosterToast(`Applied: ${success}`+(skipped?` | Existed: ${skipped}`:'')+( failed?` | Failed: ${failed}`:''), failed?'error':'success');
+    await loadMyEntries();
   };
 
   function renderRosterLog() {
     const entries = myEntries.filter(e=>ROSTER_TYPES.includes(String(e.reason||'').trim())).sort((a,b)=>b.date.localeCompare(a.date));
-    const el=document.getElementById('rosterLog');
+    const el = document.getElementById('rosterLog');
     if (!entries.length) { el.innerHTML='<div style="font-size:13px;color:var(--muted);">No roster entries yet.</div>'; return; }
     el.innerHTML = entries.map(e=>{
-      const cls=BADGE_CLASS[e.reason]||'badge-leave';
+      const cls = BADGE_CLASS[e.reason]||'badge-leave';
       return `<div class="roster-entry">
         <div style="font-weight:600;color:var(--text);">${formatDate(e.date)}</div>
         <span class="roster-badge ${cls}">${e.reason}</span>
@@ -607,35 +581,55 @@
   };
 
   function renderCalendar() {
-    const today=getTodayStr();
-    const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-    document.getElementById('calTitle').textContent=months[calMonth]+' '+calYear;
+    const today   = getTodayStr();
+    const months  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('calTitle').textContent = months[calMonth]+' '+calYear;
 
-    const entryMap={};
-    myEntries.forEach(e=>{ entryMap[e.date]=e; });
+    const entryMap   = {};
+    myEntries.forEach(e => { entryMap[e.date]=e; });
+    const holidaySet = new Set(holidays.map(h=>h.date));
 
-    const grid=document.getElementById('calGrid');
-    grid.innerHTML='';
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
     ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{
       const el=document.createElement('div'); el.className='cal-day-label'; el.textContent=d; grid.appendChild(el);
     });
 
-    const firstDay=new Date(calYear,calMonth,1);
-    let offset=firstDay.getDay()-1; if(offset<0)offset=6;
+    const firstDay = new Date(calYear,calMonth,1);
+    let offset = firstDay.getDay()-1; if(offset<0) offset=6;
     for(let i=0;i<offset;i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
 
-    const days=new Date(calYear,calMonth+1,0).getDate();
-    for(let day=1;day<=days;day++){
+    const daysInMonth = new Date(calYear,calMonth+1,0).getDate();
+
+    for(let day=1;day<=daysInMonth;day++){
       const mm=String(calMonth+1).padStart(2,'0'), dd=String(day).padStart(2,'0');
       const ds=`${calYear}-${mm}-${dd}`;
       const dow=new Date(calYear,calMonth,day).getDay();
       const isSun=dow===0, isFuture=ds>today;
       const entry=entryMap[ds];
+      const isHoliday=holidaySet.has(ds);
 
       const el=document.createElement('div'); el.className='cal-day'; el.textContent=day;
 
       if(isSun){
         el.classList.add('sunday');
+        // Sunday — can still click if entry exists
+        if(entry){
+          el.classList.add(getEntryCalClass(entry));
+          el.style.cssText=''; // override sunday style
+          el.onclick=()=>showDayDetail(ds);
+        }
+      } else if(isHoliday){
+        el.classList.add('holiday');
+        el.onclick=()=>showHolidayDetail(ds);
+        if(entry){
+          // worked on holiday — show work color with holiday indicator
+          el.classList.remove('holiday');
+          el.classList.add('work');
+          el.title='Holiday + Worked';
+          el.onclick=()=>showDayDetail(ds);
+        }
       } else if(isFuture){
         el.classList.add('future');
       } else if(entry){
@@ -653,16 +647,22 @@
     }
   }
 
+  function getEntryCalClass(entry) {
+    const r = String(entry.reason||'').trim();
+    if (CAL_CLASS[r]) return CAL_CLASS[r];
+    return 'work';
+  }
+
   function showDayDetail(ds) {
     selectedDate=ds; renderCalendar();
-    const entry=myEntries.find(e=>e.date===ds);
-    if(!entry) return;
-    const reason=String(entry.reason||'').trim();
-    const isRosterEntry=ROSTER_TYPES.includes(reason)&&(parseInt(entry.fresh)===0&&parseInt(entry.rework)===0);
+    const entry  = myEntries.find(e=>e.date===ds);
+    if (!entry) return;
+    const reason = String(entry.reason||'').trim();
+    const isRosterEntry = ROSTER_TYPES.includes(reason) && parseInt(entry.fresh)===0 && parseInt(entry.rework)===0;
 
-    if(isRosterEntry){
-      const colorMap={'Leave':'#713f12','Sat Off':'#7c2d12','Comp Off':'#4c1d95','Half Day':'#1e3a8a','Absent':'#fff'};
-      const bgMap={'Leave':'#fef9c3','Sat Off':'#ffedd5','Comp Off':'#ede9fe','Half Day':'#dbeafe','Absent':'#450a0a'};
+    if (isRosterEntry) {
+      const colorMap={'Leave':'#713f12','Sat Off':'#7c2d12','Comp Off':'#4c1d95','Half Day':'#1e3a8a','Absent':'#fff','Holiday':'#9d174d'};
+      const bgMap   ={'Leave':'#fef9c3','Sat Off':'#ffedd5','Comp Off':'#ede9fe','Half Day':'#dbeafe','Absent':'#450a0a','Holiday':'#fce7f3'};
       document.getElementById('historyDetail').innerHTML=`
         <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
         <div style="background:${bgMap[reason]||'#f3f4f6'};border-radius:10px;padding:28px;text-align:center;">
@@ -672,22 +672,37 @@
       return;
     }
 
-    const target=parseInt(userDetails?.target)||0;
-    const total=parseInt(entry.total)||0;
-    const deficit=Math.max(0,target-total);
-    const color=total>=target?'var(--green)':'var(--red)';
-    const status=total>target?'Above Target':deficit===0?'Target Met':'Below Target';
+    const baseTarget = parseInt(userDetails?.target)||0;
+    const effectiveTarget = getEffectiveTarget(baseTarget, reason);
+    const total   = parseInt(entry.total)||0;
+    const deficit = Math.max(0, effectiveTarget-total);
+    const color   = total>=effectiveTarget?'var(--green)':'var(--red)';
+    const status  = total>effectiveTarget?'Above Target 🎯':deficit===0?'Target Met':'Below Target';
+    const targetNote = reason==='Half Day'?` (Half Day — ${effectiveTarget} of ${baseTarget})`:'';
+
     document.getElementById('historyDetail').innerHTML=`
       <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">${formatDate(ds)}</div>
       <div class="detail-grid">
         <div class="detail-card"><div class="detail-label">Fresh</div><div class="detail-val" style="color:var(--blue)">${entry.fresh}</div></div>
         <div class="detail-card"><div class="detail-label">Rework</div><div class="detail-val" style="color:var(--yellow)">${entry.rework}</div></div>
         <div class="detail-card"><div class="detail-label">Total</div><div class="detail-val">${total}</div></div>
-        <div class="detail-card"><div class="detail-label">Target</div><div class="detail-val">${target}</div></div>
+        <div class="detail-card"><div class="detail-label">Target${targetNote}</div><div class="detail-val">${effectiveTarget}</div></div>
         <div class="detail-card"><div class="detail-label">Deficit</div><div class="detail-val" style="color:${deficit>0?'var(--red)':'var(--green)'}">${deficit}</div></div>
         <div class="detail-card"><div class="detail-label">Status</div><div class="detail-val" style="font-size:12px;color:${color}">${status}</div></div>
       </div>
-      ${reason?`<div style="background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);"><strong style="color:var(--text);">Note:</strong> ${reason}</div>`:''}`;
+      ${reason&&!ROSTER_TYPES.includes(reason)?`<div style="background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);"><strong style="color:var(--text);">Note:</strong> ${reason}</div>`:''}`;
+  }
+
+  function showHolidayDetail(ds) {
+    selectedDate=ds; renderCalendar();
+    const holiday = holidays.find(h=>h.date===ds);
+    document.getElementById('historyDetail').innerHTML=`
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
+      <div style="background:#fce7f3;border-radius:10px;padding:28px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">🎉</div>
+        <div style="font-size:16px;font-weight:700;color:#9d174d;margin-bottom:4px;">${holiday?.name||'Holiday'}</div>
+        <div style="font-size:12px;color:#6b7280;margin-top:4px;">Company holiday — no work required</div>
+      </div>`;
   }
 
   function showMissedDay(ds) {
@@ -702,33 +717,38 @@
 
   /* ── DASHBOARD ── */
   function renderDashboard() {
-    const workEntries=myEntries.filter(e=>!ROSTER_TYPES.includes(String(e.reason||'').trim()));
-    if(!workEntries.length) return;
-    const target=parseInt(userDetails?.target)||0;
-    const now=new Date();
-    const thisMonth=workEntries.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
-    const thisWeek =workEntries.filter(e=>(now-new Date(e.date))/86400000<=7);
-    document.getElementById('statMonth').textContent  =thisMonth.reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statWeek').textContent   =thisWeek.reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statAvg').textContent    =workEntries.length?Math.round(workEntries.reduce((s,e)=>s+parseInt(e.total),0)/workEntries.length):0;
-    document.getElementById('statDeficit').textContent=workEntries.reduce((s,e)=>s+Math.max(0,target-parseInt(e.total)),0);
+    const workEntries = myEntries.filter(e=>!ROSTER_TYPES.includes(String(e.reason||'').trim()));
+    if (!workEntries.length) return;
+    const target = parseInt(userDetails?.target)||0;
+    const now    = new Date();
+    const thisMonth = workEntries.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+    const thisWeek  = workEntries.filter(e=>(now-new Date(e.date))/86400000<=7);
+    document.getElementById('statMonth').textContent   = thisMonth.reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statWeek').textContent    = thisWeek.reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statAvg').textContent     = workEntries.length?Math.round(workEntries.reduce((s,e)=>s+parseInt(e.total),0)/workEntries.length):0;
+    document.getElementById('statDeficit').textContent = workEntries.reduce((s,e)=>s+Math.max(0,getEffectiveTarget(target,e.reason)-parseInt(e.total)),0);
 
-    const last14=workEntries.slice(0,14).reverse();
-    const actuals=last14.map(e=>parseInt(e.total));
-    if(barChart) barChart.destroy();
-    barChart=new Chart(document.getElementById('chartBar'),{
+    const last14  = workEntries.slice(0,14).reverse();
+    const actuals = last14.map(e=>parseInt(e.total));
+    const targets = last14.map(e=>getEffectiveTarget(target,e.reason));
+
+    if (barChart) barChart.destroy();
+    barChart = new Chart(document.getElementById('chartBar'),{
       type:'bar',
-      data:{ labels:last14.map(e=>formatDate(e.date)), datasets:[
-        {label:'Cases Done',data:actuals,backgroundColor:actuals.map(v=>v>=target?'#4ade80':'#f87171'),borderRadius:6,order:2},
-        {label:'Target ('+target+')',data:last14.map(()=>target),type:'line',borderColor:'#1a1a2e',borderWidth:2,borderDash:[6,3],pointRadius:0,fill:false,order:1}
-      ]},
+      data:{
+        labels:last14.map(e=>formatDate(e.date)),
+        datasets:[
+          {label:'Cases Done',data:actuals,backgroundColor:actuals.map((v,i)=>v>=targets[i]?'#4ade80':'#f87171'),borderRadius:6,order:2},
+          {label:'Target',data:targets,type:'line',borderColor:'#1a1a2e',borderWidth:2,borderDash:[6,3],pointRadius:0,fill:false,order:1}
+        ]
+      },
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{y:{beginAtZero:true},x:{grid:{display:false}}}}
     });
 
     const tF=workEntries.reduce((s,e)=>s+parseInt(e.fresh),0);
     const tR=workEntries.reduce((s,e)=>s+parseInt(e.rework),0);
-    if(doughnutChart) doughnutChart.destroy();
-    doughnutChart=new Chart(document.getElementById('chartDoughnut'),{
+    if (doughnutChart) doughnutChart.destroy();
+    doughnutChart = new Chart(document.getElementById('chartDoughnut'),{
       type:'doughnut',
       data:{labels:['Fresh','Rework'],datasets:[{data:[tF,tR],backgroundColor:['#4ade80','#f87171'],borderWidth:0}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
@@ -737,7 +757,7 @@
     const rc={};
     workEntries.filter(e=>e.reason&&e.reason.trim()).forEach(e=>{const r=e.reason.trim().toLowerCase();rc[r]=(rc[r]||0)+1;});
     const sorted=Object.entries(rc).sort((a,b)=>b[1]-a[1]);
-    document.getElementById('reasonsList').innerHTML=sorted.length
+    document.getElementById('reasonsList').innerHTML = sorted.length
       ?sorted.map(([r,c])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);"><span style="text-transform:capitalize;color:var(--text);">${r}</span><span style="background:var(--red);color:#fff;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">${c}x</span></div>`).join('')
       :'<div style="font-size:13px;color:var(--green);">No deficit reasons on record.</div>';
   }
@@ -753,10 +773,8 @@
 
   function setTodayDate() {
     const t=getTodayStr();
-    // Submit EOD — future dates blocked
     document.getElementById('date').value=t;
-    document.getElementById('date').max=t;
-    // Roster — NO max, future dates allowed for planned leave/sat-off
+    // NOTE: No max on date — allow past dates and Sundays
     document.getElementById('rosterFrom').value=t;
     document.getElementById('rosterTo').value=t;
   }
@@ -770,8 +788,12 @@
   }
 
   setInterval(async()=>{
-    if(currentUser&&userDetails) await loadMyEntries(currentUser.email);
-  },30000);
+    if(currentUser&&userDetails){
+      const [hData] = await Promise.all([apiFetch('getHolidays')]);
+      holidays = (hData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+      await loadMyEntries();
+    }
+  }, 30000);
 </script>
 </body>
 </html>
