@@ -14,7 +14,6 @@
       --accent: #1a1a2e; --accent2: #16213e;
       --green: #16a34a; --red: #dc2626;
       --blue: #2563eb; --yellow: #d97706;
-      --orange: #ea580c;
       --radius: 12px;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; }
@@ -45,6 +44,7 @@
     .badge-compoff{ background: #ede9fe; color: #5b21b6;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .badge-halfday{ background: #dbeafe; color: #1e40af;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .badge-absent { background: #450a0a; color: #fca5a5;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-holiday{ background: #fce7f3; color: #9d174d;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
     select, input[type="date"], input[type="text"] { height: 38px; padding: 0 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); outline: none; }
     select:focus, input:focus { border-color: var(--accent); }
@@ -54,10 +54,7 @@
     .range-btn:hover:not(.active) { background: var(--border); color: var(--text); }
     .custom-range { display: none; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
     .custom-range.show { display: flex; }
-
-    /* ── ROSTER ── */
-    .roster-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .field { margin-bottom: 0; }
+    .field { margin-bottom: 14px; }
     label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
     .roster-type-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 16px; }
     .rtype-btn { padding: 12px 6px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; transition: all 0.15s; }
@@ -71,12 +68,36 @@
     .btn-primary { height: 44px; padding: 0 24px; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
     .btn-primary:hover:not(:disabled) { background: var(--accent2); }
     .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-danger { height: 36px; padding: 0 16px; background: var(--red); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; }
     .toast { display: none; align-items: center; gap: 8px; margin-top: 12px; padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; }
     .toast.show { display: flex; }
     .toast.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
     .toast.error   { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
 
-    .roster-log-entry { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
+    /* CALENDAR */
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .cal-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .cal-nav { background: none; border: 1px solid var(--border); border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; color: var(--text); }
+    .cal-nav:hover { background: var(--border); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .cal-day-label { text-align: center; font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; padding: 3px 0; }
+    .cal-day { text-align: center; font-size: 11px; font-weight: 500; padding: 6px 2px; border-radius: 5px; cursor: pointer; transition: all 0.12s; }
+    .cal-day.empty   { cursor: default; }
+    .cal-day.sunday  { background: #f3f4f6; color: #9ca3af; font-style: italic; }
+    .cal-day.future  { color: #d1d5db; cursor: default; }
+    .cal-day.work    { background: #dcfce7; color: #14532d; font-weight: 700; }
+    .cal-day.leave   { background: #fef9c3; color: #713f12; font-weight: 700; }
+    .cal-day.satoff  { background: #ffedd5; color: #7c2d12; font-weight: 700; }
+    .cal-day.compoff { background: #ede9fe; color: #4c1d95; font-weight: 700; }
+    .cal-day.halfday { background: #dbeafe; color: #1e3a8a; font-weight: 700; }
+    .cal-day.absent  { background: #450a0a; color: #fca5a5; font-weight: 700; }
+    .cal-day.holiday { background: #fce7f3; color: #9d174d; font-weight: 700; }
+    .cal-day.missed  { background: #fef2f2; color: #ef4444; }
+    .cal-day.selected { outline: 2.5px solid var(--accent); outline-offset: 1px; }
+    .cal-day.today-marker { text-decoration: underline; font-weight: 800; }
+    .cal-legend { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 4px; font-size: 9px; color: var(--muted); }
+    .legend-dot { width: 9px; height: 9px; border-radius: 2px; }
 
     @media (max-width: 700px) {
       .roster-type-row { grid-template-columns: repeat(3, 1fr); }
@@ -98,11 +119,12 @@
 
   <div class="tabs">
     <button class="tab active" onclick="switchTab('overview')">Overview</button>
-    <button class="tab" onclick="switchTab('entries')">All Entries</button>
     <button class="tab" onclick="switchTab('roster')">Roster</button>
+    <button class="tab" onclick="switchTab('calendar')">Employee Calendar</button>
+    <button class="tab" onclick="switchTab('holidays')">Holidays</button>
   </div>
 
-  <!-- ══════════════ OVERVIEW TAB ══════════════ -->
+  <!-- ── OVERVIEW TAB ── -->
   <div id="tab-overview">
     <div class="stat-grid">
       <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-val" id="statEmp">—</div></div>
@@ -114,6 +136,7 @@
       <div class="stat-card"><div class="stat-label">Cashless</div><div class="stat-val" style="color:var(--yellow)" id="statCash">—</div></div>
     </div>
 
+    <!-- Chart -->
     <div class="card">
       <div class="card-title">Team Performance</div>
       <div class="range-tabs">
@@ -130,7 +153,7 @@
       </div>
       <div style="display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:8px;width:fit-content;margin-bottom:16px;">
         <button class="range-btn active" id="view-total"   onclick="setView('total',this)">Total</button>
-        <button class="range-btn"        id="view-distrib" onclick="setView('distrib',this)">Fresh & Rework</button>
+        <button class="range-btn"        id="view-distrib" onclick="setView('distrib',this)">Fresh &amp; Rework</button>
       </div>
       <div id="chartTotalWrap"><div class="chart-wrap"><canvas id="adminChart"></canvas></div></div>
       <div id="chartDistribWrap" style="display:none;">
@@ -141,12 +164,10 @@
         <div class="chart-wrap"><canvas id="chartRework"></canvas></div>
       </div>
     </div>
-  </div>
 
-  <!-- ══════════════ ENTRIES TAB ══════════════ -->
-  <div id="tab-entries" style="display:none;">
+    <!-- Entries table — synced with chart filters -->
     <div class="card">
-      <div class="card-title">All Entries</div>
+      <div class="card-title">Entries</div>
       <div class="filter-row">
         <select id="filterEmployee" onchange="renderTable()"><option value="">All Employees</option></select>
         <select id="filterTeam" onchange="renderTable()">
@@ -158,10 +179,10 @@
         <input type="date" id="filterFrom" onchange="renderTable()">
         <input type="date" id="filterTo"   onchange="renderTable()">
       </div>
-      <div style="overflow-x:auto;overflow-y:auto;max-height:520px;">
+      <div style="overflow-x:auto;overflow-y:auto;max-height:480px;">
         <table>
           <thead>
-            <tr><th>Date</th><th>Name</th><th>Team</th><th>Fresh</th><th>Rework</th><th>Total</th><th>Target</th><th>Deficit</th><th>Type / Reason</th></tr>
+            <tr><th>Date</th><th>Name</th><th>Team</th><th>Fresh</th><th>Rework</th><th>Total</th><th>Target</th><th>Deficit</th><th>Type/Reason</th></tr>
           </thead>
           <tbody id="tableBody">
             <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>
@@ -171,62 +192,50 @@
     </div>
   </div>
 
-  <!-- ══════════════ ROSTER TAB ══════════════ -->
+  <!-- ── ROSTER TAB ── -->
   <div id="tab-roster" style="display:none;">
     <div class="card">
-      <div class="card-title">Roster Management — Mark Leave / Attendance</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">
-        Mark leave, week-offs, comp-offs, half-days, or absences for any employee across a date range. All marked dates auto-record a zero count entry with the selected type.
-      </p>
+      <div class="card-title">Roster Management</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Mark leave, week-offs, comp-offs, half-days, or absences for any employee.</p>
 
-      <!-- Employee selector -->
-      <div style="margin-bottom:16px;">
+      <div class="field">
         <label>Employee</label>
-        <select id="rosterEmployee" style="width:100%;height:46px;font-size:14px;">
+        <select id="rosterEmployee" style="width:100%;height:46px;font-size:14px;" onchange="updateAdminPreview()">
           <option value="">Select Employee</option>
         </select>
       </div>
 
-      <!-- Type selection — Admin gets all 5 types -->
       <label style="margin-bottom:10px;">Type</label>
-      <div class="roster-type-row" id="adminRosterTypeRow">
+      <div class="roster-type-row">
         <button class="rtype-btn" onclick="selectAdminRosterType('Leave')" id="art-Leave">
-          <span class="rtype-label">Planned</span>
-          <span class="rtype-name">Leave</span>
+          <span class="rtype-label">Planned</span><span class="rtype-name">Leave</span>
         </button>
         <button class="rtype-btn" onclick="selectAdminRosterType('Sat Off')" id="art-Sat Off">
-          <span class="rtype-label">Weekly Off</span>
-          <span class="rtype-name">Sat Off</span>
+          <span class="rtype-label">Weekly Off</span><span class="rtype-name">Sat Off</span>
         </button>
         <button class="rtype-btn" onclick="selectAdminRosterType('Comp Off')" id="art-Comp Off">
-          <span class="rtype-label">Compensation</span>
-          <span class="rtype-name">Comp Off</span>
+          <span class="rtype-label">Compensation</span><span class="rtype-name">Comp Off</span>
         </button>
         <button class="rtype-btn" onclick="selectAdminRosterType('Half Day')" id="art-Half Day">
-          <span class="rtype-label">Partial</span>
-          <span class="rtype-name">Half Day</span>
+          <span class="rtype-label">Partial</span><span class="rtype-name">Half Day</span>
         </button>
         <button class="rtype-btn" onclick="selectAdminRosterType('Absent')" id="art-Absent">
-          <span class="rtype-label">Unplanned</span>
-          <span class="rtype-name">Absent</span>
+          <span class="rtype-label">Unplanned</span><span class="rtype-name">Absent</span>
         </button>
       </div>
 
-      <!-- Date range -->
       <div class="date-range-row">
         <div>
           <label>From Date</label>
-          <input type="date" id="adminRosterFrom" style="width:100%;height:46px;font-size:14px;" oninput="updateAdminPreview()">
+          <input type="date" id="adminRosterFrom" style="width:100%;height:46px;" oninput="updateAdminPreview()">
         </div>
         <div>
           <label>To Date</label>
-          <input type="date" id="adminRosterTo" style="width:100%;height:46px;font-size:14px;" oninput="updateAdminPreview()">
+          <input type="date" id="adminRosterTo" style="width:100%;height:46px;" oninput="updateAdminPreview()">
         </div>
       </div>
 
-      <!-- Preview -->
       <div class="preview-bar" id="adminRosterPreview">Select an employee, type, and date range to preview</div>
-
       <button class="btn-primary" id="adminRosterBtn" onclick="submitAdminRoster()">Apply to Roster</button>
       <div class="toast" id="adminRosterToast" style="margin-top:10px;"><span id="adminRosterToastMsg"></span></div>
     </div>
@@ -235,20 +244,84 @@
     <div class="card">
       <div class="card-title">Roster Entries</div>
       <div class="filter-row">
-        <select id="rosterFilterEmp" onchange="renderRosterLog()"><option value="">All Employees</option></select>
+        <select id="rosterFilterEmp"  onchange="renderRosterLog()"><option value="">All Employees</option></select>
         <select id="rosterFilterType" onchange="renderRosterLog()">
           <option value="">All Types</option>
-          <option value="Leave">Leave</option>
-          <option value="Sat Off">Sat Off</option>
-          <option value="Comp Off">Comp Off</option>
-          <option value="Half Day">Half Day</option>
-          <option value="Absent">Absent</option>
+          <option>Leave</option><option>Sat Off</option><option>Comp Off</option>
+          <option>Half Day</option><option>Absent</option>
         </select>
         <input type="date" id="rosterFilterFrom" onchange="renderRosterLog()">
         <input type="date" id="rosterFilterTo"   onchange="renderRosterLog()">
       </div>
-      <div id="rosterLog" style="max-height:420px;overflow-y:auto;">
-        <div style="font-size:13px;color:var(--muted);padding:16px 0;">No roster entries found.</div>
+      <div id="rosterLog" style="max-height:400px;overflow-y:auto;">
+        <div style="font-size:13px;color:var(--muted);padding:12px 0;">No roster entries found.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EMPLOYEE CALENDAR TAB ── -->
+  <div id="tab-calendar" style="display:none;">
+    <div class="card">
+      <div class="card-title">Employee Calendar</div>
+      <div class="filter-row" style="margin-bottom:20px;">
+        <select id="calEmpSelect" onchange="loadEmpCalendar()" style="height:42px;min-width:220px;">
+          <option value="">Select Employee</option>
+        </select>
+      </div>
+
+      <div id="empCalWrap" style="display:none;">
+        <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;">
+          <div>
+            <div style="background:var(--bg);border-radius:10px;padding:14px;">
+              <div class="cal-header">
+                <button class="cal-nav" onclick="empCalNav(-1)">&#8249;</button>
+                <div class="cal-title" id="empCalTitle">—</div>
+                <button class="cal-nav" onclick="empCalNav(1)">&#8250;</button>
+              </div>
+              <div class="cal-grid" id="empCalGrid"></div>
+              <div class="cal-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#dcfce7;"></div> Submitted</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#fef9c3;"></div> Leave</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ffedd5;"></div> Sat Off</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ede9fe;"></div> Comp Off</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#dbeafe;"></div> Half Day</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#450a0a;"></div> Absent</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#fce7f3;"></div> Holiday</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#fef2f2;"></div> Missed</div>
+              </div>
+            </div>
+          </div>
+          <div id="empCalDetail" style="background:var(--bg);border-radius:10px;padding:18px;">
+            <div style="text-align:center;color:var(--muted);font-size:13px;padding:36px 0;">Select a date to view details</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HOLIDAYS TAB ── -->
+  <div id="tab-holidays" style="display:none;">
+    <div class="card">
+      <div class="card-title">Add Holiday</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Holidays will appear on all employee calendars. Employees can still submit counts on holidays.</p>
+      <div style="display:grid;grid-template-columns:1fr 2fr auto;gap:12px;align-items:end;">
+        <div>
+          <label>Date</label>
+          <input type="date" id="holidayDate" style="width:100%;height:42px;">
+        </div>
+        <div>
+          <label>Holiday Name</label>
+          <input type="text" id="holidayName" placeholder="e.g. Diwali, Christmas..." style="width:100%;height:42px;">
+        </div>
+        <button class="btn-primary" onclick="addHoliday()">Add Holiday</button>
+      </div>
+      <div class="toast" id="holidayToast" style="margin-top:12px;"><span id="holidayToastMsg"></span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">All Holidays</div>
+      <div id="holidayList">
+        <div style="font-size:13px;color:var(--muted);">Loading...</div>
       </div>
     </div>
   </div>
@@ -267,51 +340,55 @@
     messagingSenderId: "665878833615",
     appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
+
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpIetd36Y_iUqfV6Sx0gNuxaXvm6yi_xORmgFEIo15G6YxJkVVPcMOBPfiPEu0H4qZ8A/exec";
+
+  const ROSTER_TYPES      = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
+  const ZERO_TARGET_TYPES = ['Leave','Sat Off','Comp Off','Absent','Holiday'];
+  const BADGE_CLASS       = {'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent','Holiday':'badge-holiday'};
+  const CAL_CLASS         = {'Leave':'leave','Sat Off':'satoff','Comp Off':'compoff','Half Day':'halfday','Absent':'absent','Holiday':'holiday'};
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  let currentUser      = null;
-  let allEntries       = [];
-  let allEmployees     = [];
-  let adminChart       = null;
-  let chartFresh       = null;
-  let chartRework      = null;
-  let currentRange     = 'week';
-  let currentView      = 'total';
-  let adminRosterType  = null;
+  let currentUser     = null;
+  let allEntries      = [];
+  let allEmployees    = [];
+  let holidays        = [];
+  let adminChart      = null;
+  let chartFresh      = null;
+  let chartRework     = null;
+  let currentRange    = 'week';
+  let currentView     = 'total';
+  let adminRosterType = null;
 
-  const ROSTER_TYPES = ['Leave','Sat Off','Comp Off','Half Day','Absent'];
-  const BADGE_CLASS  = {'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent'};
+  // Employee calendar state
+  let empCalYear    = new Date().getFullYear();
+  let empCalMonth   = new Date().getMonth();
+  let empCalEntries = [];
+  let empCalTarget  = 0;
+  let empCalSelected = null;
 
   /* ── UTILS ── */
   function normalizeDate(raw) {
-    if(!raw) return "";
+    if (!raw) return "";
     const s=String(raw).trim();
-    if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
     const dmy=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-    if(dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
-    try{const d=new Date(s);if(!isNaN(d))return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}catch(_){}
+    if (dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
+    try{const d=new Date(s);if(!isNaN(d))return d.toISOString().split('T')[0];}catch(_){}
     return s.substring(0,10);
   }
-  function getTodayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-  function formatDate(ds) {
-    if(!ds) return '—';
-    const [y,m,d]=ds.split('-').map(Number);
-    return new Date(y,m-1,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  }
-  function matchTeam(e,t) { return String(e.team).toLowerCase().includes(t.toLowerCase()); }
-  function getDaysBetween(from,to) {
-    const dates=[]; let cur=new Date(from); const end=new Date(to);
-    while(cur<=end){dates.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}
-    return dates;
-  }
+  function getTodayStr(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+  function formatDate(ds){if(!ds)return'—';const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+  function matchTeam(e,t){return String(e.team).toLowerCase().includes(t.toLowerCase());}
+  function getDaysBetween(from,to){const dates=[];let cur=new Date(from);const end=new Date(to);while(cur<=end){dates.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}return dates;}
   function isSunday(ds){const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).getDay()===0;}
+  function getEffectiveTarget(base,reason){const r=String(reason||'').trim();if(ZERO_TARGET_TYPES.includes(r))return 0;if(r==='Half Day')return Math.ceil(base/2);return base;}
 
-  async function apiFetch(action,params={}) {
+  async function apiFetch(action,params={}){
     const url=APPS_SCRIPT_URL+"?"+new URLSearchParams({action,...params}).toString();
-    const r=await fetch(url); return r.json();
+    const r=await fetch(url);return r.json();
   }
 
   /* ── AUTH ── */
@@ -321,32 +398,35 @@
     document.getElementById('navEmail').textContent=user.email;
     await loadAdminData();
   });
-
   window.logout=async()=>{await signOut(auth);window.location.href="index.html";};
 
-  async function loadAdminData() {
-    try {
-      const user=await apiFetch('getUser',{email:currentUser.email});
-      if(user.role!=="Admin"){alert("Access denied");window.location.href="index.html";return;}
-      const data=await apiFetch('getAllEntries',{email:currentUser.email});
-      allEntries  =(data.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
-      allEmployees=data.employees||[];
-      renderStats(); renderChart(); renderTable(); populateFilters();
-    } catch(e){alert("Error: "+e.message);}
+  async function loadAdminData(){
+    try{
+      const [userRes, entriesRes, holidayRes] = await Promise.all([
+        apiFetch('getUser',{email:currentUser.email}),
+        apiFetch('getAllEntries',{email:currentUser.email}),
+        apiFetch('getHolidays')
+      ]);
+      if(userRes.role!=="Admin"){alert("Access denied");window.location.href="index.html";return;}
+      allEntries   =(entriesRes.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+      allEmployees = entriesRes.employees||[];
+      holidays     =(holidayRes.holidays ||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+      renderStats();renderChart();renderTable();populateFilters();renderHolidayList();
+    }catch(e){alert("Error: "+e.message);}
   }
 
   /* ── TABS ── */
   window.switchTab=function(tab){
-    ['overview','entries','roster'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
-    document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['overview','entries','roster'][i]===tab);});
+    ['overview','roster','calendar','holidays'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
+    document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['overview','roster','calendar','holidays'][i]===tab);});
     if(tab==='overview') renderChart();
     if(tab==='roster')   renderRosterLog();
+    if(tab==='holidays') renderHolidayList();
   };
 
   /* ── STATS ── */
-  function renderStats() {
-    const today=getTodayStr();
-    // Only count actual work entries for "submitted today" (not roster/leave entries)
+  function renderStats(){
+    const today    =getTodayStr();
     const todayWork=allEntries.filter(e=>e.date===today&&!ROSTER_TYPES.includes(String(e.reason||'').trim()));
     const todayAll =allEntries.filter(e=>e.date===today);
     const empCount =allEmployees.filter(e=>String(e.role)!=='Admin').length;
@@ -360,60 +440,60 @@
   }
 
   /* ── TABLE ── */
-  function getFilteredEntries() {
+  function getFilteredEntries(){
     const emp =document.getElementById('filterEmployee').value;
     const team=document.getElementById('filterTeam').value;
     const from=document.getElementById('filterFrom').value;
     const to  =document.getElementById('filterTo').value;
     return allEntries.filter(e=>{
-      const d=e.date;
-      if(emp  && e.name!==emp)           return false;
-      if(team && !matchTeam(e,team))     return false;
-      if(from && d<from)                 return false;
-      if(to   && d>to)                   return false;
+      if(emp  && e.name!==emp)       return false;
+      if(team && !matchTeam(e,team)) return false;
+      if(from && e.date<from)        return false;
+      if(to   && e.date>to)          return false;
       return true;
     });
   }
 
-  window.renderTable=function() {
+  window.renderTable=function(){
     const filtered=getFilteredEntries().sort((a,b)=>b.date.localeCompare(a.date));
     const tbody=document.getElementById('tableBody');
     if(!filtered.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No entries found</td></tr>';renderChart();return;}
     tbody.innerHTML=filtered.map(e=>{
-      const deficit=parseInt(e.deficit)||0;
-      const teamColor=matchTeam(e,'technical')?'var(--blue)':matchTeam(e,'medical')?'var(--green)':'var(--yellow)';
-      const reason=String(e.reason||'');
-      const isRoster=ROSTER_TYPES.includes(reason.trim());
-      const reasonBadge=isRoster?`<span class="${BADGE_CLASS[reason.trim()]||'badge-green'}">${reason}</span>`:reason||'—';
+      const deficit   =parseInt(e.deficit)||0;
+      const teamColor =matchTeam(e,'technical')?'var(--blue)':matchTeam(e,'medical')?'var(--green)':'var(--yellow)';
+      const reason    =String(e.reason||'').trim();
+      const isRoster  =ROSTER_TYPES.includes(reason);
+      const rBadge    =isRoster?`<span class="${BADGE_CLASS[reason]||'badge-leave'}">${reason}</span>`:reason||'—';
+      const effTarget =getEffectiveTarget(e.target||0,reason);
       return `<tr>
         <td>${formatDate(e.date)}</td>
         <td><strong>${e.name}</strong></td>
         <td><span style="color:${teamColor};font-weight:500;">${e.team}</span></td>
         <td>${e.fresh}</td><td>${e.rework}</td>
         <td><strong>${e.total}</strong></td>
-        <td>${e.target||'—'}</td>
+        <td>${effTarget}</td>
         <td>${isRoster?'—':deficit>0?`<span class="badge-red">${deficit}</span>`:`<span class="badge-green">0</span>`}</td>
-        <td>${reasonBadge}</td>
+        <td>${rBadge}</td>
       </tr>`;
     }).join('');
     renderChart();
   };
 
-  function populateFilters() {
-    const sel1=document.getElementById('filterEmployee');
-    const sel2=document.getElementById('rosterFilterEmp');
-    const sel3=document.getElementById('rosterEmployee');
+  function populateFilters(){
     const names=[...new Set(allEntries.map(e=>e.name))].sort();
-    names.forEach(n=>{
-      [sel1,sel2].forEach(s=>{const o=document.createElement('option');o.value=n;o.textContent=n;s.appendChild(o);});
+    ['filterEmployee','rosterFilterEmp','calEmpSelect'].forEach(id=>{
+      const sel=document.getElementById(id);
+      if(!sel) return;
+      // clear existing options except first
+      while(sel.options.length>1) sel.remove(1);
+      names.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});
     });
+    // For roster employee — use email as value
+    const rEmp=document.getElementById('rosterEmployee');
+    while(rEmp.options.length>1) rEmp.remove(1);
     allEmployees.filter(e=>e.role!=='Admin').forEach(emp=>{
-      const o=document.createElement('option');
-      o.value=emp.email;
-      o.textContent=emp.name+(emp.team?' ('+emp.team+')':'');
-      sel3.appendChild(o);
+      const o=document.createElement('option');o.value=emp.email;o.textContent=emp.name+(emp.team?' ('+emp.team+')':'');rEmp.appendChild(o);
     });
-    // Set today as default for admin roster
     const today=getTodayStr();
     document.getElementById('adminRosterFrom').value=today;
     document.getElementById('adminRosterTo').value=today;
@@ -446,12 +526,12 @@
   };
 
   function buildDateRange(){
-    const now=new Date(); let from,to;
+    const now=new Date();let from,to;
     if(currentRange==='week'){const diff=now.getDay()===0?6:now.getDay()-1;from=new Date(now);from.setDate(now.getDate()-diff);to=new Date(now);}
     else if(currentRange==='month'){from=new Date(now.getFullYear(),now.getMonth(),1);to=new Date(now);}
     else if(currentRange==='year'){from=new Date(now.getFullYear(),0,1);to=new Date(now);}
     else{const f=document.getElementById('chartFrom').value,t=document.getElementById('chartTo').value;if(!f||!t)return null;from=new Date(f);to=new Date(t);}
-    const days=[]; let cur=new Date(from);
+    const days=[];let cur=new Date(from);
     while(cur<=to){days.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}
     return days;
   }
@@ -459,10 +539,11 @@
   function buildChartData(days,entries){
     const labels=[],techTotal=[],medTotal=[],cashTotal=[],techFresh=[],medFresh=[],cashFresh=[],techRework=[],medRework=[],cashRework=[],targetData=[];
     const group=days.length<=31?'day':'month';
+    const workEntries=entries.filter(e=>!ROSTER_TYPES.includes(String(e.reason||'').trim()));
     if(group==='day'){
       days.forEach(d=>{
         labels.push(new Date(...d.split('-').map((v,i)=>i===1?Number(v)-1:Number(v))).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
-        const de=entries.filter(e=>e.date===d&&!ROSTER_TYPES.includes(String(e.reason||'').trim()));
+        const de=workEntries.filter(e=>e.date===d);
         techTotal.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
         medTotal.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
         cashTotal.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
@@ -479,7 +560,7 @@
       const months={};days.forEach(d=>{const k=d.substring(0,7);if(!months[k])months[k]=[];months[k].push(d);});
       Object.entries(months).forEach(([key,mDays])=>{
         labels.push(new Date(key+'-01').toLocaleDateString('en-IN',{month:'short',year:'numeric'}));
-        const me=entries.filter(e=>mDays.includes(e.date)&&!ROSTER_TYPES.includes(String(e.reason||'').trim()));
+        const me=workEntries.filter(e=>mDays.includes(e.date));
         techTotal.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
         medTotal.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
         cashTotal.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
@@ -497,8 +578,9 @@
   }
 
   window.renderChart=function(){
-    const days=buildDateRange(); if(!days)return;
-    const d=buildChartData(days,allEntries);
+    const days=buildDateRange();if(!days)return;
+    const filtered=getFilteredEntries();
+    const d=buildChartData(days,filtered);
     const tgt={label:'Team Target',data:d.targetData,type:'line',borderColor:'#dc2626',borderWidth:2,borderDash:[6,3],pointRadius:3,pointBackgroundColor:'#dc2626',fill:false,order:1,stack:undefined};
     const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{usePointStyle:true,font:{size:12}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f0f0f0'}}}};
     if(currentView==='total'){
@@ -506,8 +588,7 @@
       adminChart=new Chart(document.getElementById('adminChart'),{type:'bar',data:{labels:d.labels,datasets:[
         {label:'Technical',data:d.techTotal,backgroundColor:'#3b82f6',borderRadius:4,stack:'s',order:2},
         {label:'Medical',data:d.medTotal,backgroundColor:'#4ade80',borderRadius:4,stack:'s',order:2},
-        {label:'Cashless',data:d.cashTotal,backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},
-        tgt
+        {label:'Cashless',data:d.cashTotal,backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},tgt
       ]},options:opts});
     }else{
       if(chartFresh)chartFresh.destroy();
@@ -528,7 +609,7 @@
   /* ── ADMIN ROSTER ── */
   window.selectAdminRosterType=function(type){
     adminRosterType=type;
-    document.querySelectorAll('#adminRosterTypeRow .rtype-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('#tab-roster .rtype-btn').forEach(b=>b.classList.remove('active'));
     const btn=document.getElementById('art-'+type);
     if(btn) btn.classList.add('active');
     updateAdminPreview();
@@ -544,49 +625,35 @@
     if(from>to){prev.innerHTML='<span style="color:var(--red)">To date must be after From date</span>';return;}
     const days=getDaysBetween(from,to);
     const valid=days.filter(d=>!isSunday(d));
-    const skipped=days.length-valid.length;
+    const skip =days.length-valid.length;
     const empTxt=empSel.value?`for <span>${empName}</span> `:'';
-    prev.innerHTML=`<span>${adminRosterType}</span> will be applied to <span>${valid.length} day(s)</span> `+
-      empTxt+`from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`+
-      (skipped?` <span style="color:var(--muted);font-weight:400;">(${skipped} Sunday(s) skipped)</span>`:'');
+    prev.innerHTML=`<span>${adminRosterType}</span> will be applied to <span>${valid.length} day(s)</span> ${empTxt}from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`+(skip?` <span style="color:var(--muted);font-weight:400;">(${skip} Sunday(s) skipped)</span>`:'');
   };
 
   window.submitAdminRoster=async function(){
     const empEmail=document.getElementById('rosterEmployee').value;
     const from=document.getElementById('adminRosterFrom').value;
     const to  =document.getElementById('adminRosterTo').value;
-    if(!empEmail)        return showAdminRosterToast('Please select an employee','error');
-    if(!adminRosterType) return showAdminRosterToast('Please select a type','error');
-    if(!from||!to)       return showAdminRosterToast('Please select a date range','error');
-    if(from>to)          return showAdminRosterToast('From date must be before To date','error');
-
+    if(!empEmail)        return showToast('adminRosterToast','adminRosterToastMsg','Please select an employee','error');
+    if(!adminRosterType) return showToast('adminRosterToast','adminRosterToastMsg','Please select a type','error');
+    if(!from||!to)       return showToast('adminRosterToast','adminRosterToastMsg','Please select a date range','error');
+    if(from>to)          return showToast('adminRosterToast','adminRosterToastMsg','From date must be before To date','error');
     const days=getDaysBetween(from,to).filter(d=>!isSunday(d));
-    if(!days.length) return showAdminRosterToast('No valid days (all Sundays)','error');
-
+    if(!days.length) return showToast('adminRosterToast','adminRosterToastMsg','No valid days','error');
     const btn=document.getElementById('adminRosterBtn');
     btn.disabled=true; btn.textContent='Applying...';
-
     let success=0,skipped=0,failed=0;
     for(const date of days){
       try{
-        const data=await apiFetch('saveEntry',{
-          email:  empEmail,
-          date,
-          fresh:  0,
-          rework: 0,
-          reason: adminRosterType,
-          entryType: adminRosterType
-        });
+        const data=await apiFetch('saveEntry',{email:empEmail,date,fresh:0,rework:0,reason:adminRosterType});
         if(data.result==='SUCCESS') success++;
         else if(data.result==='EXISTS') skipped++;
         else failed++;
       }catch(_){failed++;}
     }
-
     btn.disabled=false; btn.textContent='Apply to Roster';
-    const msg=`Applied: ${success} day(s)`+(skipped?` | Already existed: ${skipped}`:'')+( failed?` | Failed: ${failed}`:'');
-    showAdminRosterToast(msg,failed?'error':'success');
-    // Reload data
+    showToast('adminRosterToast','adminRosterToastMsg',`Applied: ${success}`+(skipped?` | Existed: ${skipped}`:'')+( failed?` | Failed: ${failed}`:''),failed?'error':'success');
+    // reload
     const data=await apiFetch('getAllEntries',{email:currentUser.email});
     allEntries=(data.entries||[]).map(e=>({...e,date:normalizeDate(e.date)}));
     allEmployees=data.employees||[];
@@ -598,36 +665,188 @@
     const typeF=document.getElementById('rosterFilterType')?.value||'';
     const fromF=document.getElementById('rosterFilterFrom')?.value||'';
     const toF  =document.getElementById('rosterFilterTo')?.value||'';
-
     const entries=allEntries.filter(e=>{
       const r=String(e.reason||'').trim();
-      if(!ROSTER_TYPES.includes(r)) return false;
-      if(empF  && e.name!==empF)   return false;
-      if(typeF && r!==typeF)        return false;
-      if(fromF && e.date<fromF)     return false;
-      if(toF   && e.date>toF)       return false;
+      if(!ROSTER_TYPES.includes(r))  return false;
+      if(empF  && e.name!==empF)     return false;
+      if(typeF && r!==typeF)         return false;
+      if(fromF && e.date<fromF)      return false;
+      if(toF   && e.date>toF)        return false;
       return true;
     }).sort((a,b)=>b.date.localeCompare(a.date));
-
     const el=document.getElementById('rosterLog');
     if(!entries.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:12px 0;">No roster entries found.</div>';return;}
-    el.innerHTML=`
-      <table>
-        <thead><tr><th>Date</th><th>Employee</th><th>Team</th><th>Type</th></tr></thead>
-        <tbody>
-          ${entries.map(e=>`<tr>
-            <td>${formatDate(e.date)}</td>
-            <td><strong>${e.name}</strong></td>
-            <td style="color:var(--muted)">${e.team}</td>
-            <td><span class="${BADGE_CLASS[e.reason?.trim()]||'badge-leave'}">${e.reason}</span></td>
-          </tr>`).join('')}
-        </tbody>
-      </table>`;
+    el.innerHTML=`<table><thead><tr><th>Date</th><th>Employee</th><th>Team</th><th>Type</th></tr></thead><tbody>`+
+      entries.map(e=>`<tr>
+        <td>${formatDate(e.date)}</td>
+        <td><strong>${e.name}</strong></td>
+        <td style="color:var(--muted)">${e.team}</td>
+        <td><span class="${BADGE_CLASS[e.reason?.trim()]||'badge-leave'}">${e.reason}</span></td>
+      </tr>`).join('')+'</tbody></table>';
   };
 
-  function showAdminRosterToast(msg,type){
-    const t=document.getElementById('adminRosterToast');
-    document.getElementById('adminRosterToastMsg').textContent=msg;
+  /* ── EMPLOYEE CALENDAR ── */
+  window.loadEmpCalendar=async function(){
+    const name=document.getElementById('calEmpSelect').value;
+    if(!name){document.getElementById('empCalWrap').style.display='none';return;}
+    const emp=allEmployees.find(e=>e.name===name);
+    empCalEntries=allEntries.filter(e=>e.name===name);
+    empCalTarget =parseInt(emp?.target)||0;
+    empCalSelected=null;
+    document.getElementById('empCalWrap').style.display='block';
+    renderEmpCalendar();
+  };
+
+  window.empCalNav=function(dir){
+    empCalMonth+=dir;
+    if(empCalMonth>11){empCalMonth=0;empCalYear++;}
+    if(empCalMonth<0){empCalMonth=11;empCalYear--;}
+    renderEmpCalendar();
+  };
+
+  function renderEmpCalendar(){
+    const today   =getTodayStr();
+    const months  =['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('empCalTitle').textContent=months[empCalMonth]+' '+empCalYear;
+    const entryMap  ={};
+    empCalEntries.forEach(e=>{entryMap[e.date]=e;});
+    const holidaySet=new Set(holidays.map(h=>h.date));
+    const grid=document.getElementById('empCalGrid');
+    grid.innerHTML='';
+    ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{const el=document.createElement('div');el.className='cal-day-label';el.textContent=d;grid.appendChild(el);});
+    const firstDay=new Date(empCalYear,empCalMonth,1);
+    let offset=firstDay.getDay()-1;if(offset<0)offset=6;
+    for(let i=0;i<offset;i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
+    const daysInMonth=new Date(empCalYear,empCalMonth+1,0).getDate();
+    for(let day=1;day<=daysInMonth;day++){
+      const mm=String(empCalMonth+1).padStart(2,'0'),dd=String(day).padStart(2,'0');
+      const ds=`${empCalYear}-${mm}-${dd}`;
+      const dow=new Date(empCalYear,empCalMonth,day).getDay();
+      const isSun=dow===0,isFuture=ds>today;
+      const entry=entryMap[ds];
+      const isHoliday=holidaySet.has(ds);
+      const el=document.createElement('div');el.className='cal-day';el.textContent=day;
+
+      if(isHoliday&&!entry){
+        el.classList.add('holiday');
+        el.onclick=()=>showEmpDayDetail(ds,'holiday');
+      }else if(entry){
+        const r=String(entry.reason||'').trim();
+        el.classList.add(CAL_CLASS[r]||'work');
+        el.onclick=()=>showEmpDayDetail(ds,'entry');
+      }else if(isSun){
+        el.classList.add('sunday');
+      }else if(isFuture){
+        el.classList.add('future');
+      }else{
+        el.classList.add('missed');
+        el.onclick=()=>showEmpDayDetail(ds,'missed');
+      }
+      if(ds===today) el.classList.add('today-marker');
+      if(ds===empCalSelected) el.classList.add('selected');
+      grid.appendChild(el);
+    }
+  }
+
+  function showEmpDayDetail(ds,type){
+    empCalSelected=ds; renderEmpCalendar();
+    const det=document.getElementById('empCalDetail');
+    if(type==='holiday'){
+      const h=holidays.find(h=>h.date===ds);
+      det.innerHTML=`<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
+        <div style="background:#fce7f3;border-radius:10px;padding:28px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:8px;">🎉</div>
+          <div style="font-size:16px;font-weight:700;color:#9d174d;">${h?.name||'Holiday'}</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:4px;">Company holiday</div>
+        </div>`;
+      return;
+    }
+    if(type==='missed'){
+      det.innerHTML=`<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
+        <div style="background:#fef2f2;border-radius:10px;padding:28px;text-align:center;">
+          <div style="font-size:15px;font-weight:600;color:#ef4444;">No Entry Recorded</div>
+        </div>`;
+      return;
+    }
+    const entry=empCalEntries.find(e=>e.date===ds);
+    if(!entry) return;
+    const reason=String(entry.reason||'').trim();
+    const isRoster=ROSTER_TYPES.includes(reason)&&parseInt(entry.fresh)===0&&parseInt(entry.rework)===0;
+    if(isRoster){
+      const colorMap={'Leave':'#713f12','Sat Off':'#7c2d12','Comp Off':'#4c1d95','Half Day':'#1e3a8a','Absent':'#fff','Holiday':'#9d174d'};
+      const bgMap   ={'Leave':'#fef9c3','Sat Off':'#ffedd5','Comp Off':'#ede9fe','Half Day':'#dbeafe','Absent':'#450a0a','Holiday':'#fce7f3'};
+      det.innerHTML=`<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
+        <div style="background:${bgMap[reason]||'#f3f4f6'};border-radius:10px;padding:28px;text-align:center;">
+          <div style="font-size:16px;font-weight:700;color:${colorMap[reason]||'#374151'};">${reason}</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:4px;">No work count recorded</div>
+        </div>`;
+      return;
+    }
+    const eff=getEffectiveTarget(empCalTarget,reason);
+    const total=parseInt(entry.total)||0;
+    const deficit=Math.max(0,eff-total);
+    const color=total>=eff?'var(--green)':'var(--red)';
+    const status=total>eff?'Above Target 🎯':deficit===0?'Target Met':'Below Target';
+    det.innerHTML=`
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">${formatDate(ds)}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Fresh</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--blue)">${entry.fresh}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Rework</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--yellow)">${entry.rework}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Total</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;">${total}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Target</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;">${eff}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Deficit</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:${deficit>0?'var(--red)':'var(--green)'}">${deficit}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Status</div><div style="font-size:12px;font-weight:700;color:${color}">${status}</div></div>
+      </div>
+      ${reason&&!ROSTER_TYPES.includes(reason)?`<div style="background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);"><strong style="color:var(--text);">Note:</strong> ${reason}</div>`:''}`;
+  }
+
+  /* ── HOLIDAYS ── */
+  window.addHoliday=async function(){
+    const date=document.getElementById('holidayDate').value;
+    const name=document.getElementById('holidayName').value.trim();
+    if(!date) return showToast('holidayToast','holidayToastMsg','Please select a date','error');
+    if(!name) return showToast('holidayToast','holidayToastMsg','Please enter holiday name','error');
+    const data=await apiFetch('saveHoliday',{date,name,addedBy:currentUser.email});
+    if(data.result==='SUCCESS'){
+      showToast('holidayToast','holidayToastMsg','Holiday added successfully ✓','success');
+      document.getElementById('holidayDate').value='';
+      document.getElementById('holidayName').value='';
+      const hData=await apiFetch('getHolidays');
+      holidays=(hData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+      renderHolidayList();
+    }else if(data.result==='EXISTS'){
+      showToast('holidayToast','holidayToastMsg','Holiday already exists for this date','error');
+    }else{
+      showToast('holidayToast','holidayToastMsg','Error: '+data.result,'error');
+    }
+  };
+
+  window.deleteHoliday=async function(date){
+    if(!confirm('Delete this holiday?')) return;
+    const data=await apiFetch('deleteHoliday',{date});
+    if(data.result==='SUCCESS'){
+      const hData=await apiFetch('getHolidays');
+      holidays=(hData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+      renderHolidayList();
+    }
+  };
+
+  function renderHolidayList(){
+    const el=document.getElementById('holidayList');
+    if(!holidays.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);">No holidays added yet.</div>';return;}
+    const sorted=[...holidays].sort((a,b)=>a.date.localeCompare(b.date));
+    el.innerHTML=`<table><thead><tr><th>Date</th><th>Holiday</th><th>Added By</th><th>Action</th></tr></thead><tbody>`+
+      sorted.map(h=>`<tr>
+        <td>${formatDate(h.date)}</td>
+        <td><strong>${h.name}</strong></td>
+        <td style="color:var(--muted);font-size:12px;">${h.addedBy||'—'}</td>
+        <td><button class="btn-danger" onclick="deleteHoliday('${h.date}')">Delete</button></td>
+      </tr>`).join('')+'</tbody></table>';
+  }
+
+  function showToast(toastId,msgId,msg,type){
+    const t=document.getElementById(toastId);
+    document.getElementById(msgId).textContent=msg;
     t.className='toast show '+type;
     clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',4000);
   }
@@ -635,12 +854,15 @@
   // Auto refresh
   setInterval(async()=>{
     if(!currentUser) return;
-    const data=await apiFetch('getAllEntries',{email:currentUser.email});
-    allEntries=(data.entries||[]).map(e=>({...e,date:normalizeDate(e.date)}));
-    allEmployees=data.employees||[];
+    const [entriesRes,holidayRes]=await Promise.all([
+      apiFetch('getAllEntries',{email:currentUser.email}),
+      apiFetch('getHolidays')
+    ]);
+    allEntries  =(entriesRes.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+    allEmployees= entriesRes.employees||[];
+    holidays    =(holidayRes.holidays ||[]).map(h=>({...h,date:normalizeDate(h.date)}));
     renderStats(); renderChart(); renderTable();
   },30000);
-
 </script>
 </body>
 </html>
