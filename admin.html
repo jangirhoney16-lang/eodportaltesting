@@ -189,7 +189,8 @@
       const url2  = APPS_SCRIPT_URL + "?action=getAllEntries&email=" + encodeURIComponent(currentUser.email);
       const res2  = await fetch(url2);
       const data2 = await res2.json();
-      allEntries   = data2.entries   || [];
+      // Normalize all dates at load time — fixes chart matching
+      allEntries   = (data2.entries   || []).map(e => ({...e, date: normalizeDate(e.date)}));
       allEmployees = data2.employees || [];
 
       renderStats();
@@ -349,13 +350,36 @@
     return { labels, techTotal, medTotal, cashTotal, techFresh, medFresh, cashFresh, techRework, medRework, cashRework, targetData };
   }
 
+  function normalizeDate(raw) {
+    if (!raw) return "";
+    try {
+      if (typeof raw === 'object' && raw instanceof Date) {
+        const y=raw.getFullYear(), m=String(raw.getMonth()+1).padStart(2,'0'), d=String(raw.getDate()).padStart(2,'0');
+        return y+'-'+m+'-'+d;
+      }
+      const s = String(raw).trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
+      const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (dmy) return dmy[3]+'-'+dmy[2].padStart(2,'0')+'-'+dmy[1].padStart(2,'0');
+      const d = new Date(raw);
+      if (!isNaN(d)) { const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+dd; }
+    } catch(_) {}
+    return String(raw).substring(0,10);
+  }
+
   function renderChart() {
-    // Chart always uses allEntries filtered only by date range (not table filters)
-    // Table filters are separate — they don't affect the chart
+    // Chart syncs with employee + team filters from table, but uses its OWN date range
+    const empFilter  = document.getElementById('filterEmployee').value;
+    const teamFilter = document.getElementById('filterTeam').value;
+    const ROSTER     = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
+    const chartEntries = allEntries.filter(e => {
+      if (empFilter  && e.name !== empFilter)       return false;
+      if (teamFilter && !matchTeam(e, teamFilter))  return false;
+      if (ROSTER.includes(String(e.reason||'').trim())) return false; // exclude roster from chart
+      return true;
+    });
     const days = buildDateRange();
     if (!days) return;
-    const daySet = new Set(days);
-    const chartEntries = allEntries.filter(e => daySet.has(String(e.date).substring(0,10)));
     const d = buildChartData(days, chartEntries);
 
     const targetDataset = {
@@ -486,7 +510,7 @@
       const url2  = APPS_SCRIPT_URL + "?action=getAllEntries&email=" + encodeURIComponent(currentUser.email);
       const res2  = await fetch(url2);
       const data2 = await res2.json();
-      allEntries   = data2.entries   || [];
+      allEntries   = (data2.entries   || []).map(e => ({...e, date: normalizeDate(e.date)}));
       allEmployees = data2.employees || [];
       renderStats();
       renderChart();
