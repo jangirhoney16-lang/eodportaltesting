@@ -22,33 +22,87 @@
     .navbar-right { display: flex; align-items: center; gap: 12px; }
     .navbar-email { font-size: 12px; color: rgba(255,255,255,0.6); }
     .logout-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer; }
-    .logout-btn:hover { background: rgba(255,255,255,0.2); }
     .main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+    .tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 24px; width: fit-content; flex-wrap: wrap; }
+    .tab { padding: 8px 20px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--muted); border: none; background: none; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+    .tab.active { background: var(--accent); color: #fff; }
     .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
     .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
     .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .stat-card { background: var(--bg); border-radius: 10px; padding: 14px 16px; }
     .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
     .stat-val { font-size: 26px; font-weight: 700; color: var(--text); font-family: 'DM Mono', monospace; }
-    .chart-wrap { position: relative; height: 300px; margin-bottom: 20px; }
-    .chart-container { position: relative; width: 100%; height: 300px; }
+    .chart-wrap { position: relative; height: 300px; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
     td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
     tr:hover td { background: var(--bg); }
-    .badge-green { background: #f0fdf4; color: var(--green); padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-    .badge-red { background: #fef2f2; color: var(--red); padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-green  { background: #f0fdf4; color: var(--green);  padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-red    { background: #fef2f2; color: var(--red);    padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-leave  { background: #fef9c3; color: #854d0e;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-satoff { background: #ffedd5; color: #9a3412;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-compoff{ background: #ede9fe; color: #5b21b6;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-halfday{ background: #dbeafe; color: #1e40af;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-absent { background: #450a0a; color: #fca5a5;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-holiday{ background: #fce7f3; color: #9d174d;       padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
-    select, input[type="date"] { height: 38px; padding: 0 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); }
-    select:focus, input[type="date"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,26,46,0.08); }
+    select, input[type="date"], input[type="text"] { height: 38px; padding: 0 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); outline: none; }
+    select:focus, input:focus { border-color: var(--accent); }
     .range-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 8px; width: fit-content; margin-bottom: 12px; }
-    .range-btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .range-btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
     .range-btn.active { background: var(--accent); color: #fff; }
     .range-btn:hover:not(.active) { background: var(--border); color: var(--text); }
     .custom-range { display: none; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
     .custom-range.show { display: flex; }
-    .chart-section-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-    .no-data { color: var(--muted); font-style: italic; padding: 20px; text-align: center; }
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .roster-type-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 16px; }
+    .rtype-btn { padding: 12px 6px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; transition: all 0.15s; }
+    .rtype-btn:hover { border-color: var(--accent); color: var(--text); }
+    .rtype-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .rtype-btn .rtype-label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; margin-bottom: 3px; }
+    .rtype-btn .rtype-name { display: block; font-size: 12px; font-weight: 700; }
+    .date-range-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .preview-bar { background: var(--bg); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); min-height: 42px; }
+    .preview-bar span { color: var(--text); font-weight: 600; }
+    .btn-primary { height: 44px; padding: 0 24px; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+    .btn-primary:hover:not(:disabled) { background: var(--accent2); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-danger { height: 36px; padding: 0 16px; background: var(--red); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; }
+    .toast { display: none; align-items: center; gap: 8px; margin-top: 12px; padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; }
+    .toast.show { display: flex; }
+    .toast.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+    .toast.error   { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
+
+    /* CALENDAR */
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .cal-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .cal-nav { background: none; border: 1px solid var(--border); border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; color: var(--text); }
+    .cal-nav:hover { background: var(--border); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .cal-day-label { text-align: center; font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; padding: 3px 0; }
+    .cal-day { text-align: center; font-size: 11px; font-weight: 500; padding: 6px 2px; border-radius: 5px; cursor: pointer; transition: all 0.12s; }
+    .cal-day.empty   { cursor: default; }
+    .cal-day.sunday  { background: #f3f4f6; color: #9ca3af; font-style: italic; }
+    .cal-day.future  { color: #d1d5db; cursor: default; }
+    .cal-day.work    { background: #dcfce7; color: #14532d; font-weight: 700; }
+    .cal-day.leave   { background: #fef9c3; color: #713f12; font-weight: 700; }
+    .cal-day.satoff  { background: #ffedd5; color: #7c2d12; font-weight: 700; }
+    .cal-day.compoff { background: #ede9fe; color: #4c1d95; font-weight: 700; }
+    .cal-day.halfday { background: #dbeafe; color: #1e3a8a; font-weight: 700; }
+    .cal-day.absent  { background: #450a0a; color: #fca5a5; font-weight: 700; }
+    .cal-day.holiday { background: #fce7f3; color: #9d174d; font-weight: 700; }
+    .cal-day.missed  { background: #fef2f2; color: #ef4444; }
+    .cal-day.selected { outline: 2.5px solid var(--accent); outline-offset: 1px; }
+    .cal-day.today-marker { text-decoration: underline; font-weight: 800; }
+    .cal-legend { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 4px; font-size: 9px; color: var(--muted); }
+    .legend-dot { width: 9px; height: 9px; border-radius: 2px; }
+
+    @media (max-width: 700px) {
+      .roster-type-row { grid-template-columns: repeat(3, 1fr); }
+      .date-range-row { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -63,403 +117,752 @@
 
 <div class="main">
 
-  <!-- STATS -->
-  <div class="stat-grid">
-    <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-val" id="statEmp">—</div></div>
-    <div class="stat-card"><div class="stat-label">Today's Submissions</div><div class="stat-val" id="statToday">—</div></div>
-    <div class="stat-card"><div class="stat-label">Cases Today</div><div class="stat-val" id="statCasesToday">—</div></div>
-    <div class="stat-card"><div class="stat-label">Pending Today</div><div class="stat-val" style="color:var(--red)" id="statPending">—</div></div>
-    <div class="stat-card"><div class="stat-label">Technical Today</div><div class="stat-val" style="color:var(--blue)" id="statTech">—</div></div>
-    <div class="stat-card"><div class="stat-label">Medical Today</div><div class="stat-val" style="color:var(--green)" id="statMed">—</div></div>
-    <div class="stat-card"><div class="stat-label">Cashless Today</div><div class="stat-val" style="color:var(--yellow)" id="statCash">—</div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab" onclick="switchTab('roster')">Roster</button>
+    <button class="tab" onclick="switchTab('calendar')">Employee Calendar</button>
+    <button class="tab" onclick="switchTab('holidays')">Holidays</button>
   </div>
 
-  <!-- CHART CARD -->
-  <div class="card">
-    <div class="card-title">Team Performance</div>
-
-    <!-- Range Tabs -->
-    <div class="range-tabs">
-      <button class="range-btn active" onclick="setRange('week', this)">This Week</button>
-      <button class="range-btn" onclick="setRange('month', this)">This Month</button>
-      <button class="range-btn" onclick="setRange('year',  this)">This Year</button>
-      <button class="range-btn" onclick="setRange('custom',this)">Custom</button>
+  <!-- ── OVERVIEW TAB ── -->
+  <div id="tab-overview">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-val" id="statEmp">—</div></div>
+      <div class="stat-card"><div class="stat-label">Today Submitted</div><div class="stat-val" id="statToday">—</div></div>
+      <div class="stat-card"><div class="stat-label">Cases Today</div><div class="stat-val" id="statCasesToday">—</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Today</div><div class="stat-val" style="color:var(--red)" id="statPending">—</div></div>
+      <div class="stat-card"><div class="stat-label">Technical</div><div class="stat-val" style="color:var(--blue)" id="statTech">—</div></div>
+      <div class="stat-card"><div class="stat-label">Medical</div><div class="stat-val" style="color:var(--green)" id="statMed">—</div></div>
+      <div class="stat-card"><div class="stat-label">Cashless</div><div class="stat-val" style="color:var(--yellow)" id="statCash">—</div></div>
     </div>
 
-    <!-- Custom Range -->
-    <div class="custom-range" id="customRange">
-      <span style="font-size:13px;color:var(--muted);">From</span>
-      <input type="date" id="chartFrom" onchange="renderChart()">
-      <span style="font-size:13px;color:var(--muted);">To</span>
-      <input type="date" id="chartTo" onchange="renderChart()">
+    <!-- Chart -->
+    <div class="card">
+      <div class="card-title">Team Performance</div>
+      <div class="range-tabs">
+        <button class="range-btn active" onclick="setRange('week',this)">This Week</button>
+        <button class="range-btn" onclick="setRange('month',this)">This Month</button>
+        <button class="range-btn" onclick="setRange('year',this)">This Year</button>
+        <button class="range-btn" onclick="setRange('custom',this)">Custom</button>
+      </div>
+      <div class="custom-range" id="customRange">
+        <span style="font-size:13px;color:var(--muted);">From</span>
+        <input type="date" id="chartFrom" onchange="renderChart()">
+        <span style="font-size:13px;color:var(--muted);">To</span>
+        <input type="date" id="chartTo" onchange="renderChart()">
+      </div>
+      <div style="display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:8px;width:fit-content;margin-bottom:16px;">
+        <button class="range-btn active" id="view-total"   onclick="setView('total',this)">Total</button>
+        <button class="range-btn"        id="view-distrib" onclick="setView('distrib',this)">Fresh &amp; Rework</button>
+      </div>
+      <div id="chartTotalWrap"><div class="chart-wrap"><canvas id="adminChart"></canvas></div></div>
+      <div id="chartDistribWrap" style="display:none;">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Fresh Cases</div>
+        <div class="chart-wrap"><canvas id="chartFresh"></canvas></div>
+        <div style="height:20px;"></div>
+        <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Rework Cases</div>
+        <div class="chart-wrap"><canvas id="chartRework"></canvas></div>
+      </div>
     </div>
 
-    <!-- View Toggle -->
-    <div style="display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:8px;width:fit-content;margin-bottom:16px;">
-      <button class="range-btn active" id="view-total"   onclick="setView('total',   this)">Total</button>
-      <button class="range-btn"        id="view-distrib" onclick="setView('distrib', this)">Fresh & Rework</button>
-    </div>
-
-    <!-- Total Chart -->
-    <div id="chartTotalWrap" style="position: relative; height: 300px;">
-      <canvas id="chartTotal"></canvas>
-    </div>
-
-    <!-- Distribution Chart -->
-    <div id="chartDistribWrap" style="display:none; position: relative; height: 300px;">
-      <canvas id="chartDistrib"></canvas>
+    <!-- Entries table — synced with chart filters -->
+    <div class="card">
+      <div class="card-title">Entries</div>
+      <div class="filter-row">
+        <select id="filterEmployee" onchange="renderTable()"><option value="">All Employees</option></select>
+        <select id="filterTeam" onchange="renderTable()">
+          <option value="">All Teams</option>
+          <option value="technical">Technical</option>
+          <option value="medical">Medical</option>
+          <option value="cashless">Cashless</option>
+        </select>
+        <input type="date" id="filterFrom" onchange="renderTable()">
+        <input type="date" id="filterTo"   onchange="renderTable()">
+      </div>
+      <div style="overflow-x:auto;overflow-y:auto;max-height:480px;">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Name</th><th>Team</th><th>Fresh</th><th>Rework</th><th>Total</th><th>Target</th><th>Deficit</th><th>Type/Reason</th></tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- TABLE CARD -->
-  <div class="card">
-    <div class="card-title">Entries List</div>
-    <div class="filter-row">
-      <select id="teamFilter" onchange="filterEntries()">
-        <option value="">All Teams</option>
-      </select>
-      <input type="date" id="dateFilter" onchange="filterEntries()">
-      <button style="padding: 7px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px;" onclick="filterEntries()">Filter</button>
+  <!-- ── ROSTER TAB ── -->
+  <div id="tab-roster" style="display:none;">
+    <div class="card">
+      <div class="card-title">Roster Management</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Mark leave, week-offs, comp-offs, half-days, or absences for any employee.</p>
+
+      <div class="field">
+        <label>Employee</label>
+        <select id="rosterEmployee" style="width:100%;height:46px;font-size:14px;" onchange="updateAdminPreview()">
+          <option value="">Select Employee</option>
+        </select>
+      </div>
+
+      <label style="margin-bottom:10px;">Type</label>
+      <div class="roster-type-row">
+        <button class="rtype-btn" onclick="selectAdminRosterType('Leave')" id="art-Leave">
+          <span class="rtype-label">Planned</span><span class="rtype-name">Leave</span>
+        </button>
+        <button class="rtype-btn" onclick="selectAdminRosterType('Sat Off')" id="art-Sat Off">
+          <span class="rtype-label">Weekly Off</span><span class="rtype-name">Sat Off</span>
+        </button>
+        <button class="rtype-btn" onclick="selectAdminRosterType('Comp Off')" id="art-Comp Off">
+          <span class="rtype-label">Compensation</span><span class="rtype-name">Comp Off</span>
+        </button>
+        <button class="rtype-btn" onclick="selectAdminRosterType('Half Day')" id="art-Half Day">
+          <span class="rtype-label">Partial</span><span class="rtype-name">Half Day</span>
+        </button>
+        <button class="rtype-btn" onclick="selectAdminRosterType('Absent')" id="art-Absent">
+          <span class="rtype-label">Unplanned</span><span class="rtype-name">Absent</span>
+        </button>
+      </div>
+
+      <div class="date-range-row">
+        <div>
+          <label>From Date</label>
+          <input type="date" id="adminRosterFrom" style="width:100%;height:46px;" oninput="updateAdminPreview()">
+        </div>
+        <div>
+          <label>To Date</label>
+          <input type="date" id="adminRosterTo" style="width:100%;height:46px;" oninput="updateAdminPreview()">
+        </div>
+      </div>
+
+      <div class="preview-bar" id="adminRosterPreview">Select an employee, type, and date range to preview</div>
+      <button class="btn-primary" id="adminRosterBtn" onclick="submitAdminRoster()">Apply to Roster</button>
+      <div class="toast" id="adminRosterToast" style="margin-top:10px;"><span id="adminRosterToastMsg"></span></div>
     </div>
-    <div style="overflow-x: auto;">
-      <table id="entriesTable">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Employee</th>
-            <th>Team</th>
-            <th>Fresh</th>
-            <th>Rework</th>
-            <th>Total</th>
-            <th>Target</th>
-            <th>Deficit</th>
-            <th>Reason</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <tr><td colspan="9" class="no-data">Loading entries...</td></tr>
-        </tbody>
-      </table>
+
+    <!-- Roster Log -->
+    <div class="card">
+      <div class="card-title">Roster Entries</div>
+      <div class="filter-row">
+        <select id="rosterFilterEmp"  onchange="renderRosterLog()"><option value="">All Employees</option></select>
+        <select id="rosterFilterType" onchange="renderRosterLog()">
+          <option value="">All Types</option>
+          <option>Leave</option><option>Sat Off</option><option>Comp Off</option>
+          <option>Half Day</option><option>Absent</option>
+        </select>
+        <input type="date" id="rosterFilterFrom" onchange="renderRosterLog()">
+        <input type="date" id="rosterFilterTo"   onchange="renderRosterLog()">
+      </div>
+      <div id="rosterLog" style="max-height:400px;overflow-y:auto;">
+        <div style="font-size:13px;color:var(--muted);padding:12px 0;">No roster entries found.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EMPLOYEE CALENDAR TAB ── -->
+  <div id="tab-calendar" style="display:none;">
+    <div class="card">
+      <div class="card-title">Employee Calendar</div>
+      <div class="filter-row" style="margin-bottom:20px;">
+        <select id="calEmpSelect" onchange="loadEmpCalendar()" style="height:42px;min-width:220px;">
+          <option value="">Select Employee</option>
+        </select>
+      </div>
+
+      <div id="empCalWrap" style="display:none;">
+        <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;">
+          <div>
+            <div style="background:var(--bg);border-radius:10px;padding:14px;">
+              <div class="cal-header">
+                <button class="cal-nav" onclick="empCalNav(-1)">&#8249;</button>
+                <div class="cal-title" id="empCalTitle">—</div>
+                <button class="cal-nav" onclick="empCalNav(1)">&#8250;</button>
+              </div>
+              <div class="cal-grid" id="empCalGrid"></div>
+              <div class="cal-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#dcfce7;"></div> Submitted</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#fef9c3;"></div> Leave</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ffedd5;"></div> Sat Off</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ede9fe;"></div> Comp Off</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#dbeafe;"></div> Half Day</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#450a0a;"></div> Absent</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#fce7f3;"></div> Holiday</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#fef2f2;"></div> Missed</div>
+              </div>
+            </div>
+          </div>
+          <div id="empCalDetail" style="background:var(--bg);border-radius:10px;padding:18px;">
+            <div style="text-align:center;color:var(--muted);font-size:13px;padding:36px 0;">Select a date to view details</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HOLIDAYS TAB ── -->
+  <div id="tab-holidays" style="display:none;">
+    <div class="card">
+      <div class="card-title">Add Holiday</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Holidays will appear on all employee calendars. Employees can still submit counts on holidays.</p>
+      <div style="display:grid;grid-template-columns:1fr 2fr auto;gap:12px;align-items:end;">
+        <div>
+          <label>Date</label>
+          <input type="date" id="holidayDate" style="width:100%;height:42px;">
+        </div>
+        <div>
+          <label>Holiday Name</label>
+          <input type="text" id="holidayName" placeholder="e.g. Diwali, Christmas..." style="width:100%;height:42px;">
+        </div>
+        <button class="btn-primary" onclick="addHoliday()">Add Holiday</button>
+      </div>
+      <div class="toast" id="holidayToast" style="margin-top:12px;"><span id="holidayToastMsg"></span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">All Holidays</div>
+      <div id="holidayList">
+        <div style="font-size:13px;color:var(--muted);">Loading...</div>
+      </div>
     </div>
   </div>
 
 </div>
 
-<script>
-  // ── CONFIG ──
-  const SCRIPT_URL = 'https://script.google.com/macros/d/1RlKqjLCwR9p5qb2K3ZF5xB9qB5xB9qC6eD7/usercontent/';
-  var userEmail = '';
-  var allEntries = [];
-  var chartData = [];
-  var teamData = [];
-  var currentRange = 'week';
-  var currentView = 'total';
-  var chartInstance = null;
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
 
-  // ── INIT ──
-  window.onload = function() {
-    userEmail = localStorage.getItem('userEmail');
-    if (!userEmail) {
-      window.location.href = 'index.html';
-      return;
-    }
-    document.getElementById('navEmail').textContent = userEmail;
-    loadData();
+  const firebaseConfig = {
+    apiKey: "AIzaSyB53EbCi3m1n5L1xReV8JExc_zoaQFe21Y",
+    authDomain: "daily-eod--count-portal.firebaseapp.com",
+    projectId: "daily-eod--count-portal",
+    storageBucket: "daily-eod--count-portal.firebasestorage.app",
+    messagingSenderId: "665878833615",
+    appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
 
-  // ── LOAD DATA ──
-  function loadData() {
-    console.log('Loading admin data for:', userEmail);
-    
-    // Load stats and entries
-    fetch(SCRIPT_URL + '?action=getAllEntries&email=' + encodeURIComponent(userEmail))
-      .then(r => r.json())
-      .then(data => {
-        if (data.result === 'UNAUTHORIZED') {
-          alert('Unauthorized: You are not an admin');
-          logout();
-          return;
-        }
-        allEntries = data.entries || [];
-        console.log('Loaded entries:', allEntries.length);
-        renderStats();
-        renderTable();
-        populateTeamFilter();
-      })
-      .catch(e => console.error('getAllEntries error:', e));
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpIetd36Y_iUqfV6Sx0gNuxaXvm6yi_xORmgFEIo15G6YxJkVVPcMOBPfiPEu0H4qZ8A/exec";
 
-    // Load chart data
-    loadChartData();
+  const ROSTER_TYPES      = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
+  const ZERO_TARGET_TYPES = ['Leave','Sat Off','Comp Off','Absent','Holiday'];
+  const BADGE_CLASS       = {'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent','Holiday':'badge-holiday'};
+  const CAL_CLASS         = {'Leave':'leave','Sat Off':'satoff','Comp Off':'compoff','Half Day':'halfday','Absent':'absent','Holiday':'holiday'};
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  let currentUser     = null;
+  let allEntries      = [];
+  let allEmployees    = [];
+  let holidays        = [];
+  let adminChart      = null;
+  let chartFresh      = null;
+  let chartRework     = null;
+  let currentRange    = 'week';
+  let currentView     = 'total';
+  let adminRosterType = null;
+
+  // Employee calendar state
+  let empCalYear    = new Date().getFullYear();
+  let empCalMonth   = new Date().getMonth();
+  let empCalEntries = [];
+  let empCalTarget  = 0;
+  let empCalSelected = null;
+
+  /* ── UTILS ── */
+  function normalizeDate(raw) {
+    if (!raw) return "";
+    const s=String(raw).trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
+    const dmy=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
+    try{const d=new Date(s);if(!isNaN(d))return d.toISOString().split('T')[0];}catch(_){}
+    return s.substring(0,10);
+  }
+  function getTodayStr(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+  function formatDate(ds){if(!ds)return'—';const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+  function matchTeam(e,t){return String(e.team).toLowerCase().includes(t.toLowerCase());}
+  function getDaysBetween(from,to){const dates=[];let cur=new Date(from);const end=new Date(to);while(cur<=end){dates.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}return dates;}
+  function isSunday(ds){const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).getDay()===0;}
+  function getEffectiveTarget(base,reason){const r=String(reason||'').trim();if(ZERO_TARGET_TYPES.includes(r))return 0;if(r==='Half Day')return Math.ceil(base/2);return base;}
+
+  async function apiFetch(action,params={}){
+    const url=APPS_SCRIPT_URL+"?"+new URLSearchParams({action,...params}).toString();
+    const r=await fetch(url);return r.json();
   }
 
-  // ── LOAD CHART DATA ──
-  function loadChartData() {
-    var from = '', to = '';
-    var now = new Date();
+  /* ── AUTH ── */
+  onAuthStateChanged(auth, async(user)=>{
+    if(!user){window.location.href="index.html";return;}
+    currentUser=user;
+    document.getElementById('navEmail').textContent=user.email;
+    await loadAdminData();
+  });
+  window.logout=async()=>{await signOut(auth);window.location.href="index.html";};
 
-    if (currentRange === 'week') {
-      var d = new Date(now);
-      d.setDate(d.getDate() - 7);
-      from = formatDateForAPI(d);
-      to = formatDateForAPI(now);
-    } else if (currentRange === 'month') {
-      var d = new Date(now);
-      d.setMonth(d.getMonth() - 1);
-      from = formatDateForAPI(d);
-      to = formatDateForAPI(now);
-    } else if (currentRange === 'year') {
-      var d = new Date(now);
-      d.setFullYear(d.getFullYear() - 1);
-      from = formatDateForAPI(d);
-      to = formatDateForAPI(now);
-    } else if (currentRange === 'custom') {
-      from = document.getElementById('chartFrom').value;
-      to = document.getElementById('chartTo').value;
-      if (!from || !to) return;
-    }
-
-    var params = '?action=getChartData&email=' + encodeURIComponent(userEmail);
-    if (from) params += '&from=' + from;
-    if (to) params += '&to=' + to;
-
-    fetch(SCRIPT_URL + params)
-      .then(r => r.json())
-      .then(data => {
-        chartData = data.chartData || [];
-        teamData = data.teamData || [];
-        console.log('Chart data loaded:', chartData.length, 'dates,', teamData.length, 'teams');
-        renderChart();
-      })
-      .catch(e => console.error('getChartData error:', e));
+  async function loadAdminData(){
+    try{
+      const [userRes, entriesRes, holidayRes] = await Promise.all([
+        apiFetch('getUser',{email:currentUser.email}),
+        apiFetch('getAllEntries',{email:currentUser.email}),
+        apiFetch('getHolidays')
+      ]);
+      if(userRes.role!=="Admin"){alert("Access denied");window.location.href="index.html";return;}
+      allEntries   =(entriesRes.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+      allEmployees = entriesRes.employees||[];
+      holidays     =(holidayRes.holidays ||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+      renderStats();renderChart();renderTable();populateFilters();renderHolidayList();
+    }catch(e){alert("Error: "+e.message);}
   }
 
-  // ── RENDER STATS ──
-  function renderStats() {
-    var today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    var todayEntries = allEntries.filter(e => {
-      var d = new Date(e.date);
-      d.setHours(0, 0, 0, 0);
-      return d.getTime() === today.getTime();
-    });
+  /* ── TABS ── */
+  window.switchTab=function(tab){
+    ['overview','roster','calendar','holidays'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
+    document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['overview','roster','calendar','holidays'][i]===tab);});
+    if(tab==='overview') renderChart();
+    if(tab==='roster')   renderRosterLog();
+    if(tab==='holidays') renderHolidayList();
+  };
 
-    var employees = new Set(allEntries.map(e => e.email));
-    document.getElementById('statEmp').textContent = employees.size;
-    document.getElementById('statToday').textContent = todayEntries.length;
-    document.getElementById('statCasesToday').textContent = todayEntries.reduce((s, e) => s + e.total, 0);
-    document.getElementById('statPending').textContent = todayEntries.reduce((s, e) => s + e.deficit, 0);
+  /* ── STATS ── */
+  function renderStats(){
+    const today    =getTodayStr();
+    const todayWork=allEntries.filter(e=>e.date===today&&!ROSTER_TYPES.includes(String(e.reason||'').trim()));
+    const todayAll =allEntries.filter(e=>e.date===today);
+    const empCount =allEmployees.filter(e=>String(e.role)!=='Admin').length;
+    document.getElementById('statEmp').textContent       =empCount;
+    document.getElementById('statToday').textContent     =todayWork.length;
+    document.getElementById('statCasesToday').textContent=todayWork.reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statPending').textContent   =Math.max(0,empCount-todayAll.length);
+    document.getElementById('statTech').textContent      =todayWork.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statMed').textContent       =todayWork.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statCash').textContent      =todayWork.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0);
   }
 
-  // ── RENDER TABLE ──
-  function renderTable() {
-    var tbody = document.getElementById('tableBody');
-    if (allEntries.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9" class="no-data">No entries found</td></tr>';
-      return;
-    }
-    var html = '';
-    allEntries.forEach(e => {
-      var deficitBadge = e.deficit > 0 ? '<span class="badge-red">' + e.deficit + '</span>' : '<span class="badge-green">✓</span>';
-      html += '<tr><td>' + e.date + '</td><td>' + e.name + '</td><td>' + e.team + '</td><td>' + e.fresh + '</td><td>' + e.rework + '</td><td>' + e.total + '</td><td>' + e.target + '</td><td>' + deficitBadge + '</td><td>' + e.reason + '</td></tr>';
-    });
-    tbody.innerHTML = html;
-  }
-
-  // ── POPULATE TEAM FILTER ──
-  function populateTeamFilter() {
-    var teams = [...new Set(allEntries.map(e => e.team))];
-    var select = document.getElementById('teamFilter');
-    teams.forEach(team => {
-      var opt = document.createElement('option');
-      opt.value = team;
-      opt.textContent = team;
-      select.appendChild(opt);
-    });
-  }
-
-  // ── FILTER ENTRIES ──
-  function filterEntries() {
-    var team = document.getElementById('teamFilter').value;
-    var date = document.getElementById('dateFilter').value;
-    
-    var filtered = allEntries.filter(e => {
-      if (team && e.team !== team) return false;
-      if (date && e.date !== date) return false;
+  /* ── TABLE ── */
+  function getFilteredEntries(){
+    const emp =document.getElementById('filterEmployee').value;
+    const team=document.getElementById('filterTeam').value;
+    const from=document.getElementById('filterFrom').value;
+    const to  =document.getElementById('filterTo').value;
+    return allEntries.filter(e=>{
+      if(emp  && e.name!==emp)       return false;
+      if(team && !matchTeam(e,team)) return false;
+      if(from && e.date<from)        return false;
+      if(to   && e.date>to)          return false;
       return true;
     });
-
-    var tbody = document.getElementById('tableBody');
-    if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9" class="no-data">No matching entries</td></tr>';
-      return;
-    }
-    var html = '';
-    filtered.forEach(e => {
-      var deficitBadge = e.deficit > 0 ? '<span class="badge-red">' + e.deficit + '</span>' : '<span class="badge-green">✓</span>';
-      html += '<tr><td>' + e.date + '</td><td>' + e.name + '</td><td>' + e.team + '</td><td>' + e.fresh + '</td><td>' + e.rework + '</td><td>' + e.total + '</td><td>' + e.target + '</td><td>' + deficitBadge + '</td><td>' + e.reason + '</td></tr>';
-    });
-    tbody.innerHTML = html;
   }
 
-  // ── SET RANGE ──
-  function setRange(range, btn) {
-    currentRange = range;
-    document.querySelectorAll('.range-tabs .range-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    
-    if (range === 'custom') {
-      document.getElementById('customRange').classList.add('show');
-      if (!document.getElementById('chartFrom').value) {
-        var today = new Date();
-        document.getElementById('chartTo').value = formatDateForInput(today);
-        var weekAgo = new Date(today);
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        document.getElementById('chartFrom').value = formatDateForInput(weekAgo);
-      }
-    } else {
-      document.getElementById('customRange').classList.remove('show');
-      loadChartData();
-    }
-  }
-
-  // ── SET VIEW ──
-  function setView(view, btn) {
-    currentView = view;
-    document.querySelectorAll('[id^="view-"]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    
-    if (view === 'total') {
-      document.getElementById('chartTotalWrap').style.display = 'relative';
-      document.getElementById('chartDistribWrap').style.display = 'none';
-    } else {
-      document.getElementById('chartTotalWrap').style.display = 'none';
-      document.getElementById('chartDistribWrap').style.display = 'relative';
-    }
+  window.renderTable=function(){
+    const filtered=getFilteredEntries().sort((a,b)=>b.date.localeCompare(a.date));
+    const tbody=document.getElementById('tableBody');
+    if(!filtered.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No entries found</td></tr>';renderChart();return;}
+    tbody.innerHTML=filtered.map(e=>{
+      const deficit   =parseInt(e.deficit)||0;
+      const teamColor =matchTeam(e,'technical')?'var(--blue)':matchTeam(e,'medical')?'var(--green)':'var(--yellow)';
+      const reason    =String(e.reason||'').trim();
+      const isRoster  =ROSTER_TYPES.includes(reason);
+      const rBadge    =isRoster?`<span class="${BADGE_CLASS[reason]||'badge-leave'}">${reason}</span>`:reason||'—';
+      const effTarget =getEffectiveTarget(e.target||0,reason);
+      return `<tr>
+        <td>${formatDate(e.date)}</td>
+        <td><strong>${e.name}</strong></td>
+        <td><span style="color:${teamColor};font-weight:500;">${e.team}</span></td>
+        <td>${e.fresh}</td><td>${e.rework}</td>
+        <td><strong>${e.total}</strong></td>
+        <td>${effTarget}</td>
+        <td>${isRoster?'—':deficit>0?`<span class="badge-red">${deficit}</span>`:`<span class="badge-green">0</span>`}</td>
+        <td>${rBadge}</td>
+      </tr>`;
+    }).join('');
     renderChart();
+  };
+
+  function populateFilters(){
+    const names=[...new Set(allEntries.map(e=>e.name))].sort();
+    ['filterEmployee','rosterFilterEmp','calEmpSelect'].forEach(id=>{
+      const sel=document.getElementById(id);
+      if(!sel) return;
+      // clear existing options except first
+      while(sel.options.length>1) sel.remove(1);
+      names.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});
+    });
+    // For roster employee — use email as value
+    const rEmp=document.getElementById('rosterEmployee');
+    while(rEmp.options.length>1) rEmp.remove(1);
+    allEmployees.filter(e=>e.role!=='Admin').forEach(emp=>{
+      const o=document.createElement('option');o.value=emp.email;o.textContent=emp.name+(emp.team?' ('+emp.team+')':'');rEmp.appendChild(o);
+    });
+    const today=getTodayStr();
+    document.getElementById('adminRosterFrom').value=today;
+    document.getElementById('adminRosterTo').value=today;
   }
 
-  // ── RENDER CHART ──
-  function renderChart() {
-    if (!chartData || chartData.length === 0) {
-      console.warn('No chart data available');
-      if (currentView === 'total') {
-        document.getElementById('chartTotalWrap').innerHTML = '<div class="no-data">No data available for the selected period</div>';
-      } else {
-        document.getElementById('chartDistribWrap').innerHTML = '<div class="no-data">No data available for the selected period</div>';
+  /* ── CHART ── */
+  window.setRange=function(range,btn){
+    currentRange=range;
+    document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+currentView).classList.add('active');
+    const cd=document.getElementById('customRange');
+    if(range==='custom'){
+      cd.classList.add('show');
+      const now=new Date(),from=new Date(now);from.setDate(from.getDate()-30);
+      document.getElementById('chartFrom').value=from.toISOString().split('T')[0];
+      document.getElementById('chartTo').value=now.toISOString().split('T')[0];
+    }else{cd.classList.remove('show');}
+    renderChart();
+  };
+
+  window.setView=function(view,btn){
+    currentView=view;
+    document.getElementById('view-total').classList.remove('active');
+    document.getElementById('view-distrib').classList.remove('active');
+    btn.classList.add('active');
+    document.getElementById('chartTotalWrap').style.display  =view==='total'  ?'block':'none';
+    document.getElementById('chartDistribWrap').style.display=view==='distrib'?'block':'none';
+    renderChart();
+  };
+
+  function buildDateRange(){
+    const now=new Date();let from,to;
+    if(currentRange==='week'){const diff=now.getDay()===0?6:now.getDay()-1;from=new Date(now);from.setDate(now.getDate()-diff);to=new Date(now);}
+    else if(currentRange==='month'){from=new Date(now.getFullYear(),now.getMonth(),1);to=new Date(now);}
+    else if(currentRange==='year'){from=new Date(now.getFullYear(),0,1);to=new Date(now);}
+    else{const f=document.getElementById('chartFrom').value,t=document.getElementById('chartTo').value;if(!f||!t)return null;from=new Date(f);to=new Date(t);}
+    const days=[];let cur=new Date(from);
+    while(cur<=to){days.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}
+    return days;
+  }
+
+  function buildChartData(days,entries){
+    const labels=[],techTotal=[],medTotal=[],cashTotal=[],techFresh=[],medFresh=[],cashFresh=[],techRework=[],medRework=[],cashRework=[],targetData=[];
+    const group=days.length<=31?'day':'month';
+    const workEntries=entries.filter(e=>!ROSTER_TYPES.includes(String(e.reason||'').trim()));
+    if(group==='day'){
+      days.forEach(d=>{
+        labels.push(new Date(...d.split('-').map((v,i)=>i===1?Number(v)-1:Number(v))).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
+        const de=workEntries.filter(e=>e.date===d);
+        techTotal.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
+        medTotal.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
+        cashTotal.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
+        techFresh.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.fresh),0));
+        medFresh.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.fresh),0));
+        cashFresh.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.fresh),0));
+        techRework.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.rework),0));
+        medRework.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
+        cashRework.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.rework),0));
+        const emails=[...new Set(de.map(e=>e.email))];
+        targetData.push(emails.reduce((s,email)=>{const emp=allEmployees.find(em=>String(em.email).toLowerCase()===email.toLowerCase());return s+(parseInt(emp?.target)||0);},0));
+      });
+    }else{
+      const months={};days.forEach(d=>{const k=d.substring(0,7);if(!months[k])months[k]=[];months[k].push(d);});
+      Object.entries(months).forEach(([key,mDays])=>{
+        labels.push(new Date(key+'-01').toLocaleDateString('en-IN',{month:'short',year:'numeric'}));
+        const me=workEntries.filter(e=>mDays.includes(e.date));
+        techTotal.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
+        medTotal.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
+        cashTotal.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
+        techFresh.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.fresh),0));
+        medFresh.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.fresh),0));
+        cashFresh.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.fresh),0));
+        techRework.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.rework),0));
+        medRework.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
+        cashRework.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.rework),0));
+        const mt=mDays.reduce((tot,d)=>{const de=me.filter(e=>e.date===d);const emails=[...new Set(de.map(e=>e.email))];return tot+emails.reduce((s,email)=>{const emp=allEmployees.find(em=>String(em.email).toLowerCase()===email.toLowerCase());return s+(parseInt(emp?.target)||0);},0);},0);
+        targetData.push(mt);
+      });
+    }
+    return{labels,techTotal,medTotal,cashTotal,techFresh,medFresh,cashFresh,techRework,medRework,cashRework,targetData};
+  }
+
+  window.renderChart=function(){
+    const days=buildDateRange();if(!days)return;
+    const filtered=getFilteredEntries();
+    const d=buildChartData(days,filtered);
+    const tgt={label:'Team Target',data:d.targetData,type:'line',borderColor:'#dc2626',borderWidth:2,borderDash:[6,3],pointRadius:3,pointBackgroundColor:'#dc2626',fill:false,order:1,stack:undefined};
+    const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{usePointStyle:true,font:{size:12}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f0f0f0'}}}};
+    if(currentView==='total'){
+      if(adminChart)adminChart.destroy();
+      adminChart=new Chart(document.getElementById('adminChart'),{type:'bar',data:{labels:d.labels,datasets:[
+        {label:'Technical',data:d.techTotal,backgroundColor:'#3b82f6',borderRadius:4,stack:'s',order:2},
+        {label:'Medical',data:d.medTotal,backgroundColor:'#4ade80',borderRadius:4,stack:'s',order:2},
+        {label:'Cashless',data:d.cashTotal,backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},tgt
+      ]},options:opts});
+    }else{
+      if(chartFresh)chartFresh.destroy();
+      chartFresh=new Chart(document.getElementById('chartFresh'),{type:'bar',data:{labels:d.labels,datasets:[
+        {label:'Technical Fresh',data:d.techFresh,backgroundColor:'#3b82f6',borderRadius:4,stack:'s',order:2},
+        {label:'Medical Fresh',data:d.medFresh,backgroundColor:'#4ade80',borderRadius:4,stack:'s',order:2},
+        {label:'Cashless Fresh',data:d.cashFresh,backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},tgt
+      ]},options:opts});
+      if(chartRework)chartRework.destroy();
+      chartRework=new Chart(document.getElementById('chartRework'),{type:'bar',data:{labels:d.labels,datasets:[
+        {label:'Technical Rework',data:d.techRework,backgroundColor:'#93c5fd',borderRadius:4,stack:'s',order:2},
+        {label:'Medical Rework',data:d.medRework,backgroundColor:'#86efac',borderRadius:4,stack:'s',order:2},
+        {label:'Cashless Rework',data:d.cashRework,backgroundColor:'#fcd34d',borderRadius:4,stack:'s',order:2}
+      ]},options:opts});
+    }
+  };
+
+  /* ── ADMIN ROSTER ── */
+  window.selectAdminRosterType=function(type){
+    adminRosterType=type;
+    document.querySelectorAll('#tab-roster .rtype-btn').forEach(b=>b.classList.remove('active'));
+    const btn=document.getElementById('art-'+type);
+    if(btn) btn.classList.add('active');
+    updateAdminPreview();
+  };
+
+  window.updateAdminPreview=function(){
+    const from=document.getElementById('adminRosterFrom').value;
+    const to  =document.getElementById('adminRosterTo').value;
+    const empSel=document.getElementById('rosterEmployee');
+    const empName=empSel.options[empSel.selectedIndex]?.text||'';
+    const prev=document.getElementById('adminRosterPreview');
+    if(!adminRosterType||!from||!to){prev.innerHTML='Select an employee, type, and date range to preview';return;}
+    if(from>to){prev.innerHTML='<span style="color:var(--red)">To date must be after From date</span>';return;}
+    const days=getDaysBetween(from,to);
+    const valid=days.filter(d=>!isSunday(d));
+    const skip =days.length-valid.length;
+    const empTxt=empSel.value?`for <span>${empName}</span> `:'';
+    prev.innerHTML=`<span>${adminRosterType}</span> will be applied to <span>${valid.length} day(s)</span> ${empTxt}from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`+(skip?` <span style="color:var(--muted);font-weight:400;">(${skip} Sunday(s) skipped)</span>`:'');
+  };
+
+  window.submitAdminRoster=async function(){
+    const empEmail=document.getElementById('rosterEmployee').value;
+    const from=document.getElementById('adminRosterFrom').value;
+    const to  =document.getElementById('adminRosterTo').value;
+    if(!empEmail)        return showToast('adminRosterToast','adminRosterToastMsg','Please select an employee','error');
+    if(!adminRosterType) return showToast('adminRosterToast','adminRosterToastMsg','Please select a type','error');
+    if(!from||!to)       return showToast('adminRosterToast','adminRosterToastMsg','Please select a date range','error');
+    if(from>to)          return showToast('adminRosterToast','adminRosterToastMsg','From date must be before To date','error');
+    const days=getDaysBetween(from,to).filter(d=>!isSunday(d));
+    if(!days.length) return showToast('adminRosterToast','adminRosterToastMsg','No valid days','error');
+    const btn=document.getElementById('adminRosterBtn');
+    btn.disabled=true; btn.textContent='Applying...';
+    let success=0,skipped=0,failed=0;
+    for(const date of days){
+      try{
+        const data=await apiFetch('saveEntry',{email:empEmail,date,fresh:0,rework:0,reason:adminRosterType});
+        if(data.result==='SUCCESS') success++;
+        else if(data.result==='EXISTS') skipped++;
+        else failed++;
+      }catch(_){failed++;}
+    }
+    btn.disabled=false; btn.textContent='Apply to Roster';
+    showToast('adminRosterToast','adminRosterToastMsg',`Applied: ${success}`+(skipped?` | Existed: ${skipped}`:'')+( failed?` | Failed: ${failed}`:''),failed?'error':'success');
+    // reload
+    const data=await apiFetch('getAllEntries',{email:currentUser.email});
+    allEntries=(data.entries||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+    allEmployees=data.employees||[];
+    renderStats(); renderRosterLog();
+  };
+
+  window.renderRosterLog=function(){
+    const empF =document.getElementById('rosterFilterEmp')?.value||'';
+    const typeF=document.getElementById('rosterFilterType')?.value||'';
+    const fromF=document.getElementById('rosterFilterFrom')?.value||'';
+    const toF  =document.getElementById('rosterFilterTo')?.value||'';
+    const entries=allEntries.filter(e=>{
+      const r=String(e.reason||'').trim();
+      if(!ROSTER_TYPES.includes(r))  return false;
+      if(empF  && e.name!==empF)     return false;
+      if(typeF && r!==typeF)         return false;
+      if(fromF && e.date<fromF)      return false;
+      if(toF   && e.date>toF)        return false;
+      return true;
+    }).sort((a,b)=>b.date.localeCompare(a.date));
+    const el=document.getElementById('rosterLog');
+    if(!entries.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:12px 0;">No roster entries found.</div>';return;}
+    el.innerHTML=`<table><thead><tr><th>Date</th><th>Employee</th><th>Team</th><th>Type</th></tr></thead><tbody>`+
+      entries.map(e=>`<tr>
+        <td>${formatDate(e.date)}</td>
+        <td><strong>${e.name}</strong></td>
+        <td style="color:var(--muted)">${e.team}</td>
+        <td><span class="${BADGE_CLASS[e.reason?.trim()]||'badge-leave'}">${e.reason}</span></td>
+      </tr>`).join('')+'</tbody></table>';
+  };
+
+  /* ── EMPLOYEE CALENDAR ── */
+  window.loadEmpCalendar=async function(){
+    const name=document.getElementById('calEmpSelect').value;
+    if(!name){document.getElementById('empCalWrap').style.display='none';return;}
+    const emp=allEmployees.find(e=>e.name===name);
+    empCalEntries=allEntries.filter(e=>e.name===name);
+    empCalTarget =parseInt(emp?.target)||0;
+    empCalSelected=null;
+    document.getElementById('empCalWrap').style.display='block';
+    renderEmpCalendar();
+  };
+
+  window.empCalNav=function(dir){
+    empCalMonth+=dir;
+    if(empCalMonth>11){empCalMonth=0;empCalYear++;}
+    if(empCalMonth<0){empCalMonth=11;empCalYear--;}
+    renderEmpCalendar();
+  };
+
+  function renderEmpCalendar(){
+    const today   =getTodayStr();
+    const months  =['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('empCalTitle').textContent=months[empCalMonth]+' '+empCalYear;
+    const entryMap  ={};
+    empCalEntries.forEach(e=>{entryMap[e.date]=e;});
+    const holidaySet=new Set(holidays.map(h=>h.date));
+    const grid=document.getElementById('empCalGrid');
+    grid.innerHTML='';
+    ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{const el=document.createElement('div');el.className='cal-day-label';el.textContent=d;grid.appendChild(el);});
+    const firstDay=new Date(empCalYear,empCalMonth,1);
+    let offset=firstDay.getDay()-1;if(offset<0)offset=6;
+    for(let i=0;i<offset;i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
+    const daysInMonth=new Date(empCalYear,empCalMonth+1,0).getDate();
+    for(let day=1;day<=daysInMonth;day++){
+      const mm=String(empCalMonth+1).padStart(2,'0'),dd=String(day).padStart(2,'0');
+      const ds=`${empCalYear}-${mm}-${dd}`;
+      const dow=new Date(empCalYear,empCalMonth,day).getDay();
+      const isSun=dow===0,isFuture=ds>today;
+      const entry=entryMap[ds];
+      const isHoliday=holidaySet.has(ds);
+      const el=document.createElement('div');el.className='cal-day';el.textContent=day;
+
+      if(isHoliday&&!entry){
+        el.classList.add('holiday');
+        el.onclick=()=>showEmpDayDetail(ds,'holiday');
+      }else if(entry){
+        const r=String(entry.reason||'').trim();
+        el.classList.add(CAL_CLASS[r]||'work');
+        el.onclick=()=>showEmpDayDetail(ds,'entry');
+      }else if(isSun){
+        el.classList.add('sunday');
+      }else if(isFuture){
+        el.classList.add('future');
+      }else{
+        el.classList.add('missed');
+        el.onclick=()=>showEmpDayDetail(ds,'missed');
       }
+      if(ds===today) el.classList.add('today-marker');
+      if(ds===empCalSelected) el.classList.add('selected');
+      grid.appendChild(el);
+    }
+  }
+
+  function showEmpDayDetail(ds,type){
+    empCalSelected=ds; renderEmpCalendar();
+    const det=document.getElementById('empCalDetail');
+    if(type==='holiday'){
+      const h=holidays.find(h=>h.date===ds);
+      det.innerHTML=`<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
+        <div style="background:#fce7f3;border-radius:10px;padding:28px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:8px;">🎉</div>
+          <div style="font-size:16px;font-weight:700;color:#9d174d;">${h?.name||'Holiday'}</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:4px;">Company holiday</div>
+        </div>`;
       return;
     }
-
-    if (currentView === 'total') {
-      renderTotalChart();
-    } else {
-      renderDistributionChart();
+    if(type==='missed'){
+      det.innerHTML=`<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
+        <div style="background:#fef2f2;border-radius:10px;padding:28px;text-align:center;">
+          <div style="font-size:15px;font-weight:600;color:#ef4444;">No Entry Recorded</div>
+        </div>`;
+      return;
     }
-  }
-
-  // ── RENDER TOTAL CHART ──
-  function renderTotalChart() {
-    var ctx = document.getElementById('chartTotal');
-    if (!ctx) return;
-
-    var dates = chartData.map(d => d.date);
-    var totals = chartData.map(d => d.total || 0);
-
-    if (chartInstance) {
-      chartInstance.destroy();
+    const entry=empCalEntries.find(e=>e.date===ds);
+    if(!entry) return;
+    const reason=String(entry.reason||'').trim();
+    const isRoster=ROSTER_TYPES.includes(reason)&&parseInt(entry.fresh)===0&&parseInt(entry.rework)===0;
+    if(isRoster){
+      const colorMap={'Leave':'#713f12','Sat Off':'#7c2d12','Comp Off':'#4c1d95','Half Day':'#1e3a8a','Absent':'#fff','Holiday':'#9d174d'};
+      const bgMap   ={'Leave':'#fef9c3','Sat Off':'#ffedd5','Comp Off':'#ede9fe','Half Day':'#dbeafe','Absent':'#450a0a','Holiday':'#fce7f3'};
+      det.innerHTML=`<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
+        <div style="background:${bgMap[reason]||'#f3f4f6'};border-radius:10px;padding:28px;text-align:center;">
+          <div style="font-size:16px;font-weight:700;color:${colorMap[reason]||'#374151'};">${reason}</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:4px;">No work count recorded</div>
+        </div>`;
+      return;
     }
-
-    chartInstance = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: dates,
-        datasets: [{
-          label: 'Total Cases',
-          data: totals,
-          backgroundColor: '#2563eb',
-          borderColor: '#1e40af',
-          borderWidth: 1,
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: true, position: 'bottom' },
-          title: { display: false }
-        },
-        scales: {
-          y: { beginAtZero: true, min: 0, ticks: { stepSize: 1 } }
-        }
-      }
-    });
+    const eff=getEffectiveTarget(empCalTarget,reason);
+    const total=parseInt(entry.total)||0;
+    const deficit=Math.max(0,eff-total);
+    const color=total>=eff?'var(--green)':'var(--red)';
+    const status=total>eff?'Above Target 🎯':deficit===0?'Target Met':'Below Target';
+    det.innerHTML=`
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">${formatDate(ds)}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Fresh</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--blue)">${entry.fresh}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Rework</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--yellow)">${entry.rework}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Total</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;">${total}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Target</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;">${eff}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Deficit</div><div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:${deficit>0?'var(--red)':'var(--green)'}">${deficit}</div></div>
+        <div style="background:var(--card);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Status</div><div style="font-size:12px;font-weight:700;color:${color}">${status}</div></div>
+      </div>
+      ${reason&&!ROSTER_TYPES.includes(reason)?`<div style="background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);"><strong style="color:var(--text);">Note:</strong> ${reason}</div>`:''}`;
   }
 
-  // ── RENDER DISTRIBUTION CHART ──
-  function renderDistributionChart() {
-    var ctx = document.getElementById('chartDistrib');
-    if (!ctx) return;
-
-    var dates = chartData.map(d => d.date);
-    var fresh = chartData.map(d => d.fresh || 0);
-    var rework = chartData.map(d => d.rework || 0);
-
-    if (chartInstance) {
-      chartInstance.destroy();
+  /* ── HOLIDAYS ── */
+  window.addHoliday=async function(){
+    const date=document.getElementById('holidayDate').value;
+    const name=document.getElementById('holidayName').value.trim();
+    if(!date) return showToast('holidayToast','holidayToastMsg','Please select a date','error');
+    if(!name) return showToast('holidayToast','holidayToastMsg','Please enter holiday name','error');
+    const data=await apiFetch('saveHoliday',{date,name,addedBy:currentUser.email});
+    if(data.result==='SUCCESS'){
+      showToast('holidayToast','holidayToastMsg','Holiday added successfully ✓','success');
+      document.getElementById('holidayDate').value='';
+      document.getElementById('holidayName').value='';
+      const hData=await apiFetch('getHolidays');
+      holidays=(hData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+      renderHolidayList();
+    }else if(data.result==='EXISTS'){
+      showToast('holidayToast','holidayToastMsg','Holiday already exists for this date','error');
+    }else{
+      showToast('holidayToast','holidayToastMsg','Error: '+data.result,'error');
     }
+  };
 
-    chartInstance = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: dates,
-        datasets: [
-          {
-            label: 'Fresh',
-            data: fresh,
-            backgroundColor: '#16a34a',
-            borderRadius: 4
-          },
-          {
-            label: 'Rework',
-            data: rework,
-            backgroundColor: '#dc2626',
-            borderRadius: 4
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: true, position: 'bottom' }
-        },
-        scales: {
-          x: { stacked: false },
-          y: { beginAtZero: true, min: 0, ticks: { stepSize: 1 } }
-        }
-      }
-    });
+  window.deleteHoliday=async function(date){
+    if(!confirm('Delete this holiday?')) return;
+    const data=await apiFetch('deleteHoliday',{date});
+    if(data.result==='SUCCESS'){
+      const hData=await apiFetch('getHolidays');
+      holidays=(hData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+      renderHolidayList();
+    }
+  };
+
+  function renderHolidayList(){
+    const el=document.getElementById('holidayList');
+    if(!holidays.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);">No holidays added yet.</div>';return;}
+    const sorted=[...holidays].sort((a,b)=>a.date.localeCompare(b.date));
+    el.innerHTML=`<table><thead><tr><th>Date</th><th>Holiday</th><th>Added By</th><th>Action</th></tr></thead><tbody>`+
+      sorted.map(h=>`<tr>
+        <td>${formatDate(h.date)}</td>
+        <td><strong>${h.name}</strong></td>
+        <td style="color:var(--muted);font-size:12px;">${h.addedBy||'—'}</td>
+        <td><button class="btn-danger" onclick="deleteHoliday('${h.date}')">Delete</button></td>
+      </tr>`).join('')+'</tbody></table>';
   }
 
-  // ── UTILITIES ──
-  function formatDateForAPI(date) {
-    var y = date.getFullYear();
-    var m = String(date.getMonth() + 1).padStart(2, '0');
-    var d = String(date.getDate()).padStart(2, '0');
-    return y + '-' + m + '-' + d;
+  function showToast(toastId,msgId,msg,type){
+    const t=document.getElementById(toastId);
+    document.getElementById(msgId).textContent=msg;
+    t.className='toast show '+type;
+    clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',4000);
   }
 
-  function formatDateForInput(date) {
-    return formatDateForAPI(date);
-  }
-
-  function logout() {
-    localStorage.removeItem('userEmail');
-    window.location.href = 'index.html';
-  }
+  // Auto refresh
+  setInterval(async()=>{
+    if(!currentUser) return;
+    const [entriesRes,holidayRes]=await Promise.all([
+      apiFetch('getAllEntries',{email:currentUser.email}),
+      apiFetch('getHolidays')
+    ]);
+    allEntries  =(entriesRes.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+    allEmployees= entriesRes.employees||[];
+    holidays    =(holidayRes.holidays ||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+    renderStats(); renderChart(); renderTable();
+  },30000);
 </script>
-
 </body>
 </html>
