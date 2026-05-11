@@ -23,7 +23,7 @@
     .login-banner h1 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
     .login-banner p { font-size: 13px; color: rgba(255,255,255,0.5); }
     .login-body { padding: 28px; }
-    .google-btn { width: 100%; height: 48px; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; color: var(--text); cursor: pointer; }
+    .google-btn { width: 100%; height: 48px; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; color: var(--text); cursor: pointer; transition: box-shadow 0.15s; }
     .google-btn:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .google-btn img { width: 20px; height: 20px; }
     .app { display: none; }
@@ -65,10 +65,7 @@
     .toast.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
     .toast.error   { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
     .chart-wrap { position: relative; height: 260px; }
-    .range-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 8px; width: fit-content; margin-bottom: 12px; }
-    .range-btn { padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-    .range-btn.active { background: var(--accent); color: #fff; }
-    .range-btn:hover:not(.active) { background: var(--border); color: var(--text); }
+
     /* ROSTER */
     .roster-type-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
     .rtype-btn { padding: 14px 8px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); text-align: center; transition: all 0.15s; }
@@ -77,8 +74,9 @@
     .rtype-btn .rtype-label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; opacity: 0.7; }
     .rtype-btn .rtype-name { display: block; font-size: 14px; font-weight: 700; }
     .date-range-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .preview-bar { background: var(--bg); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); }
+    .preview-bar { background: var(--bg); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); min-height: 42px; }
     .preview-bar span { color: var(--text); font-weight: 600; }
+    .roster-entry { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
     .roster-badge { padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
     .badge-leave    { background: #fef9c3; color: #854d0e; }
     .badge-satoff   { background: #ffedd5; color: #9a3412; }
@@ -86,6 +84,7 @@
     .badge-halfday  { background: #dbeafe; color: #1e40af; }
     .badge-absent   { background: #fee2e2; color: #7f1d1d; }
     .badge-holiday  { background: #fce7f3; color: #9d174d; }
+
     /* CALENDAR */
     .history-layout { display: grid; grid-template-columns: 300px 1fr; gap: 16px; }
     .calendar-wrap { background: var(--bg); border-radius: 10px; padding: 14px; }
@@ -98,7 +97,7 @@
     .cal-day { text-align: center; font-size: 11px; font-weight: 500; padding: 6px 2px; border-radius: 5px; cursor: pointer; transition: all 0.12s; }
     .cal-day.empty   { cursor: default; }
     .cal-day.sunday  { background: #f3f4f6; color: #9ca3af; font-style: italic; }
-    .cal-day.future-plain { color: #d1d5db; cursor: default; }
+    .cal-day.future  { color: #d1d5db; cursor: default; }
     .cal-day.work    { background: #dcfce7; color: #14532d; font-weight: 700; }
     .cal-day.work:hover { background: #bbf7d0; }
     .cal-day.leave   { background: #fef9c3; color: #713f12; font-weight: 700; }
@@ -119,8 +118,7 @@
     .detail-card { background: var(--card); border-radius: 8px; padding: 12px; text-align: center; }
     .detail-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
     .detail-val { font-size: 22px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); }
-    .roster-log-container { max-height: 320px; overflow-y: auto; }
-    .roster-entry { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
+
     @media (max-width: 680px) {
       .history-layout { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
@@ -185,7 +183,7 @@
         <div class="form-grid">
           <div class="field">
             <label>Date</label>
-            <input type="date" id="date" onchange="calc()">
+            <input type="date" id="date">
           </div>
           <div style="display:flex;align-items:flex-end;">
             <div class="total-box" style="width:100%;">
@@ -214,31 +212,18 @@
 
     <!-- DASHBOARD TAB -->
     <div id="tab-dashboard" style="display:none;">
-      <!-- Range filter -->
-      <div class="card" style="padding:14px 20px;">
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <span style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">View</span>
-          <div class="range-tabs" style="margin-bottom:0;">
-            <button class="range-btn active" onclick="setDashRange('week',this)">This Week</button>
-            <button class="range-btn" onclick="setDashRange('month',this)">This Month</button>
-            <button class="range-btn" onclick="setDashRange('year',this)">This Year</button>
-            <button class="range-btn" onclick="setDashRange('all',this)">All Time</button>
-          </div>
-        </div>
-      </div>
-
       <div class="stat-grid">
-        <div class="stat-card"><div class="stat-label">Total Cases</div><div class="stat-val" id="statMonth">—</div></div>
-        <div class="stat-card"><div class="stat-label">Working Days</div><div class="stat-val" id="statWeek">—</div></div>
+        <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-val" id="statMonth">—</div></div>
+        <div class="stat-card"><div class="stat-label">This Week</div><div class="stat-val" id="statWeek">—</div></div>
         <div class="stat-card"><div class="stat-label">Daily Average</div><div class="stat-val" id="statAvg">—</div></div>
         <div class="stat-card"><div class="stat-label">Total Deficit</div><div class="stat-val red" id="statDeficit">—</div></div>
       </div>
       <div class="card">
-        <div class="card-title">Performance vs Target</div>
+        <div class="card-title">Daily Performance vs Target</div>
         <div class="chart-wrap"><canvas id="chartBar"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-title">Fresh vs Rework Distribution</div>
+        <div class="card-title">Fresh vs Rework</div>
         <div class="chart-wrap"><canvas id="chartDoughnut"></canvas></div>
       </div>
       <div class="card">
@@ -284,29 +269,32 @@
     <div id="tab-roster" style="display:none;">
       <div class="card">
         <div class="card-title">Roster — Leave &amp; Attendance</div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Mark leave, week-offs, or half-days. You can still submit actual counts on half-day entries.</p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Mark leave, week-offs, or half-days. All marked dates record zero count with the selected type.</p>
 
         <label style="margin-bottom:10px;">Select Type</label>
-        <div class="roster-type-row">
+        <div class="roster-type-row" id="rosterTypeRow">
           <button class="rtype-btn" onclick="selectRosterType('Leave')" id="rt-Leave">
-            <span class="rtype-label">Planned</span><span class="rtype-name">Leave</span>
+            <span class="rtype-label">Planned</span>
+            <span class="rtype-name">Leave</span>
           </button>
           <button class="rtype-btn" onclick="selectRosterType('Sat Off')" id="rt-Sat Off">
-            <span class="rtype-label">Weekly Off</span><span class="rtype-name">Saturday Off</span>
+            <span class="rtype-label">Weekly Off</span>
+            <span class="rtype-name">Saturday Off</span>
           </button>
           <button class="rtype-btn" onclick="selectRosterType('Half Day')" id="rt-Half Day">
-            <span class="rtype-label">Partial Day</span><span class="rtype-name">Half Day</span>
+            <span class="rtype-label">Partial Day</span>
+            <span class="rtype-name">Half Day</span>
           </button>
         </div>
 
         <div class="date-range-row">
           <div class="field" style="margin:0;">
             <label>From Date</label>
-            <input type="date" id="rosterFrom" onchange="updateRosterPreview()">
+            <input type="date" id="rosterFrom">
           </div>
           <div class="field" style="margin:0;">
             <label>To Date</label>
-            <input type="date" id="rosterTo" onchange="updateRosterPreview()">
+            <input type="date" id="rosterTo">
           </div>
         </div>
 
@@ -317,9 +305,7 @@
 
       <div class="card">
         <div class="card-title">My Roster Entries</div>
-        <div class="roster-log-container" id="rosterLog">
-          <div style="font-size:13px;color:var(--muted);">No roster entries yet.</div>
-        </div>
+        <div id="rosterLog"><div style="font-size:13px;color:var(--muted);">No roster entries yet.</div></div>
       </div>
     </div>
 
@@ -339,12 +325,13 @@
     messagingSenderId: "665878833615",
     appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfu0eMO37-tJ4rWZ7-HlIq16yS49nmVGHHO6XoenSRNl351FryI1jBk5s0ICbHIUw4zQ/exec";
+
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpIetd36Y_iUqfV6Sx0gNuxaXvm6yi_xORmgFEIo15G6YxJkVVPcMOBPfiPEu0H4qZ8A/exec";
 
   const ROSTER_TYPES      = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
   const ZERO_TARGET_TYPES = ['Leave','Sat Off','Comp Off','Absent','Holiday'];
-  const BADGE_CLASS       = {'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent','Holiday':'badge-holiday'};
-  const CAL_CLASS         = {'Leave':'leave','Sat Off':'satoff','Comp Off':'compoff','Half Day':'halfday','Absent':'absent','Holiday':'holiday'};
+  const BADGE_CLASS       = { 'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent','Holiday':'badge-holiday' };
+  const CAL_CLASS         = { 'Leave':'leave','Sat Off':'satoff','Comp Off':'compoff','Half Day':'halfday','Absent':'absent','Holiday':'holiday' };
 
   const app      = initializeApp(firebaseConfig);
   const auth     = getAuth(app);
@@ -360,107 +347,129 @@
   let calMonth           = new Date().getMonth();
   let selectedDate       = null;
   let selectedRosterType = null;
-  let dashRange          = 'week';
 
   /* ── UTILS ── */
   function normalizeDate(raw) {
     if (!raw) return "";
-    const s=String(raw).trim();
+    const s = String(raw).trim();
     if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
-    const dmy=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
     if (dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
-    try{const d=new Date(s);if(!isNaN(d))return d.toISOString().split('T')[0];}catch(_){}
+    try { const d=new Date(s); if(!isNaN(d)) return d.toISOString().split('T')[0]; } catch(_){}
     return s.substring(0,10);
   }
-  function getTodayStr(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-  function formatDate(ds){if(!ds)return'—';const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
-  function getDaysBetween(from,to){const dates=[];let cur=new Date(from);const end=new Date(to);while(cur<=end){dates.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}return dates;}
-  function isSunday(ds){const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).getDay()===0;}
-  function getEffectiveTarget(base,reason){
-    const r=String(reason||'').trim();
-    // Handle combined reason like "Half Day | laptop issue"
-    if(r.startsWith('Half Day')) return Math.ceil(base/2);
-    if(ZERO_TARGET_TYPES.includes(r)) return 0;
-    return base;
+  function getTodayStr() {
+    const d=new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function formatDate(ds) {
+    if (!ds) return '—';
+    const [y,m,d] = ds.split('-').map(Number);
+    return new Date(y,m-1,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  }
+  function getDaysBetween(from, to) {
+    const dates=[]; let cur=new Date(from); const end=new Date(to);
+    while(cur<=end){ dates.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
+    return dates;
+  }
+  function isSunday(ds) {
+    const [y,m,d]=ds.split('-').map(Number);
+    return new Date(y,m-1,d).getDay()===0;
+  }
+  function getEffectiveTarget(baseTarget, reason) {
+    const r = String(reason||'').trim();
+    if (ZERO_TARGET_TYPES.includes(r)) return 0;
+    if (r==='Half Day') return Math.ceil(baseTarget/2);
+    return baseTarget;
   }
 
-  async function apiFetch(action,params={}){
-    const url=APPS_SCRIPT_URL+"?"+new URLSearchParams({action,...params}).toString();
-    const r=await fetch(url);return r.json();
+  async function apiFetch(action, params={}) {
+    const url = APPS_SCRIPT_URL + "?" + new URLSearchParams({action,...params}).toString();
+    const res = await fetch(url);
+    return res.json();
   }
 
   /* ── AUTH ── */
-  onAuthStateChanged(auth,async(user)=>{
-    if(user){currentUser=user;document.getElementById('navEmail').textContent=user.email;await loadAll();}
+  onAuthStateChanged(auth, async (user) => {
+    if (user) { currentUser=user; document.getElementById('navEmail').textContent=user.email; await loadAll(); }
     else showLogin();
   });
-  window.loginWithGoogle=async()=>{try{await signInWithPopup(auth,provider);}catch(e){alert("Login failed: "+e.message);}};
-  window.logout=async()=>{await signOut(auth);showLogin();};
-  function showLogin(){document.getElementById('loginScreen').style.display='flex';document.getElementById('app').style.display='none';}
+  window.loginWithGoogle = async () => { try { await signInWithPopup(auth,provider); } catch(e) { alert("Login failed: "+e.message); } };
+  window.logout = async () => { await signOut(auth); showLogin(); };
+  function showLogin() { document.getElementById('loginScreen').style.display='flex'; document.getElementById('app').style.display='none'; }
 
-  async function loadAll(){
-    try{
-      const[userData,holidayData]=await Promise.all([apiFetch('getUser',{email:currentUser.email}),apiFetch('getHolidays')]);
-      if(userData.role==="Admin"){window.location.href="admin.html";return;}
-      if(!userData.valid){alert("Your email is not registered. Contact admin.");await signOut(auth);showLogin();return;}
-      userDetails=userData;
-      holidays=(holidayData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
-      document.getElementById('userName').textContent  =userData.name||currentUser.email;
-      document.getElementById('userTeam').textContent  =userData.team||"—";
-      document.getElementById('userTarget').textContent=userData.target||"0";
-      document.getElementById('loginScreen').style.display='none';
-      document.getElementById('app').style.display='block';
+  async function loadAll() {
+    try {
+      const [userData, holidayData] = await Promise.all([
+        apiFetch('getUser', {email: currentUser.email}),
+        apiFetch('getHolidays')
+      ]);
+
+      if (userData.role==="Admin") { window.location.href="admin.html"; return; }
+      if (!userData.valid) { alert("Your email is not registered. Contact admin."); await signOut(auth); showLogin(); return; }
+
+      userDetails = userData;
+      holidays    = (holidayData.holidays || []).map(h => ({...h, date: normalizeDate(h.date)}));
+
+      document.getElementById('userName').textContent   = userData.name   || currentUser.email;
+      document.getElementById('userTeam').textContent   = userData.team   || "—";
+      document.getElementById('userTarget').textContent = userData.target || "0";
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display         = 'block';
+
       setTodayDate();
       await loadMyEntries();
-    }catch(e){alert("Failed to load: "+e.message);}
+    } catch(e) { alert("Failed to load: "+e.message); }
   }
 
-  async function loadMyEntries(){
-    try{
-      const data=await apiFetch('getEntries',{email:currentUser.email});
-      myEntries=(data.entries||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+  async function loadMyEntries() {
+    try {
+      const data = await apiFetch('getEntries', {email: currentUser.email});
+      myEntries  = (data.entries||[]).map(e=>({...e, date: normalizeDate(e.date)}));
       renderCalendar();
       renderDashboard();
       renderRosterLog();
-    }catch(e){console.log("Entries error:",e);}
+    } catch(e) { console.log("Entries error:",e); }
   }
 
   /* ── SUBMIT EOD ── */
-  window.submitEOD=async function(){
-    const fresh  =document.getElementById('fresh').value.trim();
-    const rework =document.getElementById('rework').value.trim();
-    const date   =document.getElementById('date').value;
-    const reason =document.getElementById('reason').value.trim();
+  window.submitEOD = async function() {
+    const fresh  = document.getElementById('fresh').value.trim();
+    const rework = document.getElementById('rework').value.trim();
+    const date   = document.getElementById('date').value;
+    const reason = document.getElementById('reason').value.trim();
 
-    if(fresh===''&&rework==='') return showToast('Enter fresh or rework count','error');
+    if (fresh===''&&rework==='') return showToast('Enter fresh or rework count','error');
     const f=parseInt(fresh)||0, r=parseInt(rework)||0;
-    if(f<0||r<0) return showToast('Counts cannot be negative','error');
-    // Block future dates for submit
-    if(date>getTodayStr()) return showToast('Future date not allowed for EOD submission','error');
+    if (f<0||r<0) return showToast('Counts cannot be negative','error');
 
-    const isHoliday=holidays.some(h=>h.date===date);
-    const halfEntry=myEntries.find(e=>e.date===date&&(e.reason==='Half Day'||String(e.reason||'').startsWith('Half Day')));
-    const baseTarget=parseInt(userDetails?.target)||0;
-    const effectiveTarget=isHoliday?0:getEffectiveTarget(baseTarget,halfEntry?.reason||'');
-    const total=f+r;
-    const deficit=Math.max(0,effectiveTarget-total);
-    if(!isHoliday&&deficit>0&&!reason) return showToast(`Reason required. Target: ${effectiveTarget}${halfEntry?' (Half Day)':''}`, 'error');
+    // Check if holiday
+    const isHoliday = holidays.some(h=>h.date===date);
+    // Check if half day
+    const halfEntry = myEntries.find(e=>e.date===date&&e.reason==='Half Day');
+    const baseTarget = parseInt(userDetails?.target)||0;
+    const effectiveTarget = isHoliday ? 0 : getEffectiveTarget(baseTarget, halfEntry?.reason||'');
+    const total   = f+r;
+    const deficit = Math.max(0, effectiveTarget-total);
 
-    const btn=document.getElementById('submitBtn');
-    btn.disabled=true;btn.textContent='Submitting...';
-    try{
-      const submitReason=isHoliday?'Holiday Work':reason;
-      const data=await apiFetch('saveEntry',{email:currentUser.email,date,fresh:f,rework:r,reason:submitReason});
-      btn.disabled=false;btn.textContent='Submit EOD';
-      if(data.result==='SUCCESS'){showToast('Submitted successfully ✓','success');resetForm();await loadMyEntries();}
-      else if(data.result==='EXISTS')    showToast('Entry already exists for this date','error');
-      else if(data.result==='NO_REASON') showToast('Please enter reason for deficit','error');
-      else if(data.result==='INVALID')   showToast('Email not found in system','error');
+    if (!isHoliday && deficit>0 && !reason) {
+      return showToast(`Reason required. Target today: ${effectiveTarget}${halfEntry?' (Half Day)':''}`, 'error');
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled=true; btn.textContent='Submitting...';
+    try {
+      const data = await apiFetch('saveEntry', {email:currentUser.email, date, fresh:f, rework:r, reason: isHoliday?'Holiday Work':reason});
+      btn.disabled=false; btn.textContent='Submit EOD';
+      if (data.result==='SUCCESS') { showToast('Submitted successfully ✓','success'); resetForm(); await loadMyEntries(); }
+      else if (data.result==='EXISTS')    showToast('Entry already exists for this date','error');
+      else if (data.result==='NO_REASON') showToast('Please enter reason for deficit','error');
+      else if (data.result==='INVALID')   showToast('Email not found in system','error');
       else showToast('Error: '+data.result,'error');
-    }catch(e){btn.disabled=false;btn.textContent='Submit EOD';showToast('Network error','error');}
+    } catch(e) { btn.disabled=false; btn.textContent='Submit EOD'; showToast('Network error','error'); }
   };
 
-  function resetForm(){
+  function resetForm() {
     ['fresh','rework','reason'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('totalNum').textContent='0';
     document.getElementById('totalNum').className='total-num';
@@ -468,147 +477,165 @@
     document.getElementById('reasonBox').classList.remove('show');
   }
 
-  window.calc=function(){
-    const date=document.getElementById('date').value;
-    const f=Math.max(0,parseInt(document.getElementById('fresh').value)||0);
-    const r=Math.max(0,parseInt(document.getElementById('rework').value)||0);
-    const total=f+r;
-    const isHoliday  =holidays.some(h=>h.date===date);
-    const halfEntry  =myEntries.find(e=>e.date===date&&(e.reason==='Half Day'||String(e.reason||'').startsWith('Half Day')));
-    const baseTarget =parseInt(userDetails?.target)||0;
-    const eff        =isHoliday?0:getEffectiveTarget(baseTarget,halfEntry?.reason||'');
-    const deficit    =Math.max(0,eff-total);
-    const el=document.getElementById('totalNum');
-    el.textContent=total;
-    el.className='total-num'+(total>=eff?' over':' under');
-    let defText='';
-    if(isHoliday) defText='Holiday — no target 🎉';
-    else if(deficit>0) defText=`Deficit: ${deficit} | Target: ${eff}${halfEntry?' (Half Day)':''}`;
-    else if(total>eff) defText='Above target ✓';
-    document.getElementById('deficitLine').textContent=defText;
-    document.getElementById('reasonBox').classList.toggle('show',!isHoliday&&deficit>0);
+  window.calc = function() {
+    const date = document.getElementById('date').value;
+    const f = Math.max(0,parseInt(document.getElementById('fresh').value)||0);
+    const r = Math.max(0,parseInt(document.getElementById('rework').value)||0);
+    const total = f+r;
+    const isHoliday   = holidays.some(h=>h.date===date);
+    const halfEntry   = myEntries.find(e=>e.date===date&&e.reason==='Half Day');
+    const baseTarget  = parseInt(userDetails?.target)||0;
+    const eff         = isHoliday ? 0 : getEffectiveTarget(baseTarget, halfEntry?.reason||'');
+    const deficit     = Math.max(0,eff-total);
+    const el = document.getElementById('totalNum');
+    el.textContent = total;
+    el.className   = 'total-num'+(total>=eff?' over':' under');
+    let defText = '';
+    if (isHoliday) defText = 'Holiday — no target today 🎉';
+    else if (deficit>0) defText = `Deficit: ${deficit} | Target: ${eff}${halfEntry?' (Half Day)':''}`;
+    else if (total>eff) defText = 'Above target ✓';
+    document.getElementById('deficitLine').textContent = defText;
+    document.getElementById('reasonBox').classList.toggle('show', !isHoliday && deficit>0);
   };
 
   /* ── ROSTER ── */
-  window.selectRosterType=function(type){
-    selectedRosterType=type;
+  window.selectRosterType = function(type) {
+    selectedRosterType = type;
     document.querySelectorAll('.rtype-btn').forEach(b=>b.classList.remove('active'));
-    const btn=document.getElementById('rt-'+type);
-    if(btn) btn.classList.add('active');
+    const btn = document.getElementById('rt-'+type);
+    if (btn) btn.classList.add('active');
     updateRosterPreview();
   };
 
-  window.updateRosterPreview=function(){
-    const from=document.getElementById('rosterFrom').value;
-    const to  =document.getElementById('rosterTo').value;
-    const prev=document.getElementById('rosterPreview');
-    if(!selectedRosterType||!from||!to){prev.innerHTML='Select a type and date range to preview';return;}
-    if(from>to){prev.innerHTML='<span style="color:var(--red)">To date must be after From date</span>';return;}
-    const days=getDaysBetween(from,to);
-    const valid=days.filter(d=>!isSunday(d));
-    const skip=days.length-valid.length;
-    prev.innerHTML=`<span>${selectedRosterType}</span> will be applied to <span>${valid.length} day(s)</span> from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`+(skip>0?` <span style="color:var(--muted);font-weight:400;">(${skip} Sunday(s) skipped)</span>`:'');
-  };
+  function updateRosterPreview() {
+    const from = document.getElementById('rosterFrom').value;
+    const to   = document.getElementById('rosterTo').value;
+    const prev = document.getElementById('rosterPreview');
+    if (!selectedRosterType||!from||!to) { prev.innerHTML='Select a type and date range to preview'; return; }
+    if (from>to) { prev.innerHTML='<span style="color:var(--red)">To date must be after From date</span>'; return; }
+    const days  = getDaysBetween(from,to);
+    const valid = days.filter(d=>!isSunday(d));
+    const skip  = days.length-valid.length;
+    prev.innerHTML = `<span>${selectedRosterType}</span> will be applied to <span>${valid.length} day(s)</span> from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`+(skip>0?` <span style="color:var(--muted);font-weight:400;">(${skip} Sunday(s) skipped)</span>`:'');
+  }
 
-  window.submitRoster=async function(){
-    const from=document.getElementById('rosterFrom').value;
-    const to  =document.getElementById('rosterTo').value;
-    if(!selectedRosterType) return showRosterToast('Please select a type','error');
-    if(!from||!to)          return showRosterToast('Please select a date range','error');
-    if(from>to)             return showRosterToast('From date must be before To date','error');
-    const days=getDaysBetween(from,to).filter(d=>!isSunday(d));
-    if(!days.length) return showRosterToast('No valid days (all Sundays)','error');
-    const btn=document.getElementById('rosterSubmitBtn');
-    btn.disabled=true;btn.textContent='Applying...';
-    let success=0,skipped=0,failed=0;
-    for(const date of days){
-      try{
-        const data=await apiFetch('saveEntry',{email:currentUser.email,date,fresh:0,rework:0,reason:selectedRosterType});
-        if(data.result==='SUCCESS') success++;
-        else if(data.result==='EXISTS') skipped++;
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('rosterFrom').addEventListener('change', updateRosterPreview);
+    document.getElementById('rosterTo').addEventListener('change',   updateRosterPreview);
+  });
+
+  window.submitRoster = async function() {
+    const from = document.getElementById('rosterFrom').value;
+    const to   = document.getElementById('rosterTo').value;
+    if (!selectedRosterType) return showRosterToast('Please select a type','error');
+    if (!from||!to)          return showRosterToast('Please select a date range','error');
+    if (from>to)             return showRosterToast('From date must be before To date','error');
+
+    const days = getDaysBetween(from,to).filter(d=>!isSunday(d));
+    if (!days.length) return showRosterToast('No valid days (all Sundays)','error');
+
+    const btn = document.getElementById('rosterSubmitBtn');
+    btn.disabled=true; btn.textContent='Applying...';
+
+    let success=0, skipped=0, failed=0;
+    for (const date of days) {
+      try {
+        const data = await apiFetch('saveEntry',{email:currentUser.email, date, fresh:0, rework:0, reason:selectedRosterType});
+        if (data.result==='SUCCESS') success++;
+        else if (data.result==='EXISTS') skipped++;
         else failed++;
-      }catch(_){failed++;}
+      } catch(_) { failed++; }
     }
-    btn.disabled=false;btn.textContent='Apply to Roster';
-    showRosterToast(`Applied: ${success}`+(skipped?` | Existed: ${skipped}`:'')+( failed?` | Failed: ${failed}`:''),failed?'error':'success');
+
+    btn.disabled=false; btn.textContent='Apply to Roster';
+    showRosterToast(`Applied: ${success}`+(skipped?` | Existed: ${skipped}`:'')+( failed?` | Failed: ${failed}`:''), failed?'error':'success');
     await loadMyEntries();
   };
 
-  function renderRosterLog(){
-    const entries=myEntries.filter(e=>ROSTER_TYPES.includes(String(e.reason||'').trim())).sort((a,b)=>b.date.localeCompare(a.date));
-    const el=document.getElementById('rosterLog');
-    if(!entries.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);">No roster entries yet.</div>';return;}
-    el.innerHTML=entries.map(e=>{
-      const r=String(e.reason||'').trim();
-      const cls=BADGE_CLASS[r]||'badge-leave';
+  function renderRosterLog() {
+    const entries = myEntries.filter(e=>ROSTER_TYPES.includes(String(e.reason||'').trim())).sort((a,b)=>b.date.localeCompare(a.date));
+    const el = document.getElementById('rosterLog');
+    if (!entries.length) { el.innerHTML='<div style="font-size:13px;color:var(--muted);">No roster entries yet.</div>'; return; }
+    el.innerHTML = entries.map(e=>{
+      const cls = BADGE_CLASS[e.reason]||'badge-leave';
       return `<div class="roster-entry">
         <div style="font-weight:600;color:var(--text);">${formatDate(e.date)}</div>
-        <span class="roster-badge ${cls}">${r}</span>
+        <span class="roster-badge ${cls}">${e.reason}</span>
       </div>`;
     }).join('');
   }
 
-  function showRosterToast(msg,type){
+  function showRosterToast(msg,type) {
     const t=document.getElementById('rosterToast');
     document.getElementById('rosterToastMsg').textContent=msg;
     t.className='toast show '+type;
-    clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',4000);
+    clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',4000);
   }
 
-  /* ── CALENDAR — shows ALL dates including future ── */
-  window.calNav=function(dir){
+  /* ── CALENDAR ── */
+  window.calNav = function(dir) {
     calMonth+=dir;
     if(calMonth>11){calMonth=0;calYear++;}
     if(calMonth<0){calMonth=11;calYear--;}
     renderCalendar();
   };
 
-  function renderCalendar(){
-    const today  =getTodayStr();
-    const months =['January','February','March','April','May','June','July','August','September','October','November','December'];
-    document.getElementById('calTitle').textContent=months[calMonth]+' '+calYear;
+  function renderCalendar() {
+    const today   = getTodayStr();
+    const months  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('calTitle').textContent = months[calMonth]+' '+calYear;
 
-    const entryMap  ={};myEntries.forEach(e=>{entryMap[e.date]=e;});
-    const holidaySet=new Set(holidays.map(h=>h.date));
-    const holidayMap={};holidays.forEach(h=>{holidayMap[h.date]=h;});
+    const entryMap   = {};
+    myEntries.forEach(e => { entryMap[e.date]=e; });
+    const holidaySet = new Set(holidays.map(h=>h.date));
 
-    const grid=document.getElementById('calGrid');
-    grid.innerHTML='';
-    ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{const el=document.createElement('div');el.className='cal-day-label';el.textContent=d;grid.appendChild(el);});
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
 
-    const firstDay=new Date(calYear,calMonth,1);
-    let offset=firstDay.getDay()-1;if(offset<0)offset=6;
+    ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{
+      const el=document.createElement('div'); el.className='cal-day-label'; el.textContent=d; grid.appendChild(el);
+    });
+
+    const firstDay = new Date(calYear,calMonth,1);
+    let offset = firstDay.getDay()-1; if(offset<0) offset=6;
     for(let i=0;i<offset;i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
 
-    const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+    const daysInMonth = new Date(calYear,calMonth+1,0).getDate();
+
     for(let day=1;day<=daysInMonth;day++){
-      const mm=String(calMonth+1).padStart(2,'0'),dd=String(day).padStart(2,'0');
+      const mm=String(calMonth+1).padStart(2,'0'), dd=String(day).padStart(2,'0');
       const ds=`${calYear}-${mm}-${dd}`;
       const dow=new Date(calYear,calMonth,day).getDay();
-      const isSun=dow===0;
-      const isFuture=ds>today;
+      const isSun=dow===0, isFuture=ds>today;
       const entry=entryMap[ds];
       const isHoliday=holidaySet.has(ds);
 
-      const el=document.createElement('div');el.className='cal-day';el.textContent=day;
+      const el=document.createElement('div'); el.className='cal-day'; el.textContent=day;
 
-      if(isHoliday&&!entry){
-        // Holiday — show for all dates (past and future)
-        el.classList.add('holiday');
-        el.title=holidayMap[ds]?.name||'Holiday';
-        el.onclick=()=>showHolidayDetail(ds);
-      } else if(entry){
-        const r=String(entry.reason||'').trim();
-        const cls=getEntryCalClass(r);
-        el.classList.add(cls);
-        el.title=r||'Submitted';
-        el.onclick=()=>showDayDetail(ds);
-      } else if(isSun){
+      if(isSun){
         el.classList.add('sunday');
-        el.title='Sunday';
+        // Sunday — can still click if entry exists
+        if(entry){
+          el.classList.add(getEntryCalClass(entry));
+          el.style.cssText=''; // override sunday style
+          el.onclick=()=>showDayDetail(ds);
+        }
+      } else if(isHoliday){
+        el.classList.add('holiday');
+        el.onclick=()=>showHolidayDetail(ds);
+        if(entry){
+          // worked on holiday — show work color with holiday indicator
+          el.classList.remove('holiday');
+          el.classList.add('work');
+          el.title='Holiday + Worked';
+          el.onclick=()=>showDayDetail(ds);
+        }
       } else if(isFuture){
-        // Future — no entry, no holiday, not sunday — just blank future
-        el.classList.add('future-plain');
+        el.classList.add('future');
+      } else if(entry){
+        el.classList.add(getEntryCalClass(entry));
+        el.onclick=()=>showDayDetail(ds);
+        el.title=entry.reason||'Submitted';
       } else {
         el.classList.add('missed');
         el.onclick=()=>showMissedDay(ds);
@@ -620,39 +647,38 @@
     }
   }
 
-  function getEntryCalClass(reason){
-    const r=String(reason||'').trim();
-    if(r.startsWith('Half Day')) return 'halfday';
-    return CAL_CLASS[r]||'work';
+  function getEntryCalClass(entry) {
+    const r = String(entry.reason||'').trim();
+    if (CAL_CLASS[r]) return CAL_CLASS[r];
+    return 'work';
   }
 
-  function showDayDetail(ds){
-    selectedDate=ds;renderCalendar();
-    const entry=myEntries.find(e=>e.date===ds);
-    if(!entry) return;
-    const reason=String(entry.reason||'').trim();
-    const isRosterEntry=ROSTER_TYPES.some(t=>reason===t||reason.startsWith(t))&&parseInt(entry.fresh)===0&&parseInt(entry.rework)===0;
+  function showDayDetail(ds) {
+    selectedDate=ds; renderCalendar();
+    const entry  = myEntries.find(e=>e.date===ds);
+    if (!entry) return;
+    const reason = String(entry.reason||'').trim();
+    const isRosterEntry = ROSTER_TYPES.includes(reason) && parseInt(entry.fresh)===0 && parseInt(entry.rework)===0;
 
-    if(isRosterEntry){
+    if (isRosterEntry) {
       const colorMap={'Leave':'#713f12','Sat Off':'#7c2d12','Comp Off':'#4c1d95','Half Day':'#1e3a8a','Absent':'#fff','Holiday':'#9d174d'};
       const bgMap   ={'Leave':'#fef9c3','Sat Off':'#ffedd5','Comp Off':'#ede9fe','Half Day':'#dbeafe','Absent':'#450a0a','Holiday':'#fce7f3'};
-      const baseType=ROSTER_TYPES.find(t=>reason===t||reason.startsWith(t))||'Leave';
       document.getElementById('historyDetail').innerHTML=`
         <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
-        <div style="background:${bgMap[baseType]||'#f3f4f6'};border-radius:10px;padding:28px;text-align:center;">
-          <div style="font-size:16px;font-weight:700;color:${colorMap[baseType]||'#374151'};">${reason}</div>
+        <div style="background:${bgMap[reason]||'#f3f4f6'};border-radius:10px;padding:28px;text-align:center;">
+          <div style="font-size:16px;font-weight:700;color:${colorMap[reason]||'#374151'};margin-bottom:4px;">${reason}</div>
           <div style="font-size:12px;color:#6b7280;margin-top:4px;">No work count recorded for this day</div>
         </div>`;
       return;
     }
 
-    const baseTarget=parseInt(userDetails?.target)||0;
-    const eff    =getEffectiveTarget(baseTarget,reason);
-    const total  =parseInt(entry.total)||0;
-    const deficit=Math.max(0,eff-total);
-    const color  =total>=eff?'var(--green)':'var(--red)';
-    const status =total>eff?'Above Target 🎯':deficit===0?'Target Met':'Below Target';
-    const targetNote=reason.startsWith('Half Day')?` (Half of ${baseTarget})`:'';
+    const baseTarget = parseInt(userDetails?.target)||0;
+    const effectiveTarget = getEffectiveTarget(baseTarget, reason);
+    const total   = parseInt(entry.total)||0;
+    const deficit = Math.max(0, effectiveTarget-total);
+    const color   = total>=effectiveTarget?'var(--green)':'var(--red)';
+    const status  = total>effectiveTarget?'Above Target 🎯':deficit===0?'Target Met':'Below Target';
+    const targetNote = reason==='Half Day'?` (Half Day — ${effectiveTarget} of ${baseTarget})`:'';
 
     document.getElementById('historyDetail').innerHTML=`
       <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">${formatDate(ds)}</div>
@@ -660,27 +686,27 @@
         <div class="detail-card"><div class="detail-label">Fresh</div><div class="detail-val" style="color:var(--blue)">${entry.fresh}</div></div>
         <div class="detail-card"><div class="detail-label">Rework</div><div class="detail-val" style="color:var(--yellow)">${entry.rework}</div></div>
         <div class="detail-card"><div class="detail-label">Total</div><div class="detail-val">${total}</div></div>
-        <div class="detail-card"><div class="detail-label">Target${targetNote}</div><div class="detail-val">${eff}</div></div>
+        <div class="detail-card"><div class="detail-label">Target${targetNote}</div><div class="detail-val">${effectiveTarget}</div></div>
         <div class="detail-card"><div class="detail-label">Deficit</div><div class="detail-val" style="color:${deficit>0?'var(--red)':'var(--green)'}">${deficit}</div></div>
         <div class="detail-card"><div class="detail-label">Status</div><div class="detail-val" style="font-size:12px;color:${color}">${status}</div></div>
       </div>
-      ${reason?`<div style="background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);"><strong style="color:var(--text);">Note:</strong> ${reason}</div>`:''}`;
+      ${reason&&!ROSTER_TYPES.includes(reason)?`<div style="background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);"><strong style="color:var(--text);">Note:</strong> ${reason}</div>`:''}`;
   }
 
-  function showHolidayDetail(ds){
-    selectedDate=ds;renderCalendar();
-    const h=holidays.find(h=>h.date===ds);
+  function showHolidayDetail(ds) {
+    selectedDate=ds; renderCalendar();
+    const holiday = holidays.find(h=>h.date===ds);
     document.getElementById('historyDetail').innerHTML=`
       <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
       <div style="background:#fce7f3;border-radius:10px;padding:28px;text-align:center;">
         <div style="font-size:24px;margin-bottom:8px;">🎉</div>
-        <div style="font-size:16px;font-weight:700;color:#9d174d;">${h?.name||'Holiday'}</div>
+        <div style="font-size:16px;font-weight:700;color:#9d174d;margin-bottom:4px;">${holiday?.name||'Holiday'}</div>
         <div style="font-size:12px;color:#6b7280;margin-top:4px;">Company holiday — no work required</div>
       </div>`;
   }
 
-  function showMissedDay(ds){
-    selectedDate=ds;renderCalendar();
+  function showMissedDay(ds) {
+    selectedDate=ds; renderCalendar();
     document.getElementById('historyDetail').innerHTML=`
       <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
       <div style="background:#fef2f2;border-radius:10px;padding:28px;text-align:center;">
@@ -689,83 +715,55 @@
       </div>`;
   }
 
-  /* ── DASHBOARD with range filter ── */
-  window.setDashRange=function(range,btn){
-    dashRange=range;
-    document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    renderDashboard();
-  };
+  /* ── DASHBOARD ── */
+  function renderDashboard() {
+    const workEntries = myEntries.filter(e=>!ROSTER_TYPES.includes(String(e.reason||'').trim()));
+    if (!workEntries.length) return;
+    const target = parseInt(userDetails?.target)||0;
+    const now    = new Date();
+    const thisMonth = workEntries.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+    const thisWeek  = workEntries.filter(e=>(now-new Date(e.date))/86400000<=7);
+    document.getElementById('statMonth').textContent   = thisMonth.reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statWeek').textContent    = thisWeek.reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statAvg').textContent     = workEntries.length?Math.round(workEntries.reduce((s,e)=>s+parseInt(e.total),0)/workEntries.length):0;
+    document.getElementById('statDeficit').textContent = workEntries.reduce((s,e)=>s+Math.max(0,getEffectiveTarget(target,e.reason)-parseInt(e.total)),0);
 
-  function getFilteredWorkEntries(){
-    const workEntries=myEntries.filter(e=>!ROSTER_TYPES.includes(String(e.reason||'').trim()));
-    const now=new Date();
-    if(dashRange==='week'){
-      return workEntries.filter(e=>(now-new Date(e.date))/86400000<=7);
-    }else if(dashRange==='month'){
-      return workEntries.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
-    }else if(dashRange==='year'){
-      return workEntries.filter(e=>new Date(e.date).getFullYear()===now.getFullYear());
-    }
-    return workEntries; // all
-  }
+    const last14  = workEntries.slice(0,14).reverse();
+    const actuals = last14.map(e=>parseInt(e.total));
+    const targets = last14.map(e=>getEffectiveTarget(target,e.reason));
 
-  function renderDashboard(){
-    const entries=getFilteredWorkEntries();
-    const target =parseInt(userDetails?.target)||0;
-
-    document.getElementById('statMonth').textContent   =entries.reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statWeek').textContent    =entries.length;
-    document.getElementById('statAvg').textContent     =entries.length?Math.round(entries.reduce((s,e)=>s+parseInt(e.total),0)/entries.length):0;
-    document.getElementById('statDeficit').textContent =entries.reduce((s,e)=>s+Math.max(0,getEffectiveTarget(target,e.reason)-parseInt(e.total)),0);
-
-    if(!entries.length){
-      if(barChart){barChart.destroy();barChart=null;}
-      if(doughnutChart){doughnutChart.destroy();doughnutChart=null;}
-      return;
-    }
-
-    // Show up to 30 entries in chart
-    const chartEntries=entries.slice(0,30).reverse();
-    const actuals=chartEntries.map(e=>parseInt(e.total));
-    const targets=chartEntries.map(e=>getEffectiveTarget(target,e.reason));
-
-    if(barChart) barChart.destroy();
-    barChart=new Chart(document.getElementById('chartBar'),{
+    if (barChart) barChart.destroy();
+    barChart = new Chart(document.getElementById('chartBar'),{
       type:'bar',
       data:{
-        labels:chartEntries.map(e=>formatDate(e.date)),
+        labels:last14.map(e=>formatDate(e.date)),
         datasets:[
           {label:'Cases Done',data:actuals,backgroundColor:actuals.map((v,i)=>v>=targets[i]?'#4ade80':'#f87171'),borderRadius:6,order:2},
           {label:'Target',data:targets,type:'line',borderColor:'#1a1a2e',borderWidth:2,borderDash:[6,3],pointRadius:0,fill:false,order:1}
         ]
       },
-      options:{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:true},tooltip:{callbacks:{afterBody:function(ctx){const v=ctx[0].raw;const tgt=targets[ctx[0].dataIndex];const d=v-tgt;return d>=0?'✓ Above by '+d:'✗ Short by '+Math.abs(d);}}}},
-        scales:{y:{beginAtZero:true,grid:{color:'#f0f0f0'}},x:{grid:{display:false}}}
-      }
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{y:{beginAtZero:true},x:{grid:{display:false}}}}
     });
 
-    const tF=entries.reduce((s,e)=>s+parseInt(e.fresh),0);
-    const tR=entries.reduce((s,e)=>s+parseInt(e.rework),0);
-    if(doughnutChart) doughnutChart.destroy();
-    doughnutChart=new Chart(document.getElementById('chartDoughnut'),{
+    const tF=workEntries.reduce((s,e)=>s+parseInt(e.fresh),0);
+    const tR=workEntries.reduce((s,e)=>s+parseInt(e.rework),0);
+    if (doughnutChart) doughnutChart.destroy();
+    doughnutChart = new Chart(document.getElementById('chartDoughnut'),{
       type:'doughnut',
       data:{labels:['Fresh','Rework'],datasets:[{data:[tF,tR],backgroundColor:['#4ade80','#f87171'],borderWidth:0}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
     });
 
     const rc={};
-    entries.filter(e=>e.reason&&e.reason.trim()).forEach(e=>{const r=e.reason.trim().toLowerCase();rc[r]=(rc[r]||0)+1;});
+    workEntries.filter(e=>e.reason&&e.reason.trim()).forEach(e=>{const r=e.reason.trim().toLowerCase();rc[r]=(rc[r]||0)+1;});
     const sorted=Object.entries(rc).sort((a,b)=>b[1]-a[1]);
-    document.getElementById('reasonsList').innerHTML=sorted.length
+    document.getElementById('reasonsList').innerHTML = sorted.length
       ?sorted.map(([r,c])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);"><span style="text-transform:capitalize;color:var(--text);">${r}</span><span style="background:var(--red);color:#fff;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">${c}x</span></div>`).join('')
       :'<div style="font-size:13px;color:var(--green);">No deficit reasons on record.</div>';
   }
 
   /* ── TABS ── */
-  window.switchTab=function(tab){
+  window.switchTab = function(tab) {
     ['submit','dashboard','history','roster'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
     document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['submit','dashboard','history','roster'][i]===tab);});
     if(tab==='dashboard') renderDashboard();
@@ -773,30 +771,29 @@
     if(tab==='roster')    renderRosterLog();
   };
 
-  function setTodayDate(){
+  function setTodayDate() {
     const t=getTodayStr();
     document.getElementById('date').value=t;
-    document.getElementById('date').max=t; // Block future dates for EOD submit only
+    // NOTE: No max on date — allow past dates and Sundays
     document.getElementById('rosterFrom').value=t;
     document.getElementById('rosterTo').value=t;
-    // No max on roster dates — allow future
   }
 
-  function showToast(msg,type){
+  function showToast(msg,type) {
     const t=document.getElementById('toast');
     document.getElementById('toastMsg').textContent=msg;
     document.getElementById('toastIcon').textContent=type==='success'?'✓':'✕';
     t.className='toast show '+type;
-    clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',3500);
+    clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',3500);
   }
 
   setInterval(async()=>{
     if(currentUser&&userDetails){
-      const[hData]=await Promise.all([apiFetch('getHolidays')]);
-      holidays=(hData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+      const [hData] = await Promise.all([apiFetch('getHolidays')]);
+      holidays = (hData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
       await loadMyEntries();
     }
-  },30000);
+  }, 30000);
 </script>
 </body>
 </html>
