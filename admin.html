@@ -341,7 +341,7 @@
     appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
 
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpIetd36Y_iUqfV6Sx0gNuxaXvm6yi_xORmgFEIo15G6YxJkVVPcMOBPfiPEu0H4qZ8A/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1hdpXMe8UbarstXx98w-Cyi06Vl-32fprqwPkrfLWWwErHlrzHSQUnj85UeOfBvPF9Q/exec";
 
   const ROSTER_TYPES      = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
   const ZERO_TARGET_TYPES = ['Leave','Sat Off','Comp Off','Absent','Holiday'];
@@ -425,19 +425,61 @@
   };
 
   /* ── STATS ── */
-  function renderStats(){
-    const today    =getTodayStr();
-    const todayWork=allEntries.filter(e=>e.date===today&&!ROSTER_TYPES.includes(String(e.reason||'').trim()));
-    const todayAll =allEntries.filter(e=>e.date===today);
-    const empCount =allEmployees.filter(e=>String(e.role)!=='Admin').length;
-    document.getElementById('statEmp').textContent       =empCount;
-    document.getElementById('statToday').textContent     =todayWork.length;
-    document.getElementById('statCasesToday').textContent=todayWork.reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statPending').textContent   =Math.max(0,empCount-todayAll.length);
-    document.getElementById('statTech').textContent      =todayWork.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statMed').textContent       =todayWork.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statCash').textContent      =todayWork.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0);
+ function renderStats(){
+  // Use table filters for stats
+  const empF =document.getElementById('filterEmployee').value;
+  const teamF=document.getElementById('filterTeam').value;
+  const fromF=document.getElementById('filterFrom').value;
+  const toF  =document.getElementById('filterTo').value;
+
+  // Determine which date to use for stats
+  let statDate = getTodayStr();
+  if(fromF && fromF===toF) statDate=fromF; // single day selected
+  else if(fromF) statDate=fromF; // use from date
+
+  const dayEntries=allEntries.filter(e=>{
+    const d=e.date;
+    if(fromF&&toF) return d>=fromF&&d<=toF;
+    if(fromF) return d===fromF;
+    return d===getTodayStr();
+  });
+
+  const workEntries=dayEntries.filter(e=>!ROSTER_TYPES.includes(String(e.reason||'').trim()));
+  const filtWork=workEntries.filter(e=>{
+    if(empF  && e.name!==empF)       return false;
+    if(teamF && !matchTeam(e,teamF)) return false;
+    return true;
+  });
+
+  const empCount=allEmployees.filter(e=>String(e.role)!=='Admin').length;
+
+  // Pending employees — who haven't submitted anything for the stat date range
+  const submittedEmails=new Set(dayEntries.map(e=>e.email));
+  const pendingEmps=allEmployees.filter(e=>e.role!=='Admin'&&!submittedEmails.has(e.email));
+
+  document.getElementById('statEmp').textContent       =empCount;
+  document.getElementById('statToday').textContent     =workEntries.length;
+  document.getElementById('statCasesToday').textContent=filtWork.reduce((s,e)=>s+parseInt(e.total),0);
+  document.getElementById('statPending').textContent   =pendingEmps.length;
+  document.getElementById('statTech').textContent      =filtWork.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0);
+  document.getElementById('statMed').textContent       =filtWork.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0);
+  document.getElementById('statCash').textContent      =filtWork.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0);
+
+  // Pending hover tooltip
+  const pendingEl=document.getElementById('statPending');
+  if(pendingEmps.length){
+    const tooltipLines=pendingEmps.map(emp=>{
+      // Check if they have a roster entry for this date
+      const rosterEntry=allEntries.find(e=>e.email===emp.email&&(fromF?e.date===fromF:e.date===getTodayStr())&&ROSTER_TYPES.includes(String(e.reason||'').trim()));
+      return rosterEntry?`${emp.name}: ${rosterEntry.reason}`:`${emp.name}: Not submitted`;
+    });
+    pendingEl.title=tooltipLines.join('\n');
+    pendingEl.style.cursor='help';
+  } else {
+    pendingEl.title='';
+    pendingEl.style.cursor='default';
   }
+}
 
   /* ── TABLE ── */
   function getFilteredEntries(){
@@ -477,6 +519,7 @@
       </tr>`;
     }).join('');
     renderChart();
+    renderStats();
   };
 
   function populateFilters(){
