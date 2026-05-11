@@ -52,8 +52,6 @@
     .range-btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
     .range-btn.active { background: var(--accent); color: #fff; }
     .range-btn:hover:not(.active) { background: var(--border); color: var(--text); }
-    .custom-range { display: none; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-    .custom-range.show { display: flex; }
     .field { margin-bottom: 14px; }
     label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
     .roster-type-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 16px; }
@@ -73,7 +71,6 @@
     .toast.show { display: flex; }
     .toast.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
     .toast.error   { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
-
     /* CALENDAR */
     .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .cal-title { font-size: 13px; font-weight: 700; color: var(--text); }
@@ -98,6 +95,8 @@
     .cal-legend { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 4px; font-size: 9px; color: var(--muted); }
     .legend-dot { width: 9px; height: 9px; border-radius: 2px; }
+    /* Active range badge on chart card */
+    .active-range-label { display:inline-block; font-size:11px; font-weight:600; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:3px 10px; margin-bottom:12px; }
 
     @media (max-width: 700px) {
       .roster-type-row { grid-template-columns: repeat(3, 1fr); }
@@ -128,28 +127,51 @@
   <div id="tab-overview">
     <div class="stat-grid">
       <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-val" id="statEmp">—</div></div>
-      <div class="stat-card"><div class="stat-label">Today Submitted</div><div class="stat-val" id="statToday">—</div></div>
-      <div class="stat-card"><div class="stat-label">Cases Today</div><div class="stat-val" id="statCasesToday">—</div></div>
-      <div class="stat-card"><div class="stat-label">Pending Today</div><div class="stat-val" style="color:var(--red)" id="statPending">—</div></div>
+      <div class="stat-card"><div class="stat-label">Submitted</div><div class="stat-val" id="statToday">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total Cases</div><div class="stat-val" id="statCasesToday">—</div></div>
+      <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-val" style="color:var(--red)" id="statPending">—</div></div>
       <div class="stat-card"><div class="stat-label">Technical</div><div class="stat-val" style="color:var(--blue)" id="statTech">—</div></div>
       <div class="stat-card"><div class="stat-label">Medical</div><div class="stat-val" style="color:var(--green)" id="statMed">—</div></div>
       <div class="stat-card"><div class="stat-label">Cashless</div><div class="stat-val" style="color:var(--yellow)" id="statCash">—</div></div>
     </div>
 
+    <!-- Unified filter row — drives BOTH chart and table -->
+    <div class="card" style="padding:14px 20px;">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;">Filter All</span>
+        <!-- Quick range buttons -->
+        <div class="range-tabs" style="margin-bottom:0;">
+          <button class="range-btn active" id="qr-today"  onclick="setQuickRange('today',this)">Today</button>
+          <button class="range-btn"        id="qr-week"   onclick="setQuickRange('week',this)">This Week</button>
+          <button class="range-btn"        id="qr-month"  onclick="setQuickRange('month',this)">This Month</button>
+          <button class="range-btn"        id="qr-year"   onclick="setQuickRange('year',this)">This Year</button>
+          <button class="range-btn"        id="qr-all"    onclick="setQuickRange('all',this)">All Time</button>
+        </div>
+        <!-- Manual date pickers — also work for custom range -->
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:12px;color:var(--muted);">From</span>
+          <input type="date" id="filterFrom" onchange="onFilterDateChange()" style="height:34px;">
+          <span style="font-size:12px;color:var(--muted);">To</span>
+          <input type="date" id="filterTo"   onchange="onFilterDateChange()" style="height:34px;">
+        </div>
+        <!-- Employee / team filters -->
+        <select id="filterEmployee" onchange="renderTable()" style="height:34px;">
+          <option value="">All Employees</option>
+        </select>
+        <select id="filterTeam" onchange="renderTable()" style="height:34px;">
+          <option value="">All Teams</option>
+          <option value="technical">Technical</option>
+          <option value="medical">Medical</option>
+          <option value="cashless">Cashless</option>
+        </select>
+      </div>
+    </div>
+
     <!-- Chart -->
     <div class="card">
-      <div class="card-title">Team Performance</div>
-      <div class="range-tabs">
-        <button class="range-btn active" onclick="setRange('week',this)">This Week</button>
-        <button class="range-btn" onclick="setRange('month',this)">This Month</button>
-        <button class="range-btn" onclick="setRange('year',this)">This Year</button>
-        <button class="range-btn" onclick="setRange('custom',this)">Custom</button>
-      </div>
-      <div class="custom-range" id="customRange">
-        <span style="font-size:13px;color:var(--muted);">From</span>
-        <input type="date" id="chartFrom" onchange="renderChart()">
-        <span style="font-size:13px;color:var(--muted);">To</span>
-        <input type="date" id="chartTo" onchange="renderChart()">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:0;">Team Performance</div>
+        <span class="active-range-label" id="chartRangeLabel">Today</span>
       </div>
       <div style="display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:8px;width:fit-content;margin-bottom:16px;">
         <button class="range-btn active" id="view-total"   onclick="setView('total',this)">Total</button>
@@ -165,20 +187,9 @@
       </div>
     </div>
 
-    <!-- Entries table — synced with chart filters -->
+    <!-- Entries table — uses same filterFrom/filterTo -->
     <div class="card">
       <div class="card-title">Entries</div>
-      <div class="filter-row">
-        <select id="filterEmployee" onchange="renderTable()"><option value="">All Employees</option></select>
-        <select id="filterTeam" onchange="renderTable()">
-          <option value="">All Teams</option>
-          <option value="technical">Technical</option>
-          <option value="medical">Medical</option>
-          <option value="cashless">Cashless</option>
-        </select>
-        <input type="date" id="filterFrom" onchange="renderTable()">
-        <input type="date" id="filterTo"   onchange="renderTable()">
-      </div>
       <div style="overflow-x:auto;overflow-y:auto;max-height:480px;">
         <table>
           <thead>
@@ -240,7 +251,6 @@
       <div class="toast" id="adminRosterToast" style="margin-top:10px;"><span id="adminRosterToastMsg"></span></div>
     </div>
 
-    <!-- Roster Log -->
     <div class="card">
       <div class="card-title">Roster Entries</div>
       <div class="filter-row">
@@ -358,155 +368,203 @@
   let adminChart      = null;
   let chartFresh      = null;
   let chartRework     = null;
-  let currentRange    = 'week';
   let currentView     = 'total';
   let adminRosterType = null;
 
   // Employee calendar state
-  let empCalYear    = new Date().getFullYear();
-  let empCalMonth   = new Date().getMonth();
-  let empCalEntries = [];
-  let empCalTarget  = 0;
+  let empCalYear     = new Date().getFullYear();
+  let empCalMonth    = new Date().getMonth();
+  let empCalEntries  = [];
+  let empCalTarget   = 0;
   let empCalSelected = null;
 
   /* ── UTILS ── */
   function normalizeDate(raw) {
     if (!raw) return "";
-    const s=String(raw).trim();
+    const s = String(raw).trim();
     if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
-    const dmy=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
     if (dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
-    try{const d=new Date(s);if(!isNaN(d))return d.toISOString().split('T')[0];}catch(_){}
+    try { const d = new Date(s); if (!isNaN(d)) return d.toISOString().split('T')[0]; } catch(_) {}
     return s.substring(0,10);
   }
-  function getTodayStr(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-  function formatDate(ds){if(!ds)return'—';const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
-  function matchTeam(e,t){return String(e.team).toLowerCase().includes(t.toLowerCase());}
-  function getDaysBetween(from,to){const dates=[];let cur=new Date(from);const end=new Date(to);while(cur<=end){dates.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}return dates;}
-  function isSunday(ds){const[y,m,d]=ds.split('-').map(Number);return new Date(y,m-1,d).getDay()===0;}
-  function getEffectiveTarget(base,reason){const r=String(reason||'').trim();if(ZERO_TARGET_TYPES.includes(r))return 0;if(r==='Half Day')return Math.ceil(base/2);return base;}
+  function getTodayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  function formatDate(ds) { if(!ds) return '—'; const[y,m,d]=ds.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+  function matchTeam(e,t) { return String(e.team).toLowerCase().includes(t.toLowerCase()); }
+  function getDaysBetween(from,to) { const dates=[]; let cur=new Date(from); const end=new Date(to); while(cur<=end){dates.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);} return dates; }
+  function isSunday(ds) { const[y,m,d]=ds.split('-').map(Number); return new Date(y,m-1,d).getDay()===0; }
+  function getEffectiveTarget(base,reason) { const r=String(reason||'').trim(); if(ZERO_TARGET_TYPES.includes(r)) return 0; if(r==='Half Day') return Math.ceil(base/2); return base; }
 
-  async function apiFetch(action,params={}){
-    const url=APPS_SCRIPT_URL+"?"+new URLSearchParams({action,...params}).toString();
-    const r=await fetch(url);return r.json();
+  async function apiFetch(action, params={}) {
+    const url = APPS_SCRIPT_URL + "?" + new URLSearchParams({action,...params}).toString();
+    const r = await fetch(url); return r.json();
   }
 
   /* ── AUTH ── */
-  onAuthStateChanged(auth, async(user)=>{
-    if(!user){window.location.href="index.html";return;}
-    currentUser=user;
-    document.getElementById('navEmail').textContent=user.email;
+  onAuthStateChanged(auth, async(user) => {
+    if (!user) { window.location.href="index.html"; return; }
+    currentUser = user;
+    document.getElementById('navEmail').textContent = user.email;
     await loadAdminData();
   });
-  window.logout=async()=>{await signOut(auth);window.location.href="index.html";};
+  window.logout = async() => { await signOut(auth); window.location.href="index.html"; };
 
-  async function loadAdminData(){
-    try{
+  async function loadAdminData() {
+    try {
       const [userRes, entriesRes, holidayRes] = await Promise.all([
         apiFetch('getUser',{email:currentUser.email}),
         apiFetch('getAllEntries',{email:currentUser.email}),
         apiFetch('getHolidays')
       ]);
-      if(userRes.role!=="Admin"){alert("Access denied");window.location.href="index.html";return;}
-      allEntries   =(entriesRes.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
-      allEmployees = entriesRes.employees||[];
-      holidays     =(holidayRes.holidays ||[]).map(h=>({...h,date:normalizeDate(h.date)}));
-      renderStats();renderChart();renderTable();populateFilters();renderHolidayList();
-    }catch(e){alert("Error: "+e.message);}
+      if (userRes.role !== "Admin") { alert("Access denied"); window.location.href="index.html"; return; }
+      allEntries   = (entriesRes.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+      allEmployees =  entriesRes.employees||[];
+      holidays     = (holidayRes.holidays ||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+      populateFilters();
+      // Default to today on load
+      setQuickRange('today', document.getElementById('qr-today'));
+    } catch(e) { alert("Error: "+e.message); }
   }
 
   /* ── TABS ── */
-  window.switchTab=function(tab){
-    ['overview','roster','calendar','holidays'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
-    document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['overview','roster','calendar','holidays'][i]===tab);});
-    if(tab==='overview') renderChart();
-    if(tab==='roster')   renderRosterLog();
-    if(tab==='holidays') renderHolidayList();
+  window.switchTab = function(tab) {
+    ['overview','roster','calendar','holidays'].forEach(t => {
+      document.getElementById('tab-'+t).style.display = t===tab ? 'block' : 'none';
+    });
+    document.querySelectorAll('.tab').forEach((el,i) => {
+      el.classList.toggle('active', ['overview','roster','calendar','holidays'][i]===tab);
+    });
+    if (tab==='overview') { renderTable(); }
+    if (tab==='roster')   renderRosterLog();
+    if (tab==='holidays') renderHolidayList();
   };
 
-  /* ── STATS ── */
- function renderStats(){
-  // Use table filters for stats
-  const empF =document.getElementById('filterEmployee').value;
-  const teamF=document.getElementById('filterTeam').value;
-  const fromF=document.getElementById('filterFrom').value;
-  const toF  =document.getElementById('filterTo').value;
+  /* ═══════════════════════════════════════════════════
+     UNIFIED DATE FILTER — single source of truth
+     filterFrom / filterTo inputs drive everything.
+     Quick range buttons simply set those inputs.
+  ═══════════════════════════════════════════════════ */
 
-  // Determine which date to use for stats
-  let statDate = getTodayStr();
-  if(fromF && fromF===toF) statDate=fromF; // single day selected
-  else if(fromF) statDate=fromF; // use from date
+  /** Called by quick-range buttons */
+  window.setQuickRange = function(range, btn) {
+    // Update button styles
+    document.querySelectorAll('.range-btn[id^="qr-"]').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
 
-  const dayEntries=allEntries.filter(e=>{
-    const d=e.date;
-    if(fromF&&toF) return d>=fromF&&d<=toF;
-    if(fromF) return d===fromF;
-    return d===getTodayStr();
-  });
+    const now = new Date();
+    let from, to = getTodayStr();
 
-  const workEntries=dayEntries.filter(e=>!ROSTER_TYPES.includes(String(e.reason||'').trim()));
-  const filtWork=workEntries.filter(e=>{
-    if(empF  && e.name!==empF)       return false;
-    if(teamF && !matchTeam(e,teamF)) return false;
-    return true;
-  });
+    if (range === 'today') {
+      from = getTodayStr();
+      document.getElementById('chartRangeLabel').textContent = 'Today';
+    } else if (range === 'week') {
+      const diff = now.getDay()===0 ? 6 : now.getDay()-1;
+      const d = new Date(now); d.setDate(now.getDate()-diff);
+      from = d.toISOString().split('T')[0];
+      document.getElementById('chartRangeLabel').textContent = 'This Week';
+    } else if (range === 'month') {
+      from = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+      document.getElementById('chartRangeLabel').textContent = 'This Month';
+    } else if (range === 'year') {
+      from = `${now.getFullYear()}-01-01`;
+      document.getElementById('chartRangeLabel').textContent = 'This Year';
+    } else if (range === 'all') {
+      from = '2000-01-01';
+      to   = getTodayStr();
+      document.getElementById('chartRangeLabel').textContent = 'All Time';
+    }
 
-  const empCount=allEmployees.filter(e=>String(e.role)!=='Admin').length;
+    document.getElementById('filterFrom').value = from;
+    document.getElementById('filterTo').value   = to;
+    renderTable(); // renders chart inside
+  };
 
-  // Pending employees — who haven't submitted anything for the stat date range
-  const submittedEmails=new Set(dayEntries.map(e=>e.email));
-  const pendingEmps=allEmployees.filter(e=>e.role!=='Admin'&&!submittedEmails.has(e.email));
+  /** Called when user manually changes a date picker */
+  window.onFilterDateChange = function() {
+    // Clear quick-range active state since user picked custom
+    document.querySelectorAll('.range-btn[id^="qr-"]').forEach(b => b.classList.remove('active'));
+    const from = document.getElementById('filterFrom').value;
+    const to   = document.getElementById('filterTo').value;
+    document.getElementById('chartRangeLabel').textContent =
+      (from && to) ? `${formatDate(from)} – ${formatDate(to)}` : 'Custom';
+    renderTable();
+  };
 
-  document.getElementById('statEmp').textContent       =empCount;
-  document.getElementById('statToday').textContent     =workEntries.length;
-  document.getElementById('statCasesToday').textContent=filtWork.reduce((s,e)=>s+parseInt(e.total),0);
-  document.getElementById('statPending').textContent   =pendingEmps.length;
-  document.getElementById('statTech').textContent      =filtWork.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0);
-  document.getElementById('statMed').textContent       =filtWork.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0);
-  document.getElementById('statCash').textContent      =filtWork.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0);
+  /* ── STATS — uses filterFrom/To ── */
+  function renderStats() {
+    const empF  = document.getElementById('filterEmployee').value;
+    const teamF = document.getElementById('filterTeam').value;
+    const fromF = document.getElementById('filterFrom').value;
+    const toF   = document.getElementById('filterTo').value;
 
-  // Pending hover tooltip
-  const pendingEl=document.getElementById('statPending');
-  if(pendingEmps.length){
-    const tooltipLines=pendingEmps.map(emp=>{
-      // Check if they have a roster entry for this date
-      const rosterEntry=allEntries.find(e=>e.email===emp.email&&(fromF?e.date===fromF:e.date===getTodayStr())&&ROSTER_TYPES.includes(String(e.reason||'').trim()));
-      return rosterEntry?`${emp.name}: ${rosterEntry.reason}`:`${emp.name}: Not submitted`;
+    // All entries in the date range (for pending count)
+    const rangeEntries = allEntries.filter(e => {
+      if (fromF && e.date < fromF) return false;
+      if (toF   && e.date > toF)   return false;
+      return true;
     });
-    pendingEl.title=tooltipLines.join('\n');
-    pendingEl.style.cursor='help';
-  } else {
-    pendingEl.title='';
-    pendingEl.style.cursor='default';
-  }
-}
+    const workEntries = rangeEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason||'').trim()));
+    const filtWork = workEntries.filter(e => {
+      if (empF  && e.name !== empF)       return false;
+      if (teamF && !matchTeam(e, teamF))  return false;
+      return true;
+    });
 
-  /* ── TABLE ── */
-  function getFilteredEntries(){
-    const emp =document.getElementById('filterEmployee').value;
-    const team=document.getElementById('filterTeam').value;
-    const from=document.getElementById('filterFrom').value;
-    const to  =document.getElementById('filterTo').value;
-    return allEntries.filter(e=>{
-      if(emp  && e.name!==emp)       return false;
-      if(team && !matchTeam(e,team)) return false;
-      if(from && e.date<from)        return false;
-      if(to   && e.date>to)          return false;
+    const empCount = allEmployees.filter(e => String(e.role) !== 'Admin').length;
+    const submittedEmails = new Set(rangeEntries.map(e => e.email));
+    const pendingEmps = allEmployees.filter(e => e.role !== 'Admin' && !submittedEmails.has(e.email));
+
+    document.getElementById('statEmp').textContent        = empCount;
+    document.getElementById('statToday').textContent      = workEntries.length;
+    document.getElementById('statCasesToday').textContent = filtWork.reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statPending').textContent    = pendingEmps.length;
+    document.getElementById('statTech').textContent       = filtWork.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statMed').textContent        = filtWork.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0);
+    document.getElementById('statCash').textContent       = filtWork.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0);
+
+    const pendingEl = document.getElementById('statPending');
+    if (pendingEmps.length) {
+      const lines = pendingEmps.map(emp => {
+        const re = rangeEntries.find(e => e.email===emp.email && ROSTER_TYPES.includes(String(e.reason||'').trim()));
+        return re ? `${emp.name}: ${re.reason}` : `${emp.name}: Not submitted`;
+      });
+      pendingEl.title  = lines.join('\n');
+      pendingEl.style.cursor = 'help';
+    } else {
+      pendingEl.title  = '';
+      pendingEl.style.cursor = 'default';
+    }
+  }
+
+  /* ── TABLE — uses filterFrom/To ── */
+  function getFilteredEntries() {
+    const emp  = document.getElementById('filterEmployee').value;
+    const team = document.getElementById('filterTeam').value;
+    const from = document.getElementById('filterFrom').value;
+    const to   = document.getElementById('filterTo').value;
+    return allEntries.filter(e => {
+      if (emp  && e.name !== emp)        return false;
+      if (team && !matchTeam(e, team))   return false;
+      if (from && e.date < from)         return false;
+      if (to   && e.date > to)           return false;
       return true;
     });
   }
 
-  window.renderTable=function(){
-    const filtered=getFilteredEntries().sort((a,b)=>b.date.localeCompare(a.date));
-    const tbody=document.getElementById('tableBody');
-    if(!filtered.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No entries found</td></tr>';renderChart();return;}
-    tbody.innerHTML=filtered.map(e=>{
-      const deficit   =parseInt(e.deficit)||0;
-      const teamColor =matchTeam(e,'technical')?'var(--blue)':matchTeam(e,'medical')?'var(--green)':'var(--yellow)';
-      const reason    =String(e.reason||'').trim();
-      const isRoster  =ROSTER_TYPES.includes(reason);
-      const rBadge    =isRoster?`<span class="${BADGE_CLASS[reason]||'badge-leave'}">${reason}</span>`:reason||'—';
-      const effTarget =getEffectiveTarget(e.target||0,reason);
+  window.renderTable = function() {
+    const filtered = getFilteredEntries().sort((a,b) => b.date.localeCompare(a.date));
+    const tbody = document.getElementById('tableBody');
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No entries found</td></tr>';
+      renderChart([]); renderStats(); return;
+    }
+    tbody.innerHTML = filtered.map(e => {
+      const deficit    = parseInt(e.deficit)||0;
+      const teamColor  = matchTeam(e,'technical')?'var(--blue)':matchTeam(e,'medical')?'var(--green)':'var(--yellow)';
+      const reason     = String(e.reason||'').trim();
+      const isRoster   = ROSTER_TYPES.includes(reason);
+      const rBadge     = isRoster ? `<span class="${BADGE_CLASS[reason]||'badge-leave'}">${reason}</span>` : reason||'—';
+      const effTarget  = getEffectiveTarget(e.target||0, reason);
       return `<tr>
         <td>${formatDate(e.date)}</td>
         <td><strong>${e.name}</strong></td>
@@ -518,208 +576,210 @@
         <td>${rBadge}</td>
       </tr>`;
     }).join('');
-    renderChart();
+    renderChart(filtered);
     renderStats();
   };
 
-  function populateFilters(){
-    const names=[...new Set(allEntries.map(e=>e.name))].sort();
-    ['filterEmployee','rosterFilterEmp','calEmpSelect'].forEach(id=>{
-      const sel=document.getElementById(id);
-      if(!sel) return;
-      // clear existing options except first
-      while(sel.options.length>1) sel.remove(1);
-      names.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});
+  function populateFilters() {
+    const names = [...new Set(allEntries.map(e=>e.name))].sort();
+    ['filterEmployee','rosterFilterEmp','calEmpSelect'].forEach(id => {
+      const sel = document.getElementById(id); if (!sel) return;
+      while (sel.options.length > 1) sel.remove(1);
+      names.forEach(n => { const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
     });
-    // For roster employee — use email as value
-    const rEmp=document.getElementById('rosterEmployee');
-    while(rEmp.options.length>1) rEmp.remove(1);
-    allEmployees.filter(e=>e.role!=='Admin').forEach(emp=>{
-      const o=document.createElement('option');o.value=emp.email;o.textContent=emp.name+(emp.team?' ('+emp.team+')':'');rEmp.appendChild(o);
+    const rEmp = document.getElementById('rosterEmployee');
+    while (rEmp.options.length > 1) rEmp.remove(1);
+    allEmployees.filter(e=>e.role!=='Admin').forEach(emp => {
+      const o=document.createElement('option'); o.value=emp.email;
+      o.textContent=emp.name+(emp.team?' ('+emp.team+')':''); rEmp.appendChild(o);
     });
-    const today=getTodayStr();
-    document.getElementById('adminRosterFrom').value=today;
-    document.getElementById('adminRosterTo').value=today;
+    const today = getTodayStr();
+    document.getElementById('adminRosterFrom').value = today;
+    document.getElementById('adminRosterTo').value   = today;
   }
 
-  /* ── CHART ── */
-  window.setRange=function(range,btn){
-    currentRange=range;
-    document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('view-'+currentView).classList.add('active');
-    const cd=document.getElementById('customRange');
-    if(range==='custom'){
-      cd.classList.add('show');
-      const now=new Date(),from=new Date(now);from.setDate(from.getDate()-30);
-      document.getElementById('chartFrom').value=from.toISOString().split('T')[0];
-      document.getElementById('chartTo').value=now.toISOString().split('T')[0];
-    }else{cd.classList.remove('show');}
-    renderChart();
-  };
-
-  window.setView=function(view,btn){
-    currentView=view;
+  /* ── CHART — receives filtered entries directly ── */
+  window.setView = function(view, btn) {
+    currentView = view;
     document.getElementById('view-total').classList.remove('active');
     document.getElementById('view-distrib').classList.remove('active');
     btn.classList.add('active');
-    document.getElementById('chartTotalWrap').style.display  =view==='total'  ?'block':'none';
-    document.getElementById('chartDistribWrap').style.display=view==='distrib'?'block':'none';
-    renderChart();
+    document.getElementById('chartTotalWrap').style.display   = view==='total'   ? 'block' : 'none';
+    document.getElementById('chartDistribWrap').style.display = view==='distrib' ? 'block' : 'none';
+    renderTable(); // re-render chart with current data
   };
 
-  function buildDateRange(){
-    const now=new Date();let from,to;
-    if(currentRange==='week'){const diff=now.getDay()===0?6:now.getDay()-1;from=new Date(now);from.setDate(now.getDate()-diff);to=new Date(now);}
-    else if(currentRange==='month'){from=new Date(now.getFullYear(),now.getMonth(),1);to=new Date(now);}
-    else if(currentRange==='year'){from=new Date(now.getFullYear(),0,1);to=new Date(now);}
-    else{const f=document.getElementById('chartFrom').value,t=document.getElementById('chartTo').value;if(!f||!t)return null;from=new Date(f);to=new Date(t);}
-    const days=[];let cur=new Date(from);
-    while(cur<=to){days.push(cur.toISOString().split('T')[0]);cur.setDate(cur.getDate()+1);}
-    return days;
-  }
+  /**
+   * Builds date labels from the current filterFrom/To range,
+   * then aggregates the passed filtered entries into those buckets.
+   */
+  function renderChart(filteredEntries) {
+    const from = document.getElementById('filterFrom').value;
+    const to   = document.getElementById('filterTo').value;
+    if (!from || !to) return;
 
-  function buildChartData(days,entries){
-    const labels=[],techTotal=[],medTotal=[],cashTotal=[],techFresh=[],medFresh=[],cashFresh=[],techRework=[],medRework=[],cashRework=[],targetData=[];
-    const group=days.length<=31?'day':'month';
-    const workEntries=entries.filter(e=>!ROSTER_TYPES.includes(String(e.reason||'').trim()));
-    if(group==='day'){
-      days.forEach(d=>{
-        labels.push(new Date(...d.split('-').map((v,i)=>i===1?Number(v)-1:Number(v))).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
-        const de=workEntries.filter(e=>e.date===d);
+    const days = getDaysBetween(from, to);
+    const entries = (filteredEntries || getFilteredEntries())
+      .filter(e => !ROSTER_TYPES.includes(String(e.reason||'').trim()));
+
+    const useMonthly = days.length > 60;
+
+    // Build buckets
+    let labels=[], techTotal=[], medTotal=[], cashTotal=[];
+    let techFresh=[], medFresh=[], cashFresh=[];
+    let techRework=[], medRework=[], cashRework=[], targetData=[];
+
+    if (!useMonthly) {
+      days.forEach(d => {
+        labels.push(new Date(...d.split('-').map((v,i)=>i===1?Number(v)-1:Number(v)))
+          .toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
+        const de = entries.filter(e => e.date===d);
         techTotal.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
-        medTotal.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
+        medTotal.push( de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
         cashTotal.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
         techFresh.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.fresh),0));
-        medFresh.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.fresh),0));
+        medFresh.push( de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.fresh),0));
         cashFresh.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.fresh),0));
         techRework.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.rework),0));
-        medRework.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
+        medRework.push( de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
         cashRework.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.rework),0));
-        const emails=[...new Set(de.map(e=>e.email))];
-        targetData.push(emails.reduce((s,email)=>{const emp=allEmployees.find(em=>String(em.email).toLowerCase()===email.toLowerCase());return s+(parseInt(emp?.target)||0);},0));
+        const emails = [...new Set(de.map(e=>e.email))];
+        targetData.push(emails.reduce((s,email)=>{
+          const emp=allEmployees.find(em=>String(em.email).toLowerCase()===email.toLowerCase());
+          return s+(parseInt(emp?.target)||0);
+        },0));
       });
-    }else{
-      const months={};days.forEach(d=>{const k=d.substring(0,7);if(!months[k])months[k]=[];months[k].push(d);});
-      Object.entries(months).forEach(([key,mDays])=>{
+    } else {
+      const months = {};
+      days.forEach(d => { const k=d.substring(0,7); if(!months[k]) months[k]=[]; months[k].push(d); });
+      Object.entries(months).forEach(([key, mDays]) => {
         labels.push(new Date(key+'-01').toLocaleDateString('en-IN',{month:'short',year:'numeric'}));
-        const me=workEntries.filter(e=>mDays.includes(e.date));
+        const me = entries.filter(e => mDays.includes(e.date));
         techTotal.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
-        medTotal.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
+        medTotal.push( me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
         cashTotal.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
         techFresh.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.fresh),0));
-        medFresh.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.fresh),0));
+        medFresh.push( me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.fresh),0));
         cashFresh.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.fresh),0));
         techRework.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.rework),0));
-        medRework.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
+        medRework.push( me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
         cashRework.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.rework),0));
-        const mt=mDays.reduce((tot,d)=>{const de=me.filter(e=>e.date===d);const emails=[...new Set(de.map(e=>e.email))];return tot+emails.reduce((s,email)=>{const emp=allEmployees.find(em=>String(em.email).toLowerCase()===email.toLowerCase());return s+(parseInt(emp?.target)||0);},0);},0);
+        const mt = mDays.reduce((tot,d) => {
+          const de = me.filter(e=>e.date===d);
+          const emails=[...new Set(de.map(e=>e.email))];
+          return tot+emails.reduce((s,email)=>{const emp=allEmployees.find(em=>String(em.email).toLowerCase()===email.toLowerCase());return s+(parseInt(emp?.target)||0);},0);
+        },0);
         targetData.push(mt);
       });
     }
-    return{labels,techTotal,medTotal,cashTotal,techFresh,medFresh,cashFresh,techRework,medRework,cashRework,targetData};
-  }
 
-  window.renderChart=function(){
-    const days=buildDateRange();if(!days)return;
-    const filtered=getFilteredEntries();
-    const d=buildChartData(days,filtered);
-    const tgt={label:'Team Target',data:d.targetData,type:'line',borderColor:'#dc2626',borderWidth:2,borderDash:[6,3],pointRadius:3,pointBackgroundColor:'#dc2626',fill:false,order:1,stack:undefined};
-    const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{usePointStyle:true,font:{size:12}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f0f0f0'}}}};
-    if(currentView==='total'){
-      if(adminChart)adminChart.destroy();
-      adminChart=new Chart(document.getElementById('adminChart'),{type:'bar',data:{labels:d.labels,datasets:[
-        {label:'Technical',data:d.techTotal,backgroundColor:'#3b82f6',borderRadius:4,stack:'s',order:2},
-        {label:'Medical',data:d.medTotal,backgroundColor:'#4ade80',borderRadius:4,stack:'s',order:2},
-        {label:'Cashless',data:d.cashTotal,backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},tgt
+    const tgt = {
+      label:'Team Target', data:targetData, type:'line',
+      borderColor:'#dc2626', borderWidth:2, borderDash:[6,3],
+      pointRadius:3, pointBackgroundColor:'#dc2626',
+      fill:false, order:1, stack:undefined
+    };
+    const opts = {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{usePointStyle:true,font:{size:12}}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f0f0f0'}}}
+    };
+
+    if (currentView === 'total') {
+      if (adminChart) adminChart.destroy();
+      adminChart = new Chart(document.getElementById('adminChart'),{type:'bar',data:{labels,datasets:[
+        {label:'Technical',data:techTotal,backgroundColor:'#3b82f6',borderRadius:4,stack:'s',order:2},
+        {label:'Medical',  data:medTotal, backgroundColor:'#4ade80',borderRadius:4,stack:'s',order:2},
+        {label:'Cashless', data:cashTotal,backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},
+        tgt
       ]},options:opts});
-    }else{
-      if(chartFresh)chartFresh.destroy();
-      chartFresh=new Chart(document.getElementById('chartFresh'),{type:'bar',data:{labels:d.labels,datasets:[
-        {label:'Technical Fresh',data:d.techFresh,backgroundColor:'#3b82f6',borderRadius:4,stack:'s',order:2},
-        {label:'Medical Fresh',data:d.medFresh,backgroundColor:'#4ade80',borderRadius:4,stack:'s',order:2},
-        {label:'Cashless Fresh',data:d.cashFresh,backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},tgt
+    } else {
+      if (chartFresh)  chartFresh.destroy();
+      chartFresh = new Chart(document.getElementById('chartFresh'),{type:'bar',data:{labels,datasets:[
+        {label:'Technical Fresh',data:techFresh, backgroundColor:'#3b82f6',borderRadius:4,stack:'s',order:2},
+        {label:'Medical Fresh',  data:medFresh,  backgroundColor:'#4ade80',borderRadius:4,stack:'s',order:2},
+        {label:'Cashless Fresh', data:cashFresh, backgroundColor:'#f59e0b',borderRadius:4,stack:'s',order:2},
+        tgt
       ]},options:opts});
-      if(chartRework)chartRework.destroy();
-      chartRework=new Chart(document.getElementById('chartRework'),{type:'bar',data:{labels:d.labels,datasets:[
-        {label:'Technical Rework',data:d.techRework,backgroundColor:'#93c5fd',borderRadius:4,stack:'s',order:2},
-        {label:'Medical Rework',data:d.medRework,backgroundColor:'#86efac',borderRadius:4,stack:'s',order:2},
-        {label:'Cashless Rework',data:d.cashRework,backgroundColor:'#fcd34d',borderRadius:4,stack:'s',order:2}
+      if (chartRework) chartRework.destroy();
+      chartRework = new Chart(document.getElementById('chartRework'),{type:'bar',data:{labels,datasets:[
+        {label:'Technical Rework',data:techRework, backgroundColor:'#93c5fd',borderRadius:4,stack:'s',order:2},
+        {label:'Medical Rework',  data:medRework,  backgroundColor:'#86efac',borderRadius:4,stack:'s',order:2},
+        {label:'Cashless Rework', data:cashRework, backgroundColor:'#fcd34d',borderRadius:4,stack:'s',order:2}
       ]},options:opts});
     }
-  };
+  }
 
   /* ── ADMIN ROSTER ── */
-  window.selectAdminRosterType=function(type){
-    adminRosterType=type;
+  window.selectAdminRosterType = function(type) {
+    adminRosterType = type;
     document.querySelectorAll('#tab-roster .rtype-btn').forEach(b=>b.classList.remove('active'));
-    const btn=document.getElementById('art-'+type);
-    if(btn) btn.classList.add('active');
+    const btn = document.getElementById('art-'+type); if (btn) btn.classList.add('active');
     updateAdminPreview();
   };
 
-  window.updateAdminPreview=function(){
-    const from=document.getElementById('adminRosterFrom').value;
-    const to  =document.getElementById('adminRosterTo').value;
-    const empSel=document.getElementById('rosterEmployee');
-    const empName=empSel.options[empSel.selectedIndex]?.text||'';
-    const prev=document.getElementById('adminRosterPreview');
-    if(!adminRosterType||!from||!to){prev.innerHTML='Select an employee, type, and date range to preview';return;}
-    if(from>to){prev.innerHTML='<span style="color:var(--red)">To date must be after From date</span>';return;}
-    const days=getDaysBetween(from,to);
-    const valid=days.filter(d=>!isSunday(d));
-    const skip =days.length-valid.length;
-    const empTxt=empSel.value?`for <span>${empName}</span> `:'';
-    prev.innerHTML=`<span>${adminRosterType}</span> will be applied to <span>${valid.length} day(s)</span> ${empTxt}from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`+(skip?` <span style="color:var(--muted);font-weight:400;">(${skip} Sunday(s) skipped)</span>`:'');
+  window.updateAdminPreview = function() {
+    const from   = document.getElementById('adminRosterFrom').value;
+    const to     = document.getElementById('adminRosterTo').value;
+    const empSel = document.getElementById('rosterEmployee');
+    const empName= empSel.options[empSel.selectedIndex]?.text||'';
+    const prev   = document.getElementById('adminRosterPreview');
+    if (!adminRosterType||!from||!to) { prev.innerHTML='Select an employee, type, and date range to preview'; return; }
+    if (from>to) { prev.innerHTML='<span style="color:var(--red)">To date must be after From date</span>'; return; }
+    const days=getDaysBetween(from,to), valid=days.filter(d=>!isSunday(d)), skip=days.length-valid.length;
+    const empTxt = empSel.value ? `for <span>${empName}</span> ` : '';
+    prev.innerHTML = `<span>${adminRosterType}</span> will be applied to <span>${valid.length} day(s)</span> ${empTxt}from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>`
+      +(skip?` <span style="color:var(--muted);font-weight:400;">(${skip} Sunday(s) skipped)</span>`:'');
   };
 
-  window.submitAdminRoster=async function(){
-    const empEmail=document.getElementById('rosterEmployee').value;
-    const from=document.getElementById('adminRosterFrom').value;
-    const to  =document.getElementById('adminRosterTo').value;
-    if(!empEmail)        return showToast('adminRosterToast','adminRosterToastMsg','Please select an employee','error');
-    if(!adminRosterType) return showToast('adminRosterToast','adminRosterToastMsg','Please select a type','error');
-    if(!from||!to)       return showToast('adminRosterToast','adminRosterToastMsg','Please select a date range','error');
-    if(from>to)          return showToast('adminRosterToast','adminRosterToastMsg','From date must be before To date','error');
-    const days=getDaysBetween(from,to).filter(d=>!isSunday(d));
-    if(!days.length) return showToast('adminRosterToast','adminRosterToastMsg','No valid days','error');
-    const btn=document.getElementById('adminRosterBtn');
+  window.submitAdminRoster = async function() {
+    const empEmail = document.getElementById('rosterEmployee').value;
+    const from = document.getElementById('adminRosterFrom').value;
+    const to   = document.getElementById('adminRosterTo').value;
+    if (!empEmail)        return showToast('adminRosterToast','adminRosterToastMsg','Please select an employee','error');
+    if (!adminRosterType) return showToast('adminRosterToast','adminRosterToastMsg','Please select a type','error');
+    if (!from||!to)       return showToast('adminRosterToast','adminRosterToastMsg','Please select a date range','error');
+    if (from>to)          return showToast('adminRosterToast','adminRosterToastMsg','From date must be before To date','error');
+    const days = getDaysBetween(from,to).filter(d=>!isSunday(d));
+    if (!days.length) return showToast('adminRosterToast','adminRosterToastMsg','No valid days','error');
+    const btn = document.getElementById('adminRosterBtn');
     btn.disabled=true; btn.textContent='Applying...';
-    let success=0,skipped=0,failed=0;
-    for(const date of days){
-      try{
-        const data=await apiFetch('saveEntry',{email:empEmail,date,fresh:0,rework:0,reason:adminRosterType});
-        if(data.result==='SUCCESS') success++;
-        else if(data.result==='EXISTS') skipped++;
+    let success=0, skipped=0, failed=0;
+    for (const date of days) {
+      try {
+        const data = await apiFetch('saveEntry',{email:empEmail,date,fresh:0,rework:0,reason:adminRosterType});
+        if (data.result==='SUCCESS') success++;
+        else if (data.result==='EXISTS') skipped++;
         else failed++;
-      }catch(_){failed++;}
+      } catch(_) { failed++; }
     }
     btn.disabled=false; btn.textContent='Apply to Roster';
-    showToast('adminRosterToast','adminRosterToastMsg',`Applied: ${success}`+(skipped?` | Existed: ${skipped}`:'')+( failed?` | Failed: ${failed}`:''),failed?'error':'success');
-    // reload
-    const data=await apiFetch('getAllEntries',{email:currentUser.email});
-    allEntries=(data.entries||[]).map(e=>({...e,date:normalizeDate(e.date)}));
-    allEmployees=data.employees||[];
-    renderStats(); renderRosterLog();
+    showToast('adminRosterToast','adminRosterToastMsg',
+      `Applied: ${success}`+(skipped?` | Existed: ${skipped}`:'')+( failed?` | Failed: ${failed}`:''),
+      failed?'error':'success');
+    const data = await apiFetch('getAllEntries',{email:currentUser.email});
+    allEntries   = (data.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+    allEmployees =  data.employees||[];
+    renderTable(); renderRosterLog();
   };
 
-  window.renderRosterLog=function(){
-    const empF =document.getElementById('rosterFilterEmp')?.value||'';
-    const typeF=document.getElementById('rosterFilterType')?.value||'';
-    const fromF=document.getElementById('rosterFilterFrom')?.value||'';
-    const toF  =document.getElementById('rosterFilterTo')?.value||'';
-    const entries=allEntries.filter(e=>{
-      const r=String(e.reason||'').trim();
-      if(!ROSTER_TYPES.includes(r))  return false;
-      if(empF  && e.name!==empF)     return false;
-      if(typeF && r!==typeF)         return false;
-      if(fromF && e.date<fromF)      return false;
-      if(toF   && e.date>toF)        return false;
+  window.renderRosterLog = function() {
+    const empF  = document.getElementById('rosterFilterEmp')?.value||'';
+    const typeF = document.getElementById('rosterFilterType')?.value||'';
+    const fromF = document.getElementById('rosterFilterFrom')?.value||'';
+    const toF   = document.getElementById('rosterFilterTo')?.value||'';
+    const entries = allEntries.filter(e => {
+      const r = String(e.reason||'').trim();
+      if (!ROSTER_TYPES.includes(r))   return false;
+      if (empF  && e.name !== empF)    return false;
+      if (typeF && r !== typeF)        return false;
+      if (fromF && e.date < fromF)     return false;
+      if (toF   && e.date > toF)       return false;
       return true;
     }).sort((a,b)=>b.date.localeCompare(a.date));
-    const el=document.getElementById('rosterLog');
-    if(!entries.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:12px 0;">No roster entries found.</div>';return;}
-    el.innerHTML=`<table><thead><tr><th>Date</th><th>Employee</th><th>Team</th><th>Type</th></tr></thead><tbody>`+
+    const el = document.getElementById('rosterLog');
+    if (!entries.length) { el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:12px 0;">No roster entries found.</div>'; return; }
+    el.innerHTML = `<table><thead><tr><th>Date</th><th>Employee</th><th>Team</th><th>Type</th></tr></thead><tbody>`+
       entries.map(e=>`<tr>
         <td>${formatDate(e.date)}</td>
         <td><strong>${e.name}</strong></td>
@@ -729,62 +789,48 @@
   };
 
   /* ── EMPLOYEE CALENDAR ── */
-  window.loadEmpCalendar=async function(){
-    const name=document.getElementById('calEmpSelect').value;
-    if(!name){document.getElementById('empCalWrap').style.display='none';return;}
-    const emp=allEmployees.find(e=>e.name===name);
-    empCalEntries=allEntries.filter(e=>e.name===name);
-    empCalTarget =parseInt(emp?.target)||0;
-    empCalSelected=null;
+  window.loadEmpCalendar = async function() {
+    const name = document.getElementById('calEmpSelect').value;
+    if (!name) { document.getElementById('empCalWrap').style.display='none'; return; }
+    const emp = allEmployees.find(e=>e.name===name);
+    empCalEntries  = allEntries.filter(e=>e.name===name);
+    empCalTarget   = parseInt(emp?.target)||0;
+    empCalSelected = null;
     document.getElementById('empCalWrap').style.display='block';
     renderEmpCalendar();
   };
 
-  window.empCalNav=function(dir){
-    empCalMonth+=dir;
-    if(empCalMonth>11){empCalMonth=0;empCalYear++;}
-    if(empCalMonth<0){empCalMonth=11;empCalYear--;}
+  window.empCalNav = function(dir) {
+    empCalMonth += dir;
+    if (empCalMonth>11) { empCalMonth=0; empCalYear++; }
+    if (empCalMonth<0)  { empCalMonth=11; empCalYear--; }
     renderEmpCalendar();
   };
 
-  function renderEmpCalendar(){
-    const today   =getTodayStr();
-    const months  =['January','February','March','April','May','June','July','August','September','October','November','December'];
-    document.getElementById('empCalTitle').textContent=months[empCalMonth]+' '+empCalYear;
-    const entryMap  ={};
-    empCalEntries.forEach(e=>{entryMap[e.date]=e;});
-    const holidaySet=new Set(holidays.map(h=>h.date));
-    const grid=document.getElementById('empCalGrid');
+  function renderEmpCalendar() {
+    const today  = getTodayStr();
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('empCalTitle').textContent = months[empCalMonth]+' '+empCalYear;
+    const entryMap   = {}; empCalEntries.forEach(e=>{entryMap[e.date]=e;});
+    const holidaySet = new Set(holidays.map(h=>h.date));
+    const grid = document.getElementById('empCalGrid');
     grid.innerHTML='';
     ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{const el=document.createElement('div');el.className='cal-day-label';el.textContent=d;grid.appendChild(el);});
     const firstDay=new Date(empCalYear,empCalMonth,1);
-    let offset=firstDay.getDay()-1;if(offset<0)offset=6;
+    let offset=firstDay.getDay()-1; if(offset<0) offset=6;
     for(let i=0;i<offset;i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
     const daysInMonth=new Date(empCalYear,empCalMonth+1,0).getDate();
     for(let day=1;day<=daysInMonth;day++){
       const mm=String(empCalMonth+1).padStart(2,'0'),dd=String(day).padStart(2,'0');
       const ds=`${empCalYear}-${mm}-${dd}`;
-      const dow=new Date(empCalYear,empCalMonth,day).getDay();
-      const isSun=dow===0,isFuture=ds>today;
-      const entry=entryMap[ds];
-      const isHoliday=holidaySet.has(ds);
+      const isSun=new Date(empCalYear,empCalMonth,day).getDay()===0, isFuture=ds>today;
+      const entry=entryMap[ds], isHoliday=holidaySet.has(ds);
       const el=document.createElement('div');el.className='cal-day';el.textContent=day;
-
-      if(isHoliday&&!entry){
-        el.classList.add('holiday');
-        el.onclick=()=>showEmpDayDetail(ds,'holiday');
-      }else if(entry){
-        const r=String(entry.reason||'').trim();
-        el.classList.add(CAL_CLASS[r]||'work');
-        el.onclick=()=>showEmpDayDetail(ds,'entry');
-      }else if(isSun){
-        el.classList.add('sunday');
-      }else if(isFuture){
-        el.classList.add('future');
-      }else{
-        el.classList.add('missed');
-        el.onclick=()=>showEmpDayDetail(ds,'missed');
-      }
+      if(isHoliday&&!entry){el.classList.add('holiday');el.onclick=()=>showEmpDayDetail(ds,'holiday');}
+      else if(entry){el.classList.add(CAL_CLASS[String(entry.reason||'').trim()]||'work');el.onclick=()=>showEmpDayDetail(ds,'entry');}
+      else if(isSun){el.classList.add('sunday');}
+      else if(isFuture){el.classList.add('future');}
+      else{el.classList.add('missed');el.onclick=()=>showEmpDayDetail(ds,'missed');}
       if(ds===today) el.classList.add('today-marker');
       if(ds===empCalSelected) el.classList.add('selected');
       grid.appendChild(el);
@@ -801,33 +847,27 @@
           <div style="font-size:24px;margin-bottom:8px;">🎉</div>
           <div style="font-size:16px;font-weight:700;color:#9d174d;">${h?.name||'Holiday'}</div>
           <div style="font-size:12px;color:#6b7280;margin-top:4px;">Company holiday</div>
-        </div>`;
-      return;
+        </div>`;return;
     }
     if(type==='missed'){
       det.innerHTML=`<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
         <div style="background:#fef2f2;border-radius:10px;padding:28px;text-align:center;">
           <div style="font-size:15px;font-weight:600;color:#ef4444;">No Entry Recorded</div>
-        </div>`;
-      return;
+        </div>`;return;
     }
-    const entry=empCalEntries.find(e=>e.date===ds);
-    if(!entry) return;
+    const entry=empCalEntries.find(e=>e.date===ds);if(!entry) return;
     const reason=String(entry.reason||'').trim();
     const isRoster=ROSTER_TYPES.includes(reason)&&parseInt(entry.fresh)===0&&parseInt(entry.rework)===0;
     if(isRoster){
       const colorMap={'Leave':'#713f12','Sat Off':'#7c2d12','Comp Off':'#4c1d95','Half Day':'#1e3a8a','Absent':'#fff','Holiday':'#9d174d'};
-      const bgMap   ={'Leave':'#fef9c3','Sat Off':'#ffedd5','Comp Off':'#ede9fe','Half Day':'#dbeafe','Absent':'#450a0a','Holiday':'#fce7f3'};
+      const bgMap={'Leave':'#fef9c3','Sat Off':'#ffedd5','Comp Off':'#ede9fe','Half Day':'#dbeafe','Absent':'#450a0a','Holiday':'#fce7f3'};
       det.innerHTML=`<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
         <div style="background:${bgMap[reason]||'#f3f4f6'};border-radius:10px;padding:28px;text-align:center;">
           <div style="font-size:16px;font-weight:700;color:${colorMap[reason]||'#374151'};">${reason}</div>
           <div style="font-size:12px;color:#6b7280;margin-top:4px;">No work count recorded</div>
-        </div>`;
-      return;
+        </div>`;return;
     }
-    const eff=getEffectiveTarget(empCalTarget,reason);
-    const total=parseInt(entry.total)||0;
-    const deficit=Math.max(0,eff-total);
+    const eff=getEffectiveTarget(empCalTarget,reason), total=parseInt(entry.total)||0, deficit=Math.max(0,eff-total);
     const color=total>=eff?'var(--green)':'var(--red)';
     const status=total>eff?'Above Target 🎯':deficit===0?'Target Met':'Below Target';
     det.innerHTML=`
@@ -844,39 +884,39 @@
   }
 
   /* ── HOLIDAYS ── */
-  window.addHoliday=async function(){
-    const date=document.getElementById('holidayDate').value;
-    const name=document.getElementById('holidayName').value.trim();
-    if(!date) return showToast('holidayToast','holidayToastMsg','Please select a date','error');
-    if(!name) return showToast('holidayToast','holidayToastMsg','Please enter holiday name','error');
-    const data=await apiFetch('saveHoliday',{date,name,addedBy:currentUser.email});
-    if(data.result==='SUCCESS'){
+  window.addHoliday = async function() {
+    const date = document.getElementById('holidayDate').value;
+    const name = document.getElementById('holidayName').value.trim();
+    if (!date) return showToast('holidayToast','holidayToastMsg','Please select a date','error');
+    if (!name) return showToast('holidayToast','holidayToastMsg','Please enter holiday name','error');
+    const data = await apiFetch('saveHoliday',{date,name,addedBy:currentUser.email});
+    if (data.result==='SUCCESS') {
       showToast('holidayToast','holidayToastMsg','Holiday added successfully ✓','success');
       document.getElementById('holidayDate').value='';
       document.getElementById('holidayName').value='';
       const hData=await apiFetch('getHolidays');
       holidays=(hData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
       renderHolidayList();
-    }else if(data.result==='EXISTS'){
+    } else if (data.result==='EXISTS') {
       showToast('holidayToast','holidayToastMsg','Holiday already exists for this date','error');
-    }else{
+    } else {
       showToast('holidayToast','holidayToastMsg','Error: '+data.result,'error');
     }
   };
 
-  window.deleteHoliday=async function(date){
-    if(!confirm('Delete this holiday?')) return;
-    const data=await apiFetch('deleteHoliday',{date});
-    if(data.result==='SUCCESS'){
+  window.deleteHoliday = async function(date) {
+    if (!confirm('Delete this holiday?')) return;
+    const data = await apiFetch('deleteHoliday',{date});
+    if (data.result==='SUCCESS') {
       const hData=await apiFetch('getHolidays');
       holidays=(hData.holidays||[]).map(h=>({...h,date:normalizeDate(h.date)}));
       renderHolidayList();
     }
   };
 
-  function renderHolidayList(){
-    const el=document.getElementById('holidayList');
-    if(!holidays.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);">No holidays added yet.</div>';return;}
+  function renderHolidayList() {
+    const el = document.getElementById('holidayList');
+    if (!holidays.length) { el.innerHTML='<div style="font-size:13px;color:var(--muted);">No holidays added yet.</div>'; return; }
     const sorted=[...holidays].sort((a,b)=>a.date.localeCompare(b.date));
     el.innerHTML=`<table><thead><tr><th>Date</th><th>Holiday</th><th>Added By</th><th>Action</th></tr></thead><tbody>`+
       sorted.map(h=>`<tr>
@@ -887,25 +927,25 @@
       </tr>`).join('')+'</tbody></table>';
   }
 
-  function showToast(toastId,msgId,msg,type){
-    const t=document.getElementById(toastId);
-    document.getElementById(msgId).textContent=msg;
-    t.className='toast show '+type;
-    clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',4000);
+  function showToast(toastId, msgId, msg, type) {
+    const t = document.getElementById(toastId);
+    document.getElementById(msgId).textContent = msg;
+    t.className = 'toast show '+type;
+    clearTimeout(t._t); t._t = setTimeout(()=>t.className='toast', 4000);
   }
 
-  // Auto refresh
-  setInterval(async()=>{
-    if(!currentUser) return;
-    const [entriesRes,holidayRes]=await Promise.all([
+  // Auto refresh every 30s
+  setInterval(async() => {
+    if (!currentUser) return;
+    const [entriesRes, holidayRes] = await Promise.all([
       apiFetch('getAllEntries',{email:currentUser.email}),
       apiFetch('getHolidays')
     ]);
-    allEntries  =(entriesRes.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
-    allEmployees= entriesRes.employees||[];
-    holidays    =(holidayRes.holidays ||[]).map(h=>({...h,date:normalizeDate(h.date)}));
-    renderStats(); renderChart(); renderTable();
-  },30000);
+    allEntries   = (entriesRes.entries  ||[]).map(e=>({...e,date:normalizeDate(e.date)}));
+    allEmployees =  entriesRes.employees||[];
+    holidays     = (holidayRes.holidays ||[]).map(h=>({...h,date:normalizeDate(h.date)}));
+    renderTable();
+  }, 30000);
 </script>
 </body>
 </html>
