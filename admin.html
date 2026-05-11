@@ -22,6 +22,7 @@
     .navbar-right { display: flex; align-items: center; gap: 12px; }
     .navbar-email { font-size: 12px; color: rgba(255,255,255,0.6); }
     .logout-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer; }
+    .logout-btn:hover { background: rgba(255,255,255,0.2); }
     .main { padding: 24px; max-width: 1200px; margin: 0 auto; }
     .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
     .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -29,7 +30,8 @@
     .stat-card { background: var(--bg); border-radius: 10px; padding: 14px 16px; }
     .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
     .stat-val { font-size: 26px; font-weight: 700; color: var(--text); font-family: 'DM Mono', monospace; }
-    .chart-wrap { position: relative; height: 300px; }
+    .chart-wrap { position: relative; height: 300px; margin-bottom: 20px; }
+    .chart-container { position: relative; width: 100%; height: 300px; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
     td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
@@ -37,14 +39,16 @@
     .badge-green { background: #f0fdf4; color: var(--green); padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .badge-red { background: #fef2f2; color: var(--red); padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
-    select, input[type="date"] { height: 38px; padding: 0 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); outline: none; }
+    select, input[type="date"] { height: 38px; padding: 0 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); }
+    select:focus, input[type="date"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,26,46,0.08); }
     .range-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 8px; width: fit-content; margin-bottom: 12px; }
-    .range-btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+    .range-btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
     .range-btn.active { background: var(--accent); color: #fff; }
     .range-btn:hover:not(.active) { background: var(--border); color: var(--text); }
     .custom-range { display: none; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
     .custom-range.show { display: flex; }
     .chart-section-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .no-data { color: var(--muted); font-style: italic; padding: 20px; text-align: center; }
   </style>
 </head>
 <body>
@@ -97,41 +101,43 @@
     </div>
 
     <!-- Total Chart -->
-    <div id="chartTotalWrap">
-      <div class="chart-wrap"><canvas id="adminChart"></canvas></div>
+    <div id="chartTotalWrap" style="position: relative; height: 300px;">
+      <canvas id="chartTotal"></canvas>
     </div>
 
-    <!-- Fresh & Rework Charts -->
-    <div id="chartDistribWrap" style="display:none;">
-      <div class="chart-section-label">Fresh Cases</div>
-      <div class="chart-wrap"><canvas id="chartFresh"></canvas></div>
-      <div style="height:24px;"></div>
-      <div class="chart-section-label">Rework Cases</div>
-      <div class="chart-wrap"><canvas id="chartRework"></canvas></div>
+    <!-- Distribution Chart -->
+    <div id="chartDistribWrap" style="display:none; position: relative; height: 300px;">
+      <canvas id="chartDistrib"></canvas>
     </div>
   </div>
 
-  <!-- TABLE -->
+  <!-- TABLE CARD -->
   <div class="card">
-    <div class="card-title">All Entries</div>
+    <div class="card-title">Entries List</div>
     <div class="filter-row">
-      <select id="filterEmployee" onchange="renderTable()"><option value="">All Employees</option></select>
-      <select id="filterTeam" onchange="renderTable()">
+      <select id="teamFilter" onchange="filterEntries()">
         <option value="">All Teams</option>
-        <option value="technical">Technical</option>
-        <option value="medical">Medical</option>
-        <option value="cashless">Cashless</option>
       </select>
-      <input type="date" id="filterFrom" onchange="renderTable()">
-      <input type="date" id="filterTo"   onchange="renderTable()">
+      <input type="date" id="dateFilter" onchange="filterEntries()">
+      <button style="padding: 7px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px;" onclick="filterEntries()">Filter</button>
     </div>
-    <div style="overflow-x:auto; overflow-y:auto; max-height:500px;">
-      <table>
+    <div style="overflow-x: auto;">
+      <table id="entriesTable">
         <thead>
-          <tr><th>Date</th><th>Name</th><th>Team</th><th>Fresh</th><th>Rework</th><th>Total</th><th>Target</th><th>Deficit</th><th>Reason</th></tr>
+          <tr>
+            <th>Date</th>
+            <th>Employee</th>
+            <th>Team</th>
+            <th>Fresh</th>
+            <th>Rework</th>
+            <th>Total</th>
+            <th>Target</th>
+            <th>Deficit</th>
+            <th>Reason</th>
+          </tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>
+          <tr><td colspan="9" class="no-data">Loading entries...</td></tr>
         </tbody>
       </table>
     </div>
@@ -139,385 +145,321 @@
 
 </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+<script>
+  // ── CONFIG ──
+  const SCRIPT_URL = 'https://script.google.com/macros/d/1RlKqjLCwR9p5qb2K3ZF5xB9qB5xB9qC6eD7/usercontent/';
+  var userEmail = '';
+  var allEntries = [];
+  var chartData = [];
+  var teamData = [];
+  var currentRange = 'week';
+  var currentView = 'total';
+  var chartInstance = null;
 
-  const firebaseConfig = {
-    apiKey:            "AIzaSyB53EbCi3m1n5L1xReV8JExc_zoaQFe21Y",
-    authDomain:        "daily-eod--count-portal.firebaseapp.com",
-    projectId:         "daily-eod--count-portal",
-    storageBucket:     "daily-eod--count-portal.firebasestorage.app",
-    messagingSenderId: "665878833615",
-    appId:             "1:665878833615:web:3ef734d845a531b7874aba",
-    measurementId:     "G-9DTPC5WSN3"
-  };
-
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfu0eMO37-tJ4rWZ7-HlIq16yS49nmVGHHO6XoenSRNl351FryI1jBk5s0ICbHIUw4zQ/exec";
-
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  let currentUser  = null;
-  let allEntries   = [];
-  let allEmployees = [];
-  let adminChart   = null;
-  let chartFresh   = null;
-  let chartRework  = null;
-  let currentRange = 'week';
-  let currentView  = 'total';
-
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) { window.location.href = "index.html"; return; }
-    currentUser = user;
-    document.getElementById('navEmail').textContent = user.email;
-    await loadAdminData();
-  });
-
-  window.logout = async function() {
-    await signOut(auth);
-    window.location.href = "index.html";
-  };
-
-  async function loadAdminData() {
-    try {
-      const url1  = APPS_SCRIPT_URL + "?action=getUser&email=" + encodeURIComponent(currentUser.email);
-      const res1  = await fetch(url1);
-      const user  = await res1.json();
-      if (user.role !== "Admin") { alert("Access denied"); window.location.href = "index.html"; return; }
-
-      const url2  = APPS_SCRIPT_URL + "?action=getAllEntries&email=" + encodeURIComponent(currentUser.email);
-      const res2  = await fetch(url2);
-      const data2 = await res2.json();
-      // Normalize all dates at load time — fixes chart matching
-      allEntries   = (data2.entries   || []).map(e => ({...e, date: normalizeDate(e.date)}));
-      allEmployees = data2.employees || [];
-
-      renderStats();
-      renderChart();
-      renderTable();
-      populateFilter();
-    } catch(e) {
-      alert("Error: " + e.message);
-    }
-  }
-
-  function getTodayStr() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  }
-
-  function matchTeam(entry, team) {
-    return String(entry.team).toLowerCase().includes(team.toLowerCase());
-  }
-
-  function getFilteredEntries() {
-    const empFilter  = document.getElementById('filterEmployee').value;
-    const teamFilter = document.getElementById('filterTeam').value;
-    const fromFilter = document.getElementById('filterFrom').value;
-    const toFilter   = document.getElementById('filterTo').value;
-    return allEntries.filter(e => {
-      const d = String(e.date).substring(0,10);
-      if (empFilter  && e.name !== empFilter)      return false;
-      if (teamFilter && !matchTeam(e, teamFilter)) return false;
-      if (fromFilter && d < fromFilter)            return false;
-      if (toFilter   && d > toFilter)              return false;
-      return true;
-    });
-  }
-
-  function renderStats() {
-    const today    = getTodayStr();
-    const todayEnt = allEntries.filter(e => String(e.date).substring(0,10) === today);
-    const empCount = allEmployees.filter(e => String(e.role) !== 'Admin').length;
-    document.getElementById('statEmp').textContent        = empCount;
-    document.getElementById('statToday').textContent      = todayEnt.length;
-    document.getElementById('statCasesToday').textContent = todayEnt.reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statPending').textContent    = Math.max(0, empCount - todayEnt.length);
-    document.getElementById('statTech').textContent       = todayEnt.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statMed').textContent        = todayEnt.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0);
-    document.getElementById('statCash').textContent       = todayEnt.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0);
-  }
-
-  window.setRange = function(range, btn) {
-    currentRange = range;
-    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    // restore view toggle active state
-    document.getElementById('view-' + currentView).classList.add('active');
-    const cd = document.getElementById('customRange');
-    if (range === 'custom') {
-      cd.classList.add('show');
-      const now  = new Date();
-      const from = new Date(now);
-      from.setDate(from.getDate() - 30);
-      document.getElementById('chartFrom').value = from.toISOString().split('T')[0];
-      document.getElementById('chartTo').value   = now.toISOString().split('T')[0];
-    } else {
-      cd.classList.remove('show');
-    }
-    renderChart();
-  };
-
-  window.setView = function(view, btn) {
-    currentView = view;
-    document.getElementById('view-total').classList.remove('active');
-    document.getElementById('view-distrib').classList.remove('active');
-    btn.classList.add('active');
-    document.getElementById('chartTotalWrap').style.display   = view === 'total'   ? 'block' : 'none';
-    document.getElementById('chartDistribWrap').style.display = view === 'distrib' ? 'block' : 'none';
-    renderChart();
-  };
-
-  function buildDateRange() {
-    const now = new Date();
-    let fromDate, toDate;
-    if (currentRange === 'week') {
-      const diff = now.getDay() === 0 ? 6 : now.getDay() - 1;
-      fromDate = new Date(now); fromDate.setDate(now.getDate() - diff);
-      toDate   = new Date(now);
-    } else if (currentRange === 'month') {
-      fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      toDate   = new Date(now);
-    } else if (currentRange === 'year') {
-      fromDate = new Date(now.getFullYear(), 0, 1);
-      toDate   = new Date(now);
-    } else {
-      const f = document.getElementById('chartFrom').value;
-      const t = document.getElementById('chartTo').value;
-      if (!f || !t) return null;
-      fromDate = new Date(f); toDate = new Date(t);
-    }
-    const days = [];
-    const cur  = new Date(fromDate);
-    while (cur <= toDate) { days.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
-    return days;
-  }
-
-  function buildChartData(days, filteredEntries) {
-    let labels=[];
-    let techTotal=[], medTotal=[], cashTotal=[];
-    let techFresh=[], medFresh=[], cashFresh=[];
-    let techRework=[], medRework=[], cashRework=[];
-    let targetData=[];
-
-    if (days.length <= 35) {
-      labels = days.map(d => new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
-      days.forEach(d => {
-        const de = filteredEntries.filter(e => String(e.date).substring(0,10) === d);
-        techTotal.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
-        medTotal.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
-        cashTotal.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
-        techFresh.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.fresh),0));
-        medFresh.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.fresh),0));
-        cashFresh.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.fresh),0));
-        techRework.push(de.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.rework),0));
-        medRework.push(de.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
-        cashRework.push(de.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.rework),0));
-        const emails = [...new Set(de.map(e=>e.email))];
-        targetData.push(emails.reduce((sum,email) => {
-          const emp = allEmployees.find(em=>String(em.email).toLowerCase()===String(email).toLowerCase());
-          return sum + (parseInt(emp?.target)||0);
-        }, 0));
-      });
-    } else {
-      const months = {};
-      days.forEach(d => { const k=d.substring(0,7); if(!months[k]) months[k]=[]; months[k].push(d); });
-      Object.entries(months).forEach(([key, mDays]) => {
-        labels.push(new Date(key+'-01').toLocaleDateString('en-IN',{month:'short',year:'numeric'}));
-        const me = filteredEntries.filter(e=>mDays.includes(String(e.date).substring(0,10)));
-        techTotal.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.total),0));
-        medTotal.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.total),0));
-        cashTotal.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.total),0));
-        techFresh.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.fresh),0));
-        medFresh.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.fresh),0));
-        cashFresh.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.fresh),0));
-        techRework.push(me.filter(e=>matchTeam(e,'technical')).reduce((s,e)=>s+parseInt(e.rework),0));
-        medRework.push(me.filter(e=>matchTeam(e,'medical')).reduce((s,e)=>s+parseInt(e.rework),0));
-        cashRework.push(me.filter(e=>matchTeam(e,'cashless')).reduce((s,e)=>s+parseInt(e.rework),0));
-        const mt = mDays.reduce((total,d) => {
-          const de = filteredEntries.filter(e=>String(e.date).substring(0,10)===d);
-          const emails = [...new Set(de.map(e=>e.email))];
-          return total + emails.reduce((sum,email) => {
-            const emp = allEmployees.find(em=>String(em.email).toLowerCase()===String(email).toLowerCase());
-            return sum+(parseInt(emp?.target)||0);
-          },0);
-        },0);
-        targetData.push(mt);
-      });
-    }
-
-    return { labels, techTotal, medTotal, cashTotal, techFresh, medFresh, cashFresh, techRework, medRework, cashRework, targetData };
-  }
-
-  function normalizeDate(raw) {
-    if (!raw) return "";
-    try {
-      if (typeof raw === 'object' && raw instanceof Date) {
-        const y=raw.getFullYear(), m=String(raw.getMonth()+1).padStart(2,'0'), d=String(raw.getDate()).padStart(2,'0');
-        return y+'-'+m+'-'+d;
-      }
-      const s = String(raw).trim();
-      if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
-      const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-      if (dmy) return dmy[3]+'-'+dmy[2].padStart(2,'0')+'-'+dmy[1].padStart(2,'0');
-      const d = new Date(raw);
-      if (!isNaN(d)) { const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+dd; }
-    } catch(_) {}
-    return String(raw).substring(0,10);
-  }
-
-  function renderChart() {
-    // Chart syncs with employee + team filters from table, but uses its OWN date range
-    const empFilter  = document.getElementById('filterEmployee').value;
-    const teamFilter = document.getElementById('filterTeam').value;
-    const ROSTER     = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
-    const chartEntries = allEntries.filter(e => {
-      if (empFilter  && e.name !== empFilter)       return false;
-      if (teamFilter && !matchTeam(e, teamFilter))  return false;
-      if (ROSTER.includes(String(e.reason||'').trim())) return false; // exclude roster from chart
-      return true;
-    });
-    const days = buildDateRange();
-    if (!days) return;
-    const d = buildChartData(days, chartEntries);
-
-    const targetDataset = {
-      label: 'Team Target',
-      data: d.targetData,
-      type: 'line',
-      borderColor: '#dc2626',
-      borderWidth: 2.5,
-      borderDash: [6,3],
-      pointRadius: 4,
-      pointBackgroundColor: '#dc2626',
-      fill: false,
-      order: 1,
-      stack: undefined
-    };
-
-    const commonOptions = {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display:true, labels:{ usePointStyle:true, font:{size:12} } } },
-      scales: {
-        x: { stacked:true, grid:{display:false}, ticks:{font:{size:11}} },
-        y: { stacked:true, beginAtZero:true, grid:{color:'#f0f0f0'}, ticks:{font:{size:11}} }
-      }
-    };
-
-    if (currentView === 'total') {
-      if (adminChart) adminChart.destroy();
-      adminChart = new Chart(document.getElementById('adminChart'), {
-        type: 'bar',
-        data: {
-          labels: d.labels,
-          datasets: [
-            { label:'Technical', data:d.techTotal, backgroundColor:'#3b82f6', borderRadius:4, stack:'cases', order:2 },
-            { label:'Medical',   data:d.medTotal,  backgroundColor:'#4ade80', borderRadius:4, stack:'cases', order:2 },
-            { label:'Cashless',  data:d.cashTotal, backgroundColor:'#f59e0b', borderRadius:4, stack:'cases', order:2 },
-            targetDataset
-          ]
-        },
-        options: {
-          ...commonOptions,
-          plugins: {
-            ...commonOptions.plugins,
-            tooltip: {
-              callbacks: {
-                afterBody: function(context) {
-                  const idx   = context[0].dataIndex;
-                  const total = (d.techTotal[idx]||0)+(d.medTotal[idx]||0)+(d.cashTotal[idx]||0);
-                  const tgt   = d.targetData[idx];
-                  if (tgt===0) return 'Total: '+total;
-                  const diff  = total-tgt;
-                  if (diff>=0) return 'Total: '+total+'\n✓ Above by '+diff;
-                  return 'Total: '+total+'\n✗ Short by '+Math.abs(diff);
-                }
-              }
-            }
-          }
-        }
-      });
-
-    } else {
-      if (chartFresh) chartFresh.destroy();
-      chartFresh = new Chart(document.getElementById('chartFresh'), {
-        type: 'bar',
-        data: {
-          labels: d.labels,
-          datasets: [
-            { label:'Technical Fresh', data:d.techFresh, backgroundColor:'#3b82f6', borderRadius:4, stack:'fresh', order:2 },
-            { label:'Medical Fresh',   data:d.medFresh,  backgroundColor:'#4ade80', borderRadius:4, stack:'fresh', order:2 },
-            { label:'Cashless Fresh',  data:d.cashFresh, backgroundColor:'#f59e0b', borderRadius:4, stack:'fresh', order:2 },
-            targetDataset
-          ]
-        },
-        options: commonOptions
-      });
-
-      if (chartRework) chartRework.destroy();
-      chartRework = new Chart(document.getElementById('chartRework'), {
-        type: 'bar',
-        data: {
-          labels: d.labels,
-          datasets: [
-            { label:'Technical Rework', data:d.techRework, backgroundColor:'#93c5fd', borderRadius:4, stack:'rework', order:2 },
-            { label:'Medical Rework',   data:d.medRework,  backgroundColor:'#86efac', borderRadius:4, stack:'rework', order:2 },
-            { label:'Cashless Rework',  data:d.cashRework, backgroundColor:'#fcd34d', borderRadius:4, stack:'rework', order:2 }
-          ]
-        },
-        options: commonOptions
-      });
-    }
-  }
-
-  function renderTable() {
-    const filtered = getFilteredEntries();
-    const tbody = document.getElementById('tableBody');
-    if (!filtered.length) {
-      tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No entries found</td></tr>';
-      renderChart();
+  // ── INIT ──
+  window.onload = function() {
+    userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+      window.location.href = 'index.html';
       return;
     }
-    tbody.innerHTML = filtered.map(e => {
-      const deficit   = parseInt(e.deficit)||0;
-      const teamColor = matchTeam(e,'technical')?'var(--blue)':matchTeam(e,'medical')?'var(--green)':'var(--yellow)';
-      return `<tr>
-        <td>${new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</td>
-        <td><strong>${e.name}</strong></td>
-        <td><span style="color:${teamColor};font-weight:500;">${e.team}</span></td>
-        <td>${e.fresh}</td><td>${e.rework}</td>
-        <td><strong>${e.total}</strong></td>
-        <td>${e.target||'—'}</td>
-        <td>${deficit>0?`<span class="badge-red">${deficit}</span>`:`<span class="badge-green">0</span>`}</td>
-        <td style="color:var(--muted)">${e.reason||'—'}</td>
-      </tr>`;
-    }).join('');
+    document.getElementById('navEmail').textContent = userEmail;
+    loadData();
+  };
+
+  // ── LOAD DATA ──
+  function loadData() {
+    console.log('Loading admin data for:', userEmail);
+    
+    // Load stats and entries
+    fetch(SCRIPT_URL + '?action=getAllEntries&email=' + encodeURIComponent(userEmail))
+      .then(r => r.json())
+      .then(data => {
+        if (data.result === 'UNAUTHORIZED') {
+          alert('Unauthorized: You are not an admin');
+          logout();
+          return;
+        }
+        allEntries = data.entries || [];
+        console.log('Loaded entries:', allEntries.length);
+        renderStats();
+        renderTable();
+        populateTeamFilter();
+      })
+      .catch(e => console.error('getAllEntries error:', e));
+
+    // Load chart data
+    loadChartData();
+  }
+
+  // ── LOAD CHART DATA ──
+  function loadChartData() {
+    var from = '', to = '';
+    var now = new Date();
+
+    if (currentRange === 'week') {
+      var d = new Date(now);
+      d.setDate(d.getDate() - 7);
+      from = formatDateForAPI(d);
+      to = formatDateForAPI(now);
+    } else if (currentRange === 'month') {
+      var d = new Date(now);
+      d.setMonth(d.getMonth() - 1);
+      from = formatDateForAPI(d);
+      to = formatDateForAPI(now);
+    } else if (currentRange === 'year') {
+      var d = new Date(now);
+      d.setFullYear(d.getFullYear() - 1);
+      from = formatDateForAPI(d);
+      to = formatDateForAPI(now);
+    } else if (currentRange === 'custom') {
+      from = document.getElementById('chartFrom').value;
+      to = document.getElementById('chartTo').value;
+      if (!from || !to) return;
+    }
+
+    var params = '?action=getChartData&email=' + encodeURIComponent(userEmail);
+    if (from) params += '&from=' + from;
+    if (to) params += '&to=' + to;
+
+    fetch(SCRIPT_URL + params)
+      .then(r => r.json())
+      .then(data => {
+        chartData = data.chartData || [];
+        teamData = data.teamData || [];
+        console.log('Chart data loaded:', chartData.length, 'dates,', teamData.length, 'teams');
+        renderChart();
+      })
+      .catch(e => console.error('getChartData error:', e));
+  }
+
+  // ── RENDER STATS ──
+  function renderStats() {
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    var todayEntries = allEntries.filter(e => {
+      var d = new Date(e.date);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime() === today.getTime();
+    });
+
+    var employees = new Set(allEntries.map(e => e.email));
+    document.getElementById('statEmp').textContent = employees.size;
+    document.getElementById('statToday').textContent = todayEntries.length;
+    document.getElementById('statCasesToday').textContent = todayEntries.reduce((s, e) => s + e.total, 0);
+    document.getElementById('statPending').textContent = todayEntries.reduce((s, e) => s + e.deficit, 0);
+  }
+
+  // ── RENDER TABLE ──
+  function renderTable() {
+    var tbody = document.getElementById('tableBody');
+    if (allEntries.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="no-data">No entries found</td></tr>';
+      return;
+    }
+    var html = '';
+    allEntries.forEach(e => {
+      var deficitBadge = e.deficit > 0 ? '<span class="badge-red">' + e.deficit + '</span>' : '<span class="badge-green">✓</span>';
+      html += '<tr><td>' + e.date + '</td><td>' + e.name + '</td><td>' + e.team + '</td><td>' + e.fresh + '</td><td>' + e.rework + '</td><td>' + e.total + '</td><td>' + e.target + '</td><td>' + deficitBadge + '</td><td>' + e.reason + '</td></tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  // ── POPULATE TEAM FILTER ──
+  function populateTeamFilter() {
+    var teams = [...new Set(allEntries.map(e => e.team))];
+    var select = document.getElementById('teamFilter');
+    teams.forEach(team => {
+      var opt = document.createElement('option');
+      opt.value = team;
+      opt.textContent = team;
+      select.appendChild(opt);
+    });
+  }
+
+  // ── FILTER ENTRIES ──
+  function filterEntries() {
+    var team = document.getElementById('teamFilter').value;
+    var date = document.getElementById('dateFilter').value;
+    
+    var filtered = allEntries.filter(e => {
+      if (team && e.team !== team) return false;
+      if (date && e.date !== date) return false;
+      return true;
+    });
+
+    var tbody = document.getElementById('tableBody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="no-data">No matching entries</td></tr>';
+      return;
+    }
+    var html = '';
+    filtered.forEach(e => {
+      var deficitBadge = e.deficit > 0 ? '<span class="badge-red">' + e.deficit + '</span>' : '<span class="badge-green">✓</span>';
+      html += '<tr><td>' + e.date + '</td><td>' + e.name + '</td><td>' + e.team + '</td><td>' + e.fresh + '</td><td>' + e.rework + '</td><td>' + e.total + '</td><td>' + e.target + '</td><td>' + deficitBadge + '</td><td>' + e.reason + '</td></tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  // ── SET RANGE ──
+  function setRange(range, btn) {
+    currentRange = range;
+    document.querySelectorAll('.range-tabs .range-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    if (range === 'custom') {
+      document.getElementById('customRange').classList.add('show');
+      if (!document.getElementById('chartFrom').value) {
+        var today = new Date();
+        document.getElementById('chartTo').value = formatDateForInput(today);
+        var weekAgo = new Date(today);
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        document.getElementById('chartFrom').value = formatDateForInput(weekAgo);
+      }
+    } else {
+      document.getElementById('customRange').classList.remove('show');
+      loadChartData();
+    }
+  }
+
+  // ── SET VIEW ──
+  function setView(view, btn) {
+    currentView = view;
+    document.querySelectorAll('[id^="view-"]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    if (view === 'total') {
+      document.getElementById('chartTotalWrap').style.display = 'relative';
+      document.getElementById('chartDistribWrap').style.display = 'none';
+    } else {
+      document.getElementById('chartTotalWrap').style.display = 'none';
+      document.getElementById('chartDistribWrap').style.display = 'relative';
+    }
     renderChart();
   }
 
-  window.renderTable = renderTable;
+  // ── RENDER CHART ──
+  function renderChart() {
+    if (!chartData || chartData.length === 0) {
+      console.warn('No chart data available');
+      if (currentView === 'total') {
+        document.getElementById('chartTotalWrap').innerHTML = '<div class="no-data">No data available for the selected period</div>';
+      } else {
+        document.getElementById('chartDistribWrap').innerHTML = '<div class="no-data">No data available for the selected period</div>';
+      }
+      return;
+    }
 
-  function populateFilter() {
-    const sel   = document.getElementById('filterEmployee');
-    const names = [...new Set(allEntries.map(e=>e.name))].sort();
-    names.forEach(n => { const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
+    if (currentView === 'total') {
+      renderTotalChart();
+    } else {
+      renderDistributionChart();
+    }
   }
 
-  // Auto refresh every 30 seconds
-  setInterval(async () => {
-    if (currentUser) {
-      const url2  = APPS_SCRIPT_URL + "?action=getAllEntries&email=" + encodeURIComponent(currentUser.email);
-      const res2  = await fetch(url2);
-      const data2 = await res2.json();
-      allEntries   = (data2.entries   || []).map(e => ({...e, date: normalizeDate(e.date)}));
-      allEmployees = data2.employees || [];
-      renderStats();
-      renderChart();
-      renderTable();
-    }
-  }, 30000);
+  // ── RENDER TOTAL CHART ──
+  function renderTotalChart() {
+    var ctx = document.getElementById('chartTotal');
+    if (!ctx) return;
 
+    var dates = chartData.map(d => d.date);
+    var totals = chartData.map(d => d.total || 0);
+
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: dates,
+        datasets: [{
+          label: 'Total Cases',
+          data: totals,
+          backgroundColor: '#2563eb',
+          borderColor: '#1e40af',
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: 'bottom' },
+          title: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true, min: 0, ticks: { stepSize: 1 } }
+        }
+      }
+    });
+  }
+
+  // ── RENDER DISTRIBUTION CHART ──
+  function renderDistributionChart() {
+    var ctx = document.getElementById('chartDistrib');
+    if (!ctx) return;
+
+    var dates = chartData.map(d => d.date);
+    var fresh = chartData.map(d => d.fresh || 0);
+    var rework = chartData.map(d => d.rework || 0);
+
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: dates,
+        datasets: [
+          {
+            label: 'Fresh',
+            data: fresh,
+            backgroundColor: '#16a34a',
+            borderRadius: 4
+          },
+          {
+            label: 'Rework',
+            data: rework,
+            backgroundColor: '#dc2626',
+            borderRadius: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: 'bottom' }
+        },
+        scales: {
+          x: { stacked: false },
+          y: { beginAtZero: true, min: 0, ticks: { stepSize: 1 } }
+        }
+      }
+    });
+  }
+
+  // ── UTILITIES ──
+  function formatDateForAPI(date) {
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var d = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+  function formatDateForInput(date) {
+    return formatDateForAPI(date);
+  }
+
+  function logout() {
+    localStorage.removeItem('userEmail');
+    window.location.href = 'index.html';
+  }
 </script>
+
 </body>
 </html>
