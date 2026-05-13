@@ -122,9 +122,8 @@
 
 <nav class="navbar">
   <span class="navbar-brand">EOD Admin Panel</span>
-  <div class="navbar-right">
+ <div class="navbar-right">
   <span class="navbar-email" id="navEmail"></span>
-  <button class="refresh-btn" onclick="manualRefresh()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:#fff; font-family:'DM Sans',sans-serif; font-size:12px; padding:5px 12px; border-radius:6px; cursor:pointer; margin-right:8px;">↻ Refresh</button>
   <button class="logout-btn" onclick="logout()">Logout</button>
 </div>
 </nav>
@@ -1107,22 +1106,13 @@
     clearTimeout(t._t); t._t = setTimeout(() => t.className = 'toast', 4000);
   }
 
-window.manualRefresh = async function() {
-  showToast('Refreshing data...', 'success');
-  try {
-    // Reload holidays
+setInterval(async () => {
+  if (currentUser && userDetails) {
     const hData = await apiFetch('getHolidays');
     holidays = (hData.holidays || []).map(h => ({...h, date: normalizeDate(h.date)}));
-    // Reload user entries
     await loadMyEntries();
-    // Re-render the current active tab to reflect fresh data
-    const activeTab = document.querySelector('.tab.active')?.innerText?.toLowerCase() || 'submit';
-    switchTab(activeTab);
-    showToast('Data refreshed successfully', 'success');
-  } catch(e) {
-    showToast('Refresh failed: ' + e.message, 'error');
   }
-};
+}, 30000);
 
 </script>
 </body>
