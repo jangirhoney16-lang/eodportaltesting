@@ -791,7 +791,8 @@
       // Remaining working days from tomorrow to month end
       const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-      const remainDays = isCurrentMonth ? getRemainingWorkDays(adminStatsYear, adminStatsMonth, holidaySet, tomorrowDs, monthEnd) : [];
+      const alreadyWorked = workEntries.filter(e => e.date <= cutoff).length;
+      const remainDays = isCurrentMonth ? { length: Math.max(0, workingDaysThisMonth - alreadyWorked) } : { length: 0 };
       const remaining  = Math.max(0, monthlyTarget - actual);
       const dailyNeeded = remainDays.length > 0 ? Math.ceil(remaining / remainDays.length) : 0;
 
@@ -1113,27 +1114,7 @@ setInterval(async () => {
     await loadMyEntries();
   }
 }, 30000);
-function getRemainingWorkDays(year, month, holidaySet, fromDs, toDs) {
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const mm = String(month + 1).padStart(2, '0');
-  const firstTwoSats = new Set();
-  let satCount = 0;
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dow = new Date(year, month, d).getDay();
-    if (dow === 6) { satCount++; if (satCount <= 2) firstTwoSats.add(`${year}-${mm}-${String(d).padStart(2,'0')}`); }
-  }
-  const result = [];
-  for (let d = 1; d <= daysInMonth; d++) {
-    const ds = `${year}-${mm}-${String(d).padStart(2,'0')}`;
-    if (ds < fromDs || ds > toDs) continue;
-    const dow = new Date(year, month, d).getDay();
-    if (dow === 0) continue;
-    if (firstTwoSats.has(ds)) continue;
-    if (holidaySet.has(ds)) continue;
-    result.push(ds);
-  }
-  return result;
-}
+  
 </script>
 </body>
 </html>
