@@ -526,24 +526,31 @@
     return workingDays;
   }
 
-  // Working days in a date range — skips Sundays, first 2 Sats of each month, holidays, and roster zero-day entries
+  // Working days in a date range — skips Sundays, first 2 Sats of each month, holidays
   function getWorkingDays(fromDs, toDs) {
-    const satCounts = {}; // track saturday count per month key "YYYY-MM"
-    return getDaysBetween(fromDs, toDs).filter(d => {
-      const [y, m, day] = d.split('-');
-      const dow = new Date(parseInt(y), parseInt(m)-1, parseInt(day)).getDay();
-      if (dow === 0) return false; // Sunday
-      const monthKey = y + '-' + m;
+    // Find first 2 Saturdays of the month (fromDs ke month ka)
+    const parts = fromDs.split('-');
+    const year  = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1;
+    const mm    = String(month + 1).padStart(2, '0');
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstTwoSats = new Set();
+    let satCount = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dow = new Date(year, month, d).getDay();
       if (dow === 6) {
-        satCounts[monthKey] = (satCounts[monthKey] || 0) + 1;
-        if (satCounts[monthKey] <= 2) return false; // first 2 Saturdays = Sat Off
+        satCount++;
+        if (satCount <= 2) firstTwoSats.add(`${year}-${mm}-${String(d).padStart(2,'0')}`);
       }
-      if (holidays.some(h => h.date === d)) return false; // holiday
-      const entry = myEntries.find(e => e.date === d);
-      if (entry) {
-        const r = String(entry.reason || '').trim();
-        if (ZERO_TARGET_TYPES.includes(r)) return false; // leave/absent etc
-      }
+    }
+    // Count working days — only skip Sundays, first 2 Sats, holidays
+    // Do NOT skip employee roster entries — that causes double minus
+    return getDaysBetween(fromDs, toDs).filter(d => {
+      const p   = d.split('-');
+      const dow = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2])).getDay();
+      if (dow === 0) return false;              // Sunday
+      if (firstTwoSats.has(d)) return false;   // First 2 Sat Offs of month
+      if (holidays.some(h => h.date === d)) return false; // Holiday
       return true;
     });
   }
