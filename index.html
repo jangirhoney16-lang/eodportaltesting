@@ -605,6 +605,7 @@
       document.getElementById('app').style.display = 'block';
       setTodayDate();
       await loadMyEntries();
+      renderStats();
     } catch(e) { alert("Failed to load: " + e.message); }
   }
 
@@ -615,7 +616,6 @@
       renderCalendar();
       renderDashboard();
       renderRosterLog();
-      renderStats();
     } catch(e) { console.log("Entries error:", e); }
   }
 
