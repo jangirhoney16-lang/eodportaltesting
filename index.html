@@ -957,7 +957,7 @@
     const alreadyWorked = workEntries.filter(e => e.date <= cutoff).length;
     const remainWorkDays = isCurrentMonth ? { length: Math.max(0, workingDaysCount - alreadyWorked) } : { length: 0 };
     const remaining  = Math.max(0, monthlyTarget - actual);
-    const dailyNeeded = remainDays.length > 0 ? Math.ceil(remaining / remainDays.length) : 0;
+    const dailyNeeded = remainWorkDays.length > 0 ? Math.ceil(remaining / remainWorkDays.length) : 0;
 
     // Progress
     const pct          = monthlyTarget > 0 ? Math.min(100, Math.round((actual / monthlyTarget) * 100)) : 0;
