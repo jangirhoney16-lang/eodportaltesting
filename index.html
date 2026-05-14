@@ -973,7 +973,7 @@
     document.getElementById('sWorkingDaysCount').textContent = workingDaysCount;
     document.getElementById('sActual').textContent          = actual;
     document.getElementById('sRemaining').textContent       = remaining;
-    document.getElementById('sDailyNeeded').textContent     = isCurrentMonth ? (remainDays.length > 0 ? dailyNeeded : 'Done!') : '—';
+    document.getElementById('sDailyNeeded').textContent = isCurrentMonth ? (remainWorkDays.length > 0 ? dailyNeeded : 'Done!') : '—';
 
     document.getElementById('sExpected').textContent = expected;
     const atEl = document.getElementById('sActualToday');
