@@ -954,7 +954,7 @@
     // Remaining working days (tomorrow onwards)
     const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-    const alreadyWorked = workEntries.filter(e => e.date <= cutoff).length;
+    const alreadyWorked = getWorkingDays(monthStart, cutoff).length;
     const remainWorkDays = isCurrentMonth ? { length: Math.max(0, workingDaysCount - alreadyWorked) } : { length: 0 };
     const remaining  = Math.max(0, monthlyTarget - actual);
     const dailyNeeded = remainWorkDays.length > 0 ? Math.ceil(remaining / remainWorkDays.length) : 0;
