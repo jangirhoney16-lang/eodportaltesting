@@ -924,6 +924,7 @@
   };
 
   function renderStats() {
+    console.log("renderStats called", userDetails, holidays, myEntries.length);
     const today      = getTodayStr();
     const months     = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('statsMonthLabel').textContent = months[statsMonth] + ' ' + statsYear;
