@@ -802,9 +802,9 @@
       const remaining  = Math.max(0, monthlyTarget - actual);
       const dailyNeeded = remainDays.length > 0 ? Math.ceil(remaining / remainDays.length) : 0;
 
-      const scores   = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
-      const netScore = scores.reduce((s,v) => s + v, 0);
-
+      const calendarDaysTillToday = getEmpWorkingDays(empEntries, holidaySet, monthStart, cutoff).length;
+      const expectedTillToday = calendarDaysTillToday * baseTarget;
+      const netScore = actual - expectedTillToday;
       const leaves  = empEntries.filter(e => e.reason === 'Leave').length;
       const satOff  = empEntries.filter(e => e.reason === 'Sat Off').length;
       const absent  = empEntries.filter(e => e.reason === 'Absent').length;
