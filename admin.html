@@ -1,4 +1,4 @@
-<!-- admin.html - Fixed -->
+<!-- admin.html - Fully Fixed -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -464,19 +464,6 @@
     return workingDays;
   }
 
-  // Count how many days employee has "accounted for" (work + leave + absent + halfday)
-  // These are working days that are either worked or taken off (leave/absent)
-  function getDaysAccounted(empEntries, monthStart, cutoff, workingDaysThisMonth) {
-    const accountedDays = empEntries.filter(e => {
-      const reason = String(e.reason || '').trim();
-      // Sat Off, Comp Off, Holiday are NOT working days - don't count them
-      if (NON_WORKING_DAYS.includes(reason)) return false;
-      return true;
-    }).length;
-    
-    return Math.min(accountedDays, workingDaysThisMonth);
-  }
-
   function getEffectiveTarget(base, reason) {
     const r = String(reason || '').trim();
     if (r === 'Half Day' || r.startsWith('Half Day')) return Math.ceil(base / 2);
@@ -615,7 +602,7 @@
       const teamColor = matchTeam(e,'technical') ? 'var(--blue)' : matchTeam(e,'medical') ? 'var(--green)' : 'var(--yellow)';
       const rBadge = isRoster ? `<span class="${BADGE_CLASS[reason]||'badge-leave'}">${reason}</span>` : (reason || '—');
       return `<tr>
-        <td>${formatDate(e.date)}</td>
+                <td>${formatDate(e.date)}</td>
         <td><strong>${e.name}</strong></td>
         <td><span style="color:${teamColor};font-weight:500;">${e.team}</span></td>
         <td>${e.fresh}</td><td>${e.rework}</td><td><strong>${e.total}</strong></td>
@@ -786,9 +773,9 @@
       const actual = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + (parseInt(e.total)||0), 0);
       
       // Days accounted = work days + leave + absent + halfday (all working days)
+      // Sat Off, Comp Off, Holiday are NOT counted as working days
       const daysAccounted = empEntries.filter(e => {
         const reason = String(e.reason || '').trim();
-        // Sat Off, Comp Off, Holiday are NOT working days - don't count
         if (NON_WORKING_DAYS.includes(reason)) return false;
         return true;
       }).length;
@@ -797,14 +784,16 @@
       const remaining = Math.max(0, monthlyTarget - actual);
       const dailyNeeded = remainingDays > 0 ? Math.ceil(remaining / remainingDays) : 0;
       
-      // Score calculation (include leave and absent as negative scores)
-      const scores = empEntries.filter(e => e.date <= cutoff).map(e => {
+      // Score calculation - ONLY for working days (exclude Sat Off, Comp Off, Holiday)
+      const scores = empEntries.filter(e => {
+        const reason = String(e.reason || '').trim();
+        return !NON_WORKING_DAYS.includes(reason);
+      }).filter(e => e.date <= cutoff).map(e => {
         const reason = String(e.reason || '').trim();
         let targetForDay = baseTarget;
         if (reason === 'Half Day' || reason.startsWith('Half Day')) {
           targetForDay = Math.ceil(baseTarget / 2);
         }
-        // Leave and Absent: target = baseTarget, actual = 0 (from fresh/rework)
         const actualCount = (parseInt(e.fresh) || 0) + (parseInt(e.rework) || 0);
         return actualCount - targetForDay;
       });
@@ -834,7 +823,7 @@
         <td>${scoreBadge(netScore)}</td>
         <td>${leaves}</td><td>${satOff}</td>
         <td style="color:${absent>0?'var(--red)':'var(--text)'};">${absent}</td>
-       </tr>`);
+      </tr>`);
       
       progressItems.push(`<div style="margin-bottom:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
@@ -1132,7 +1121,8 @@
       const data = await apiFetch('getAllEntries', {email: currentUser.email});
       allEntries = (data.entries || []).map(e => ({...e, date: normalizeDate(e.date)}));
       allEmployees = data.employees || [];
-      refreshAll();
+      if (document.getElementById('tab-stats').style.display !== 'none') renderAdminStats();
+      if (document.getElementById('tab-overview').style.display !== 'none') refreshAll();
     }
   }, 30000);
 </script>
