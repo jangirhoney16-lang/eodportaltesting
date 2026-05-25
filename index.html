@@ -514,43 +514,25 @@
   function getMonthlyWorkingDays(year, month, holidaysArr) {
     const holidaySet  = new Set((holidaysArr || []).map(h => h.date));
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    let workingDays = 0, satCount = 0;
+    let workingDays = 0;
     for (let day = 1; day <= daysInMonth; day++) {
-      const dow = new Date(year, month, day).getDay(); // 0=Sun, 6=Sat
+      const dow = new Date(year, month, day).getDay();
       const ds  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      if (dow === 0) continue;                             // Sunday — skip
-      if (holidaySet.has(ds)) continue;                   // Holiday — skip
-      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Saturdays = Sat Off
+      if (dow === 0) continue;              // Sunday — skip
+      if (holidaySet.has(ds)) continue;    // Holiday (weekday) — skip
       workingDays++;
     }
     return workingDays;
   }
 
-  // Working days in a date range — skips Sundays, first 2 Sats of each month, holidays
+  // Working days in a date range — skips Sundays and holidays only
+  // Sat Off, Leave, Absent etc. are handled via roster entries separately
   function getWorkingDays(fromDs, toDs) {
-    // Find first 2 Saturdays of the month (fromDs ke month ka)
-    const parts = fromDs.split('-');
-    const year  = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1;
-    const mm    = String(month + 1).padStart(2, '0');
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstTwoSats = new Set();
-    let satCount = 0;
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dow = new Date(year, month, d).getDay();
-      if (dow === 6) {
-        satCount++;
-        if (satCount <= 2) firstTwoSats.add(`${year}-${mm}-${String(d).padStart(2,'0')}`);
-      }
-    }
-    // Count working days — only skip Sundays, first 2 Sats, holidays
-    // Do NOT skip employee roster entries — that causes double minus
     return getDaysBetween(fromDs, toDs).filter(d => {
       const p   = d.split('-');
       const dow = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2])).getDay();
-      if (dow === 0) return false;              // Sunday
-      if (firstTwoSats.has(d)) return false;   // First 2 Sat Offs of month
-      if (holidays.some(h => h.date === d)) return false; // Holiday
+      if (dow === 0) return false;                              // Sunday
+      if (holidays.some(h => h.date === d)) return false;      // Holiday
       return true;
     });
   }
@@ -923,37 +905,18 @@
     renderComparisonChart();
   };
 
-  async function renderStats() {
+  function renderStats() {
     console.log("renderStats called", userDetails, holidays, myEntries.length);
     const today      = getTodayStr();
     const months     = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('statsMonthLabel').textContent = months[statsMonth] + ' ' + statsYear;
 
     const baseTarget = parseInt(userDetails?.target) || 0;
-    const monthKey   = `${statsYear}-${String(statsMonth + 1).padStart(2,'0')}`;
 
     // ── DYNAMIC monthly target ──
     // Working days = days in month − Sundays − first 2 Saturdays − holidays in that month
     const workingDaysCount = getMonthlyWorkingDays(statsYear, statsMonth, holidays);
-
-    let adjustmentHistory = [];
-    try {
-      adjustmentHistory = await apiFetch('getTargetAdjustments', {
-        email: currentUser.email,
-        month: monthKey
-      });
-      if (!Array.isArray(adjustmentHistory)) adjustmentHistory = [];
-    } catch(_) {}
-
-    const totalReduction = adjustmentHistory.reduce(
-      (s, x) => s + Number(x.reduction || 0),
-      0
-    );
-
-    const monthlyTarget = Math.max(
-      0,
-      (workingDaysCount * baseTarget) - totalReduction
-    );
+    const monthlyTarget    = baseTarget * workingDaysCount;
 
     const mm         = String(statsMonth + 1).padStart(2,'0');
     const monthStart = `${statsYear}-${mm}-01`;
@@ -973,9 +936,7 @@
     // Remaining working days (tomorrow onwards)
     const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-    const remainWorkDays = isCurrentMonth
-      ? getWorkingDays(tomorrowDs, monthEnd)
-      : [];
+    const remainWorkDays = isCurrentMonth ? getWorkingDays(tomorrowDs, monthEnd) : [];
     const remaining  = Math.max(0, monthlyTarget - actual);
     const dailyNeeded = remainWorkDays.length > 0 ? Math.ceil(remaining / remainWorkDays.length) : 0;
 
@@ -1013,11 +974,9 @@
     document.getElementById('sHalfDay').textContent   = rosterEntries.filter(e => String(e.reason || '').startsWith('Half Day')).length;
     document.getElementById('sAbsent').textContent    = rosterEntries.filter(e => e.reason === 'Absent').length;
 
-    // Score
-    const workDaysTillTodayForScore = getWorkingDays(monthStart, cutoff);
-    const expectedForScore = workDaysTillTodayForScore.length * baseTarget;
-    const netScore = actual - expectedForScore;
-    const scores   = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
+    // Score — actual vs expected (working days till today × baseTarget)
+    const netScore  = actual - expected;
+    const scores    = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
     const scoreEl  = document.getElementById('sScoreNum');
     scoreEl.textContent = (netScore >= 0 ? '+' : '') + netScore;
     scoreEl.style.color = netScore >= 0 ? 'var(--green)' : 'var(--red)';
