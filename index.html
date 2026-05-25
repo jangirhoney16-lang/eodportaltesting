@@ -1,4 +1,3 @@
-<!-- index.html - Fully Fixed -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -450,10 +449,10 @@
     messagingSenderId: "665878833615",
     appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1hdpXMe8UbarstXx98w-Cyi06Vl-32fprqwPkrfLWWwErHlrzHSQUnj85UeOfBvPF9Q/exec";
+  const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
 
   const ROSTER_TYPES = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
-  const NON_WORKING_DAYS = ['Sat Off', 'Comp Off', 'Holiday'];  // These are NOT working days
+  const NON_WORKING_DAYS = ['Sat Off', 'Comp Off', 'Holiday'];
   const BADGE_CLASS = {'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent','Holiday':'badge-holiday'};
   const CAL_CLASS = {'Leave':'leave','Sat Off':'satoff','Comp Off':'compoff','Half Day':'halfday','Absent':'absent','Holiday':'holiday'};
 
@@ -477,7 +476,6 @@
   let statsMonth = new Date().getMonth();
   let compareMode = 'week';
 
-  /* ── UTILS ── */
   function normalizeDate(raw) {
     if (!raw) return "";
     const s = String(raw).trim();
@@ -510,8 +508,6 @@
     return new Date(y, m-1, d).getDay() === 0;
   }
 
-  // ── WORKING DAYS CALCULATION ──
-  // Formula: Days in month − all Sundays − first 2 Saturdays − holidays
   function getMonthlyWorkingDays(year, month, holidaysArr) {
     const holidaySet = new Set((holidaysArr || []).map(h => h.date));
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -527,18 +523,14 @@
     return workingDays;
   }
 
-  // Count working days from start to cutoff (for expected target calculation)
-  // This counts ALL working days regardless of employee's attendance
   function getWorkingDaysCount(fromDs, toDs, holidaysArr) {
     const holidaySet = new Set((holidaysArr || []).map(h => h.date));
     const dates = getDaysBetween(fromDs, toDs);
     const satCounts = {};
     let count = 0;
-    
     for (const date of dates) {
       if (isSunday(date)) continue;
       if (holidaySet.has(date)) continue;
-      
       const [y, m] = date.split('-');
       const dow = new Date(parseInt(y), parseInt(m)-1, parseInt(date.split('-')[2])).getDay();
       if (dow === 6) {
@@ -554,9 +546,7 @@
   function getEffectiveTarget(base, reason) {
     const r = String(reason || '').trim();
     if (r === 'Half Day' || r.startsWith('Half Day')) return Math.ceil(base / 2);
-    // Leave and Absent - full target (deficit will be shown)
     if (r === 'Leave' || r === 'Absent') return base;
-    // Sat Off, Comp Off, Holiday - zero target
     if (NON_WORKING_DAYS.includes(r)) return 0;
     return base;
   }
@@ -578,7 +568,6 @@
     return r.json();
   }
 
-  /* ── AUTH ── */
   onAuthStateChanged(auth, async (user) => {
     if (user) { currentUser = user; document.getElementById('navEmail').textContent = user.email; await loadAll(); }
     else showLogin();
@@ -618,7 +607,6 @@
     } catch(e) { console.log("Entries error:", e); }
   }
 
-  /* ── SUBMIT EOD ── */
   window.submitEOD = async function() {
     const fresh = document.getElementById('fresh').value.trim();
     const rework = document.getElementById('rework').value.trim();
@@ -678,7 +666,6 @@
     if (!(!isHoliday && deficit > 0)) document.getElementById('reason').value = '';
   };
 
-  /* ── ROSTER ── */
   window.selectRosterType = function(type) {
     selectedRosterType = type;
     document.querySelectorAll('.rtype-btn').forEach(b => b.classList.remove('active'));
@@ -743,7 +730,6 @@
     clearTimeout(t._t); t._t = setTimeout(() => t.className = 'toast', 4000);
   }
 
-  /* ── CALENDAR ── */
   window.calNav = function(dir) {
     calMonth += dir;
     if (calMonth > 11) { calMonth = 0; calYear++; }
@@ -850,7 +836,6 @@
       </div>`;
   }
 
-  /* ── DASHBOARD ── */
   window.setDashRange = function(range, btn) {
     dashRange = range;
     document.querySelectorAll('#tab-dashboard .range-btn').forEach(b => b.classList.remove('active'));
@@ -907,7 +892,6 @@
       : '<div style="font-size:13px;color:var(--green);">No deficit reasons on record.</div>';
   }
 
-  /* ── STATS TAB ── */
   window.statsNavMonth = function(dir) {
     statsMonth += dir;
     if (statsMonth > 11) { statsMonth = 0; statsYear++; }
@@ -928,8 +912,6 @@
     document.getElementById('statsMonthLabel').textContent = months[statsMonth] + ' ' + statsYear;
 
     const baseTarget = parseInt(userDetails?.target) || 0;
-
-    // Fixed working days for the month (same formula for everyone)
     const workingDaysCount = getMonthlyWorkingDays(statsYear, statsMonth, holidays);
     const monthlyTarget = baseTarget * workingDaysCount;
 
@@ -941,16 +923,11 @@
     const cutoff = isCurrentMonth ? today : monthEnd;
 
     const monthEntries = myEntries.filter(e => e.date >= monthStart && e.date <= monthEnd);
-    
-    // Work entries: where employee actually submitted counts (exclude roster entries)
     const workEntries = monthEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason || '').trim()));
     const actual = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + parseInt(e.total), 0);
 
-    // Expected target: working days from month start to cutoff × daily target
     const expected = getWorkingDaysCount(monthStart, cutoff, holidays) * baseTarget;
 
-    // Days accounted = working days that are either worked OR taken as leave/absent/halfday
-    // Exclude Sat Off, Comp Off, Holiday (non-working days)
     const daysAccounted = monthEntries.filter(e => {
       const reason = String(e.reason || '').trim();
       return !NON_WORKING_DAYS.includes(reason);
@@ -960,7 +937,6 @@
     const remaining = Math.max(0, monthlyTarget - actual);
     const dailyNeeded = remainingDays > 0 ? Math.ceil(remaining / remainingDays) : 0;
 
-    // Progress
     const pct = monthlyTarget > 0 ? Math.min(100, Math.round((actual / monthlyTarget) * 100)) : 0;
     const progressBar = document.getElementById('sProgressBar');
     progressBar.style.width = pct + '%';
@@ -984,7 +960,6 @@
     ahEl.textContent = (diff >= 0 ? '+' : '') + diff;
     ahEl.style.color = diff >= 0 ? 'var(--green)' : 'var(--red)';
 
-    // Attendance
     const rosterEntries = monthEntries.filter(e => ROSTER_TYPES.includes(String(e.reason || '').trim()));
     document.getElementById('sWorkDays').textContent = workEntries.filter(e => e.date <= cutoff).length;
     document.getElementById('sLeaves').textContent = rosterEntries.filter(e => e.reason === 'Leave').length;
@@ -993,7 +968,6 @@
     document.getElementById('sHalfDay').textContent = rosterEntries.filter(e => String(e.reason || '').startsWith('Half Day')).length;
     document.getElementById('sAbsent').textContent = rosterEntries.filter(e => e.reason === 'Absent').length;
 
-    // Score calculation - ONLY for working days (exclude Sat Off, Comp Off, Holiday)
     const scores = monthEntries.filter(e => {
       const reason = String(e.reason || '').trim();
       return !NON_WORKING_DAYS.includes(reason);
@@ -1072,7 +1046,6 @@
     });
   }
 
-  /* ── TABS ── */
   window.switchTab = function(tab) {
     ['submit','dashboard','history','roster','stats'].forEach(t => { document.getElementById('tab-'+t).style.display = t === tab ? 'block' : 'none'; });
     document.querySelectorAll('.tab').forEach((el,i) => { el.classList.toggle('active', ['submit','dashboard','history','roster','stats'][i] === tab); });
