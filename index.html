@@ -951,11 +951,11 @@
     const workDaysTillToday = getWorkingDays(monthStart, cutoff);
     const expected           = workDaysTillToday.length * baseTarget;
 
-    // Remaining working days (tomorrow onwards)
+    // Remaining working days — future calendar days from tomorrow to month end
     const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-    const alreadyWorked = getWorkingDays(monthStart, cutoff).length;
-    const remainWorkDays = isCurrentMonth ? { length: Math.max(0, workingDaysCount - alreadyWorked) } : { length: 0 };
+    const futureWorkDays = getWorkingDays(tomorrowDs, monthEnd);
+    const remainWorkDays = isCurrentMonth ? { length: futureWorkDays.length } : { length: 0 };
     const remaining  = Math.max(0, monthlyTarget - actual);
     const dailyNeeded = remainWorkDays.length > 0 ? Math.ceil(remaining / remainWorkDays.length) : 0;
 
@@ -993,13 +993,15 @@
     document.getElementById('sHalfDay').textContent   = rosterEntries.filter(e => String(e.reason || '').startsWith('Half Day')).length;
     document.getElementById('sAbsent').textContent    = rosterEntries.filter(e => e.reason === 'Absent').length;
 
-    // Score
-    const scores   = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
-    const netScore = scores.reduce((s,v) => s + v, 0);
+    // Score — calendar working days × baseTarget = expected (absent/leave days also counted)
+    const calendarDaysTillToday = getWorkingDays(monthStart, cutoff).length;
+    const expectedTillToday     = calendarDaysTillToday * baseTarget;
+    const netScore = actual - expectedTillToday;
     const scoreEl  = document.getElementById('sScoreNum');
     scoreEl.textContent = (netScore >= 0 ? '+' : '') + netScore;
     scoreEl.style.color = netScore >= 0 ? 'var(--green)' : 'var(--red)';
     document.getElementById('sScoreCircle').style.background = netScore >= 0 ? '#f0fdf4' : '#fef2f2';
+    const scores = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
     document.getElementById('sDaysAbove').textContent = scores.filter(s => s > 0).length;
     document.getElementById('sDaysOn').textContent    = scores.filter(s => s === 0).length;
     document.getElementById('sDaysBelow').textContent = scores.filter(s => s < 0).length;
