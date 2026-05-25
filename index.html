@@ -1,3 +1,4 @@
+<!-- index.html - Fully Fixed -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -161,10 +162,10 @@
 <div class="app" id="app">
   <nav class="navbar">
     <span class="navbar-brand">EOD Portal</span>
-   <div class="navbar-right">
-  <span class="navbar-email" id="navEmail"></span>
-  <button class="logout-btn" onclick="logout()">Logout</button>
-</div>
+    <div class="navbar-right">
+      <span class="navbar-email" id="navEmail"></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
   </nav>
 
   <div class="main-content">
@@ -451,30 +452,30 @@
   };
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1hdpXMe8UbarstXx98w-Cyi06Vl-32fprqwPkrfLWWwErHlrzHSQUnj85UeOfBvPF9Q/exec";
 
-  const ROSTER_TYPES      = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
-  const ZERO_TARGET_TYPES = ['Leave','Sat Off','Comp Off','Absent','Holiday'];
-  const BADGE_CLASS       = {'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent','Holiday':'badge-holiday'};
-  const CAL_CLASS         = {'Leave':'leave','Sat Off':'satoff','Comp Off':'compoff','Half Day':'halfday','Absent':'absent','Holiday':'holiday'};
+  const ROSTER_TYPES = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
+  const NON_WORKING_DAYS = ['Sat Off', 'Comp Off', 'Holiday'];  // These are NOT working days
+  const BADGE_CLASS = {'Leave':'badge-leave','Sat Off':'badge-satoff','Comp Off':'badge-compoff','Half Day':'badge-halfday','Absent':'badge-absent','Holiday':'badge-holiday'};
+  const CAL_CLASS = {'Leave':'leave','Sat Off':'satoff','Comp Off':'compoff','Half Day':'halfday','Absent':'absent','Holiday':'holiday'};
 
-  const app      = initializeApp(firebaseConfig);
-  const auth     = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  let currentUser        = null;
-  let userDetails        = null;
-  let myEntries          = [];
-  let holidays           = [];
-  let barChart           = null;
-  let doughnutChart      = null;
-  let compChart          = null;
-  let calYear            = new Date().getFullYear();
-  let calMonth           = new Date().getMonth();
-  let selectedDate       = null;
+  let currentUser = null;
+  let userDetails = null;
+  let myEntries = [];
+  let holidays = [];
+  let barChart = null;
+  let doughnutChart = null;
+  let compChart = null;
+  let calYear = new Date().getFullYear();
+  let calMonth = new Date().getMonth();
+  let selectedDate = null;
   let selectedRosterType = null;
-  let dashRange          = 'week';
-  let statsYear          = new Date().getFullYear();
-  let statsMonth         = new Date().getMonth();
-  let compareMode        = 'week';
+  let dashRange = 'week';
+  let statsYear = new Date().getFullYear();
+  let statsMonth = new Date().getMonth();
+  let compareMode = 'week';
 
   /* ── UTILS ── */
   function normalizeDate(raw) {
@@ -509,56 +510,54 @@
     return new Date(y, m-1, d).getDay() === 0;
   }
 
-  // ── DYNAMIC WORKING DAYS ──
-  // Rules: remove Sundays, first 2 Saturdays of the month (Sat Off), and holidays
+  // ── WORKING DAYS CALCULATION ──
+  // Formula: Days in month − all Sundays − first 2 Saturdays − holidays
   function getMonthlyWorkingDays(year, month, holidaysArr) {
-    const holidaySet  = new Set((holidaysArr || []).map(h => h.date));
+    const holidaySet = new Set((holidaysArr || []).map(h => h.date));
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     let workingDays = 0, satCount = 0;
     for (let day = 1; day <= daysInMonth; day++) {
-      const dow = new Date(year, month, day).getDay(); // 0=Sun, 6=Sat
-      const ds  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      if (dow === 0) continue;                             // Sunday — skip
-      if (holidaySet.has(ds)) continue;                   // Holiday — skip
-      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Saturdays = Sat Off
+      const dow = new Date(year, month, day).getDay();
+      const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      if (dow === 0) continue;
+      if (holidaySet.has(ds)) continue;
+      if (dow === 6) { satCount++; if (satCount <= 2) continue; }
       workingDays++;
     }
     return workingDays;
   }
 
-  // Working days in a date range — skips Sundays, first 2 Sats of each month, holidays
-  function getWorkingDays(fromDs, toDs) {
-    // Find first 2 Saturdays of the month (fromDs ke month ka)
-    const parts = fromDs.split('-');
-    const year  = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1;
-    const mm    = String(month + 1).padStart(2, '0');
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstTwoSats = new Set();
-    let satCount = 0;
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dow = new Date(year, month, d).getDay();
+  // Count working days from start to cutoff (for expected target calculation)
+  // This counts ALL working days regardless of employee's attendance
+  function getWorkingDaysCount(fromDs, toDs, holidaysArr) {
+    const holidaySet = new Set((holidaysArr || []).map(h => h.date));
+    const dates = getDaysBetween(fromDs, toDs);
+    const satCounts = {};
+    let count = 0;
+    
+    for (const date of dates) {
+      if (isSunday(date)) continue;
+      if (holidaySet.has(date)) continue;
+      
+      const [y, m] = date.split('-');
+      const dow = new Date(parseInt(y), parseInt(m)-1, parseInt(date.split('-')[2])).getDay();
       if (dow === 6) {
-        satCount++;
-        if (satCount <= 2) firstTwoSats.add(`${year}-${mm}-${String(d).padStart(2,'0')}`);
+        const key = y + '-' + m;
+        satCounts[key] = (satCounts[key] || 0) + 1;
+        if (satCounts[key] <= 2) continue;
       }
+      count++;
     }
-    // Count working days — only skip Sundays, first 2 Sats, holidays
-    // Do NOT skip employee roster entries — that causes double minus
-    return getDaysBetween(fromDs, toDs).filter(d => {
-      const p   = d.split('-');
-      const dow = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2])).getDay();
-      if (dow === 0) return false;              // Sunday
-      if (firstTwoSats.has(d)) return false;   // First 2 Sat Offs of month
-      if (holidays.some(h => h.date === d)) return false; // Holiday
-      return true;
-    });
+    return count;
   }
 
   function getEffectiveTarget(base, reason) {
     const r = String(reason || '').trim();
-    if (r.startsWith('Half Day')) return Math.ceil(base / 2);
-    if (ZERO_TARGET_TYPES.includes(r)) return 0;
+    if (r === 'Half Day' || r.startsWith('Half Day')) return Math.ceil(base / 2);
+    // Leave and Absent - full target (deficit will be shown)
+    if (r === 'Leave' || r === 'Absent') return base;
+    // Sat Off, Comp Off, Holiday - zero target
+    if (NON_WORKING_DAYS.includes(r)) return 0;
     return base;
   }
 
@@ -598,8 +597,8 @@
       if (!userData.valid) { alert("Your email is not registered. Contact admin."); await signOut(auth); showLogin(); return; }
       userDetails = userData;
       holidays = (holidayData.holidays || []).map(h => ({...h, date: normalizeDate(h.date)}));
-      document.getElementById('userName').textContent   = userData.name || currentUser.email;
-      document.getElementById('userTeam').textContent   = userData.team || "—";
+      document.getElementById('userName').textContent = userData.name || currentUser.email;
+      document.getElementById('userTeam').textContent = userData.team || "—";
       document.getElementById('userTarget').textContent = userData.target || "0";
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
@@ -621,20 +620,20 @@
 
   /* ── SUBMIT EOD ── */
   window.submitEOD = async function() {
-    const fresh  = document.getElementById('fresh').value.trim();
+    const fresh = document.getElementById('fresh').value.trim();
     const rework = document.getElementById('rework').value.trim();
-    const date   = document.getElementById('date').value;
+    const date = document.getElementById('date').value;
     const reason = document.getElementById('reason').value.trim();
     if (fresh === '' && rework === '') return showToast('Enter fresh or rework count', 'error');
     const f = parseInt(fresh) || 0, r = parseInt(rework) || 0;
     if (f < 0 || r < 0) return showToast('Counts cannot be negative', 'error');
     if (date > getTodayStr()) return showToast('Future date not allowed for EOD submission', 'error');
-    const isHoliday   = holidays.some(h => h.date === date);
-    const halfEntry   = myEntries.find(e => e.date === date && (e.reason === 'Half Day' || String(e.reason || '').startsWith('Half Day')));
-    const baseTarget  = parseInt(userDetails?.target) || 0;
-    const effTarget   = isHoliday ? 0 : getEffectiveTarget(baseTarget, halfEntry?.reason || '');
-    const total       = f + r;
-    const deficit     = Math.max(0, effTarget - total);
+    const isHoliday = holidays.some(h => h.date === date);
+    const halfEntry = myEntries.find(e => e.date === date && (e.reason === 'Half Day' || String(e.reason || '').startsWith('Half Day')));
+    const baseTarget = parseInt(userDetails?.target) || 0;
+    const effTarget = isHoliday ? 0 : getEffectiveTarget(baseTarget, halfEntry?.reason || '');
+    const total = f + r;
+    const deficit = Math.max(0, effTarget - total);
     if (!isHoliday && deficit > 0 && !reason) return showToast(`Reason required. Target: ${effTarget}${halfEntry ? ' (Half Day)' : ''}`, 'error');
     const btn = document.getElementById('submitBtn');
     btn.disabled = true; btn.textContent = 'Submitting...';
@@ -642,9 +641,9 @@
       const data = await apiFetch('saveEntry', {email: currentUser.email, date, fresh: f, rework: r, reason: isHoliday ? 'Holiday Work' : reason});
       btn.disabled = false; btn.textContent = 'Submit EOD';
       if (data.result === 'SUCCESS') { showToast('Submitted successfully ✓', 'success'); resetForm(); await loadMyEntries(); }
-      else if (data.result === 'EXISTS')    showToast('Entry already exists for this date', 'error');
+      else if (data.result === 'EXISTS') showToast('Entry already exists for this date', 'error');
       else if (data.result === 'NO_REASON') showToast('Please enter reason for deficit', 'error');
-      else if (data.result === 'INVALID')   showToast('Email not found in system', 'error');
+      else if (data.result === 'INVALID') showToast('Email not found in system', 'error');
       else showToast('Error: ' + data.result, 'error');
     } catch(e) { btn.disabled = false; btn.textContent = 'Submit EOD'; showToast('Network error', 'error'); }
   };
@@ -652,26 +651,26 @@
   function resetForm() {
     ['fresh','rework','reason'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('totalNum').textContent = '0';
-    document.getElementById('totalNum').className   = 'total-num';
+    document.getElementById('totalNum').className = 'total-num';
     document.getElementById('deficitLine').textContent = '';
     document.getElementById('reasonBox').classList.remove('show');
   }
 
   window.calc = function() {
-    const date      = document.getElementById('date').value;
-    const f         = Math.max(0, parseInt(document.getElementById('fresh').value) || 0);
-    const r         = Math.max(0, parseInt(document.getElementById('rework').value) || 0);
-    const total     = f + r;
+    const date = document.getElementById('date').value;
+    const f = Math.max(0, parseInt(document.getElementById('fresh').value) || 0);
+    const r = Math.max(0, parseInt(document.getElementById('rework').value) || 0);
+    const total = f + r;
     const isHoliday = holidays.some(h => h.date === date);
     const halfEntry = myEntries.find(e => e.date === date && (e.reason === 'Half Day' || String(e.reason||'').startsWith('Half Day')));
-    const baseTarget= parseInt(userDetails?.target) || 0;
-    const eff       = isHoliday ? 0 : getEffectiveTarget(baseTarget, halfEntry?.reason || '');
-    const deficit   = Math.max(0, eff - total);
+    const baseTarget = parseInt(userDetails?.target) || 0;
+    const eff = isHoliday ? 0 : getEffectiveTarget(baseTarget, halfEntry?.reason || '');
+    const deficit = Math.max(0, eff - total);
     const el = document.getElementById('totalNum');
     el.textContent = total;
-    el.className   = 'total-num' + (total >= eff ? ' over' : ' under');
+    el.className = 'total-num' + (total >= eff ? ' over' : ' under');
     let defText = '';
-    if (isHoliday)    defText = 'Holiday — no target 🎉';
+    if (isHoliday) defText = 'Holiday — no target 🎉';
     else if (deficit > 0) defText = `Deficit: ${deficit} | Target: ${eff}${halfEntry ? ' (Half Day)' : ''}`;
     else if (total > eff) defText = 'Above target ✓';
     document.getElementById('deficitLine').textContent = defText;
@@ -690,22 +689,22 @@
 
   window.updateRosterPreview = function() {
     const from = document.getElementById('rosterFrom').value;
-    const to   = document.getElementById('rosterTo').value;
+    const to = document.getElementById('rosterTo').value;
     const prev = document.getElementById('rosterPreview');
     if (!selectedRosterType || !from || !to) { prev.innerHTML = 'Select a type and date range to preview'; return; }
     if (from > to) { prev.innerHTML = '<span style="color:var(--red)">To date must be after From date</span>'; return; }
-    const days  = getDaysBetween(from, to);
+    const days = getDaysBetween(from, to);
     const valid = days.filter(d => !isSunday(d));
-    const skip  = days.length - valid.length;
+    const skip = days.length - valid.length;
     prev.innerHTML = `<span>${selectedRosterType}</span> will be applied to <span>${valid.length} day(s)</span> from <span>${formatDate(from)}</span> to <span>${formatDate(to)}</span>` + (skip > 0 ? ` <span style="color:var(--muted);font-weight:400;">(${skip} Sunday(s) skipped)</span>` : '');
   };
 
   window.submitRoster = async function() {
     const from = document.getElementById('rosterFrom').value;
-    const to   = document.getElementById('rosterTo').value;
+    const to = document.getElementById('rosterTo').value;
     if (!selectedRosterType) return showRosterToast('Please select a type', 'error');
-    if (!from || !to)        return showRosterToast('Please select a date range', 'error');
-    if (from > to)           return showRosterToast('From date must be before To date', 'error');
+    if (!from || !to) return showRosterToast('Please select a date range', 'error');
+    if (from > to) return showRosterToast('From date must be before To date', 'error');
     const days = getDaysBetween(from, to).filter(d => !isSunday(d));
     if (!days.length) return showRosterToast('No valid days (all Sundays)', 'error');
     const btn = document.getElementById('rosterSubmitBtn');
@@ -748,15 +747,15 @@
   window.calNav = function(dir) {
     calMonth += dir;
     if (calMonth > 11) { calMonth = 0; calYear++; }
-    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    if (calMonth < 0) { calMonth = 11; calYear--; }
     renderCalendar();
   };
 
   function renderCalendar() {
-    const today   = getTodayStr();
-    const months  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const today = getTodayStr();
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('calTitle').textContent = months[calMonth] + ' ' + calYear;
-    const entryMap   = {}; myEntries.forEach(e => { entryMap[e.date] = e; });
+    const entryMap = {}; myEntries.forEach(e => { entryMap[e.date] = e; });
     const holidaySet = new Set(holidays.map(h => h.date));
     const holidayMap = {}; holidays.forEach(h => { holidayMap[h.date] = h; });
     const grid = document.getElementById('calGrid');
@@ -800,7 +799,7 @@
     const isRosterEntry = ROSTER_TYPES.some(t => reason === t || reason.startsWith(t)) && parseInt(entry.fresh) === 0 && parseInt(entry.rework) === 0;
     if (isRosterEntry) {
       const colorMap = {'Leave':'#713f12','Sat Off':'#7c2d12','Comp Off':'#4c1d95','Half Day':'#1e3a8a','Absent':'#fff','Holiday':'#9d174d'};
-      const bgMap    = {'Leave':'#fef9c3','Sat Off':'#ffedd5','Comp Off':'#ede9fe','Half Day':'#dbeafe','Absent':'#450a0a','Holiday':'#fce7f3'};
+      const bgMap = {'Leave':'#fef9c3','Sat Off':'#ffedd5','Comp Off':'#ede9fe','Half Day':'#dbeafe','Absent':'#450a0a','Holiday':'#fce7f3'};
       const baseType = ROSTER_TYPES.find(t => reason === t || reason.startsWith(t)) || 'Leave';
       document.getElementById('historyDetail').innerHTML = `
         <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">${formatDate(ds)}</div>
@@ -811,7 +810,7 @@
       return;
     }
     const baseTarget = parseInt(userDetails?.target) || 0;
-    const eff   = getEffectiveTarget(baseTarget, reason);
+    const eff = getEffectiveTarget(baseTarget, reason);
     const total = parseInt(entry.total) || 0;
     const score = total - eff;
     const color = total >= eff ? 'var(--green)' : 'var(--red)';
@@ -861,25 +860,25 @@
 
   function getFilteredWorkEntries() {
     const work = myEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason || '').trim()));
-    const now  = new Date();
-    if (dashRange === 'week')  return work.filter(e => (now - new Date(e.date)) / 86400000 <= 7);
+    const now = new Date();
+    if (dashRange === 'week') return work.filter(e => (now - new Date(e.date)) / 86400000 <= 7);
     if (dashRange === 'month') return work.filter(e => { const d = new Date(e.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
-    if (dashRange === 'year')  return work.filter(e => new Date(e.date).getFullYear() === now.getFullYear());
+    if (dashRange === 'year') return work.filter(e => new Date(e.date).getFullYear() === now.getFullYear());
     return work;
   }
 
   function renderDashboard() {
-    const entries  = getFilteredWorkEntries();
-    const target   = parseInt(userDetails?.target) || 0;
+    const entries = getFilteredWorkEntries();
+    const target = parseInt(userDetails?.target) || 0;
     const netScore = entries.reduce((s, e) => s + getScore(e, target), 0);
     document.getElementById('statMonth').textContent = entries.reduce((s,e) => s + parseInt(e.total), 0);
-    document.getElementById('statWeek').textContent  = entries.length;
-    document.getElementById('statAvg').textContent   = entries.length ? Math.round(entries.reduce((s,e) => s + parseInt(e.total), 0) / entries.length) : 0;
+    document.getElementById('statWeek').textContent = entries.length;
+    document.getElementById('statAvg').textContent = entries.length ? Math.round(entries.reduce((s,e) => s + parseInt(e.total), 0) / entries.length) : 0;
     const scoreEl = document.getElementById('statScore');
     scoreEl.textContent = (netScore >= 0 ? '+' : '') + netScore;
-    scoreEl.className   = 'stat-val ' + (netScore >= 0 ? 'green' : 'red');
+    scoreEl.className = 'stat-val ' + (netScore >= 0 ? 'green' : 'red');
     if (!entries.length) { if (barChart) { barChart.destroy(); barChart = null; } if (doughnutChart) { doughnutChart.destroy(); doughnutChart = null; } return; }
-    const ce      = entries.slice(0, 30).reverse();
+    const ce = entries.slice(0, 30).reverse();
     const actuals = ce.map(e => parseInt(e.total));
     const targets = ce.map(e => getEffectiveTarget(target, e.reason));
     if (barChart) barChart.destroy();
@@ -912,7 +911,7 @@
   window.statsNavMonth = function(dir) {
     statsMonth += dir;
     if (statsMonth > 11) { statsMonth = 0; statsYear++; }
-    if (statsMonth < 0)  { statsMonth = 11; statsYear--; }
+    if (statsMonth < 0) { statsMonth = 11; statsYear--; }
     renderStats();
   };
 
@@ -924,61 +923,62 @@
   };
 
   function renderStats() {
-    console.log("renderStats called", userDetails, holidays, myEntries.length);
-    const today      = getTodayStr();
-    const months     = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const today = getTodayStr();
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('statsMonthLabel').textContent = months[statsMonth] + ' ' + statsYear;
 
     const baseTarget = parseInt(userDetails?.target) || 0;
 
-    // ── DYNAMIC monthly target ──
-    // Working days = days in month − Sundays − first 2 Saturdays − holidays in that month
+    // Fixed working days for the month (same formula for everyone)
     const workingDaysCount = getMonthlyWorkingDays(statsYear, statsMonth, holidays);
-    const monthlyTarget    = baseTarget * workingDaysCount;
+    const monthlyTarget = baseTarget * workingDaysCount;
 
-    const mm         = String(statsMonth + 1).padStart(2,'0');
+    const mm = String(statsMonth + 1).padStart(2,'0');
     const monthStart = `${statsYear}-${mm}-01`;
-    const lastDay    = new Date(statsYear, statsMonth + 1, 0).getDate();
-    const monthEnd   = `${statsYear}-${mm}-${String(lastDay).padStart(2,'0')}`;
+    const lastDay = new Date(statsYear, statsMonth + 1, 0).getDate();
+    const monthEnd = `${statsYear}-${mm}-${String(lastDay).padStart(2,'0')}`;
     const isCurrentMonth = (statsYear === new Date().getFullYear() && statsMonth === new Date().getMonth());
-    const cutoff     = isCurrentMonth ? today : monthEnd;
+    const cutoff = isCurrentMonth ? today : monthEnd;
 
     const monthEntries = myEntries.filter(e => e.date >= monthStart && e.date <= monthEnd);
-    const workEntries  = monthEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason || '').trim()));
-    const actual       = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + parseInt(e.total), 0);
+    
+    // Work entries: where employee actually submitted counts (exclude roster entries)
+    const workEntries = monthEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason || '').trim()));
+    const actual = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + parseInt(e.total), 0);
 
-    // Expected by today = working days from monthStart to cutoff × baseTarget
-    const workDaysTillToday = getWorkingDays(monthStart, cutoff);
-    const expected           = workDaysTillToday.length * baseTarget;
+    // Expected target: working days from month start to cutoff × daily target
+    const expected = getWorkingDaysCount(monthStart, cutoff, holidays) * baseTarget;
 
-    // Remaining working days (tomorrow onwards)
-    const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-    const alreadyWorked = getWorkingDays(monthStart, cutoff).length;
-    const remainWorkDays = isCurrentMonth ? { length: Math.max(0, workingDaysCount - alreadyWorked) } : { length: 0 };
-    const remaining  = Math.max(0, monthlyTarget - actual);
-    const dailyNeeded = remainWorkDays.length > 0 ? Math.ceil(remaining / remainWorkDays.length) : 0;
+    // Days accounted = working days that are either worked OR taken as leave/absent/halfday
+    // Exclude Sat Off, Comp Off, Holiday (non-working days)
+    const daysAccounted = monthEntries.filter(e => {
+      const reason = String(e.reason || '').trim();
+      return !NON_WORKING_DAYS.includes(reason);
+    }).length;
+
+    const remainingDays = Math.max(0, workingDaysCount - daysAccounted);
+    const remaining = Math.max(0, monthlyTarget - actual);
+    const dailyNeeded = remainingDays > 0 ? Math.ceil(remaining / remainingDays) : 0;
 
     // Progress
-    const pct          = monthlyTarget > 0 ? Math.min(100, Math.round((actual / monthlyTarget) * 100)) : 0;
-    const progressBar  = document.getElementById('sProgressBar');
+    const pct = monthlyTarget > 0 ? Math.min(100, Math.round((actual / monthlyTarget) * 100)) : 0;
+    const progressBar = document.getElementById('sProgressBar');
     progressBar.style.width = pct + '%';
-    progressBar.className   = 'progress-bar-inner' + (pct >= 100 ? ' over' : pct >= 70 ? '' : '');
     progressBar.style.background = pct >= 100 ? '#16a34a' : pct >= 70 ? '#1a1a2e' : '#dc2626';
     document.getElementById('sProgressPct').textContent = pct + '%';
     document.getElementById('sProgressMid').textContent = Math.round(monthlyTarget / 2);
     document.getElementById('sProgressEnd').textContent = monthlyTarget;
 
-    document.getElementById('sMonthlyTarget').textContent   = monthlyTarget;
+    document.getElementById('sMonthlyTarget').textContent = monthlyTarget;
     document.getElementById('sWorkingDaysCount').textContent = workingDaysCount;
-    document.getElementById('sActual').textContent          = actual;
-    document.getElementById('sRemaining').textContent       = remaining;
-    document.getElementById('sDailyNeeded').textContent = isCurrentMonth ? (remainWorkDays.length > 0 ? dailyNeeded : 'Done!') : '—';
+    document.getElementById('sActual').textContent = actual;
+    document.getElementById('sRemaining').textContent = remaining;
+    document.getElementById('sDailyNeeded').textContent = isCurrentMonth ? (remainingDays > 0 ? dailyNeeded : 'Done!') : '—';
 
     document.getElementById('sExpected').textContent = expected;
     const atEl = document.getElementById('sActualToday');
-    atEl.textContent   = actual;
-    atEl.style.color   = actual >= expected ? 'var(--green)' : 'var(--red)';
+    atEl.textContent = actual;
+    atEl.style.color = actual >= expected ? 'var(--green)' : 'var(--red)';
     const diff = actual - expected;
     const ahEl = document.getElementById('sAheadBehind');
     ahEl.textContent = (diff >= 0 ? '+' : '') + diff;
@@ -986,22 +986,33 @@
 
     // Attendance
     const rosterEntries = monthEntries.filter(e => ROSTER_TYPES.includes(String(e.reason || '').trim()));
-    document.getElementById('sWorkDays').textContent  = workEntries.filter(e => e.date <= cutoff).length;
-    document.getElementById('sLeaves').textContent    = rosterEntries.filter(e => e.reason === 'Leave').length;
-    document.getElementById('sSatOff').textContent    = rosterEntries.filter(e => e.reason === 'Sat Off').length;
-    document.getElementById('sCompOff').textContent   = rosterEntries.filter(e => e.reason === 'Comp Off').length;
-    document.getElementById('sHalfDay').textContent   = rosterEntries.filter(e => String(e.reason || '').startsWith('Half Day')).length;
-    document.getElementById('sAbsent').textContent    = rosterEntries.filter(e => e.reason === 'Absent').length;
+    document.getElementById('sWorkDays').textContent = workEntries.filter(e => e.date <= cutoff).length;
+    document.getElementById('sLeaves').textContent = rosterEntries.filter(e => e.reason === 'Leave').length;
+    document.getElementById('sSatOff').textContent = rosterEntries.filter(e => e.reason === 'Sat Off').length;
+    document.getElementById('sCompOff').textContent = rosterEntries.filter(e => e.reason === 'Comp Off').length;
+    document.getElementById('sHalfDay').textContent = rosterEntries.filter(e => String(e.reason || '').startsWith('Half Day')).length;
+    document.getElementById('sAbsent').textContent = rosterEntries.filter(e => e.reason === 'Absent').length;
 
-    // Score
-    const scores   = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
+    // Score calculation - ONLY for working days (exclude Sat Off, Comp Off, Holiday)
+    const scores = monthEntries.filter(e => {
+      const reason = String(e.reason || '').trim();
+      return !NON_WORKING_DAYS.includes(reason);
+    }).filter(e => e.date <= cutoff).map(e => {
+      const reason = String(e.reason || '').trim();
+      let targetForDay = baseTarget;
+      if (reason === 'Half Day' || reason.startsWith('Half Day')) {
+        targetForDay = Math.ceil(baseTarget / 2);
+      }
+      const actualCount = (parseInt(e.fresh) || 0) + (parseInt(e.rework) || 0);
+      return actualCount - targetForDay;
+    });
     const netScore = scores.reduce((s,v) => s + v, 0);
-    const scoreEl  = document.getElementById('sScoreNum');
+    const scoreEl = document.getElementById('sScoreNum');
     scoreEl.textContent = (netScore >= 0 ? '+' : '') + netScore;
     scoreEl.style.color = netScore >= 0 ? 'var(--green)' : 'var(--red)';
     document.getElementById('sScoreCircle').style.background = netScore >= 0 ? '#f0fdf4' : '#fef2f2';
     document.getElementById('sDaysAbove').textContent = scores.filter(s => s > 0).length;
-    document.getElementById('sDaysOn').textContent    = scores.filter(s => s === 0).length;
+    document.getElementById('sDaysOn').textContent = scores.filter(s => s === 0).length;
     document.getElementById('sDaysBelow').textContent = scores.filter(s => s < 0).length;
 
     renderComparisonChart();
@@ -1009,7 +1020,7 @@
 
   function renderComparisonChart() {
     const baseTarget = parseInt(userDetails?.target) || 0;
-    const now        = new Date();
+    const now = new Date();
     let labels = [], currData = [], prevData = [], currLabel = '', prevLabel = '';
 
     if (compareMode === 'week') {
@@ -1021,7 +1032,7 @@
         labels.push(name);
         const cd = new Date(mon); cd.setDate(mon.getDate() + i);
         const cds = cd.toISOString().split('T')[0];
-        const pd  = new Date(pMon); pd.setDate(pMon.getDate() + i);
+        const pd = new Date(pMon); pd.setDate(pMon.getDate() + i);
         const pds = pd.toISOString().split('T')[0];
         const cEntry = myEntries.find(e => e.date === cds && !ROSTER_TYPES.includes(String(e.reason||'').trim()));
         const pEntry = myEntries.find(e => e.date === pds && !ROSTER_TYPES.includes(String(e.reason||'').trim()));
@@ -1031,11 +1042,11 @@
     } else {
       const mm = String(statsMonth + 1).padStart(2,'0');
       const mStart = `${statsYear}-${mm}-01`;
-      const mEnd   = `${statsYear}-${mm}-${String(new Date(statsYear, statsMonth+1, 0).getDate()).padStart(2,'0')}`;
+      const mEnd = `${statsYear}-${mm}-${String(new Date(statsYear, statsMonth+1, 0).getDate()).padStart(2,'0')}`;
       let pm = statsMonth - 1, py = statsYear; if (pm < 0) { pm = 11; py--; }
       const pmm = String(pm + 1).padStart(2,'0');
       const pStart = `${py}-${pmm}-01`;
-      const pEnd   = `${py}-${pmm}-${String(new Date(py, pm+1, 0).getDate()).padStart(2,'0')}`;
+      const pEnd = `${py}-${pmm}-${String(new Date(py, pm+1, 0).getDate()).padStart(2,'0')}`;
       currLabel = 'This Month'; prevLabel = 'Last Month';
       for (let w = 1; w <= 4; w++) {
         labels.push('Week ' + w);
@@ -1066,35 +1077,35 @@
     ['submit','dashboard','history','roster','stats'].forEach(t => { document.getElementById('tab-'+t).style.display = t === tab ? 'block' : 'none'; });
     document.querySelectorAll('.tab').forEach((el,i) => { el.classList.toggle('active', ['submit','dashboard','history','roster','stats'][i] === tab); });
     if (tab === 'dashboard') renderDashboard();
-    if (tab === 'history')   renderCalendar();
-    if (tab === 'roster')    renderRosterLog();
-    if (tab === 'stats')     renderStats();
+    if (tab === 'history') renderCalendar();
+    if (tab === 'roster') renderRosterLog();
+    if (tab === 'stats') renderStats();
   };
 
   function setTodayDate() {
     const t = getTodayStr();
-    document.getElementById('date').value      = t;
-    document.getElementById('date').max        = t;
+    document.getElementById('date').value = t;
+    document.getElementById('date').max = t;
     document.getElementById('rosterFrom').value = t;
-    document.getElementById('rosterTo').value   = t;
+    document.getElementById('rosterTo').value = t;
   }
 
   function showToast(msg, type) {
     const t = document.getElementById('toast');
-    document.getElementById('toastMsg').textContent  = msg;
+    document.getElementById('toastMsg').textContent = msg;
     document.getElementById('toastIcon').textContent = type === 'success' ? '✓' : '✕';
     t.className = 'toast show ' + type;
     clearTimeout(t._t); t._t = setTimeout(() => t.className = 'toast', 3500);
   }
 
-setInterval(async () => {
-  if (currentUser && userDetails) {
-    const hData = await apiFetch('getHolidays');
-    holidays = (hData.holidays || []).map(h => ({...h, date: normalizeDate(h.date)}));
-    await loadMyEntries();
-  }
-}, 30000);
-  
+  setInterval(async () => {
+    if (currentUser && userDetails) {
+      const hData = await apiFetch('getHolidays');
+      holidays = (hData.holidays || []).map(h => ({...h, date: normalizeDate(h.date)}));
+      await loadMyEntries();
+      if (document.getElementById('tab-stats').style.display !== 'none') renderStats();
+    }
+  }, 30000);
 </script>
 </body>
 </html>
