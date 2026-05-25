@@ -466,8 +466,6 @@
   // Working days in a date range (for "expected by today" calc)
   // Same rules: skip Sundays, first 2 Sats of each month, holidays, roster zero-target entries
   function getEmpWorkingDays(empEntries, holidaySet, fromDs, toDs) {
-    // Only skip Sundays, first 2 Saturdays of month, and holidays
-    // Do NOT skip leave/absent days — target stays fixed, only calendar days matter
     const satCounts = {};
     return getDaysBetween(fromDs, toDs).filter(d => {
       if (isSunday(d)) return false;
@@ -478,6 +476,11 @@
         const key = y + '-' + m;
         satCounts[key] = (satCounts[key] || 0) + 1;
         if (satCounts[key] <= 2) return false; // first 2 Sats = Sat Off
+      }
+      const entry = empEntries.find(e => e.date === d);
+      if (entry) {
+        const r = String(entry.reason || '').trim();
+        if (ZERO_TARGET_TYPES.includes(r)) return false; // leave/absent etc
       }
       return true;
     });
@@ -785,16 +788,18 @@
       const workEntries = empEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason||'').trim()));
       const actual = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + (parseInt(e.total)||0), 0);
 
-      // Remaining working days from tomorrow to month end
+      // Remaining working days — future calendar days from tomorrow to month end
       const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-      const alreadyWorked = workEntries.filter(e => e.date <= cutoff).length;
-      const remainDays = isCurrentMonth ? { length: Math.max(0, workingDaysThisMonth - alreadyWorked) } : { length: 0 };
+      const futureWorkDays = getEmpWorkingDays(empEntries, holidaySet, tomorrowDs, monthEnd);
+      const remainDays = isCurrentMonth ? { length: futureWorkDays.length } : { length: 0 };
       const remaining  = Math.max(0, monthlyTarget - actual);
       const dailyNeeded = remainDays.length > 0 ? Math.ceil(remaining / remainDays.length) : 0;
 
-      const scores   = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
-      const netScore = scores.reduce((s,v) => s + v, 0);
+      // Score — calendar days × baseTarget = expected (absent/leave days also counted)
+      const calendarDaysTillToday = getEmpWorkingDays(empEntries, holidaySet, monthStart, cutoff).length;
+      const expectedTillToday     = calendarDaysTillToday * baseTarget;
+      const netScore = actual - expectedTillToday;
 
       const leaves  = empEntries.filter(e => e.reason === 'Leave').length;
       const satOff  = empEntries.filter(e => e.reason === 'Sat Off').length;
