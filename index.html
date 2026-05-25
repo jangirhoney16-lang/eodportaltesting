@@ -923,18 +923,37 @@
     renderComparisonChart();
   };
 
-  function renderStats() {
+  async function renderStats() {
     console.log("renderStats called", userDetails, holidays, myEntries.length);
     const today      = getTodayStr();
     const months     = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('statsMonthLabel').textContent = months[statsMonth] + ' ' + statsYear;
 
     const baseTarget = parseInt(userDetails?.target) || 0;
+    const monthKey   = `${statsYear}-${String(statsMonth + 1).padStart(2,'0')}`;
 
     // ── DYNAMIC monthly target ──
     // Working days = days in month − Sundays − first 2 Saturdays − holidays in that month
     const workingDaysCount = getMonthlyWorkingDays(statsYear, statsMonth, holidays);
-    const monthlyTarget    = baseTarget * workingDaysCount;
+
+    let adjustmentHistory = [];
+    try {
+      adjustmentHistory = await apiFetch('getTargetAdjustments', {
+        email: currentUser.email,
+        month: monthKey
+      });
+      if (!Array.isArray(adjustmentHistory)) adjustmentHistory = [];
+    } catch(_) {}
+
+    const totalReduction = adjustmentHistory.reduce(
+      (s, x) => s + Number(x.reduction || 0),
+      0
+    );
+
+    const monthlyTarget = Math.max(
+      0,
+      (workingDaysCount * baseTarget) - totalReduction
+    );
 
     const mm         = String(statsMonth + 1).padStart(2,'0');
     const monthStart = `${statsYear}-${mm}-01`;
@@ -951,11 +970,12 @@
     const workDaysTillToday = getWorkingDays(monthStart, cutoff);
     const expected           = workDaysTillToday.length * baseTarget;
 
-    // Remaining working days — future calendar days from tomorrow to month end
+    // Remaining working days (tomorrow onwards)
     const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-    const futureWorkDays = getWorkingDays(tomorrowDs, monthEnd);
-    const remainWorkDays = isCurrentMonth ? { length: futureWorkDays.length } : { length: 0 };
+    const remainWorkDays = isCurrentMonth
+      ? getWorkingDays(tomorrowDs, monthEnd)
+      : [];
     const remaining  = Math.max(0, monthlyTarget - actual);
     const dailyNeeded = remainWorkDays.length > 0 ? Math.ceil(remaining / remainWorkDays.length) : 0;
 
@@ -993,15 +1013,15 @@
     document.getElementById('sHalfDay').textContent   = rosterEntries.filter(e => String(e.reason || '').startsWith('Half Day')).length;
     document.getElementById('sAbsent').textContent    = rosterEntries.filter(e => e.reason === 'Absent').length;
 
-    // Score — calendar working days × baseTarget = expected (absent/leave days also counted)
-    const calendarDaysTillToday = getWorkingDays(monthStart, cutoff).length;
-    const expectedTillToday     = calendarDaysTillToday * baseTarget;
-    const netScore = actual - expectedTillToday;
+    // Score
+    const workDaysTillTodayForScore = getWorkingDays(monthStart, cutoff);
+    const expectedForScore = workDaysTillTodayForScore.length * baseTarget;
+    const netScore = actual - expectedForScore;
+    const scores   = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
     const scoreEl  = document.getElementById('sScoreNum');
     scoreEl.textContent = (netScore >= 0 ? '+' : '') + netScore;
     scoreEl.style.color = netScore >= 0 ? 'var(--green)' : 'var(--red)';
     document.getElementById('sScoreCircle').style.background = netScore >= 0 ? '#f0fdf4' : '#fef2f2';
-    const scores = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
     document.getElementById('sDaysAbove').textContent = scores.filter(s => s > 0).length;
     document.getElementById('sDaysOn').textContent    = scores.filter(s => s === 0).length;
     document.getElementById('sDaysBelow').textContent = scores.filter(s => s < 0).length;
