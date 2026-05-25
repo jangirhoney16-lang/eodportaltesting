@@ -111,6 +111,7 @@
     .emp-stats-table th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 2px solid var(--border); background: var(--bg); }
     .emp-stats-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
     .emp-stats-table tr:hover td { background: #fafafa; }
+    .history-item { background: var(--bg); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; font-size: 13px; border-left: 3px solid var(--accent); }
     @media (max-width: 700px) {
       .roster-type-row { grid-template-columns: repeat(3, 1fr); }
       .date-range-row { grid-template-columns: 1fr; }
@@ -270,6 +271,27 @@
     <div class="card">
       <div class="card-title">Progress vs Monthly Target</div>
       <div id="empProgressBars"></div>
+    </div>
+
+    <div class="card target-adjust-box">
+      <div class="card-title">Adjust Monthly Target</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Reduce a specific employee's monthly target. Employee will see the updated target automatically.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label>Employee</label>
+          <select id="adjustEmp" style="width:100%;height:42px;" onchange="loadAdjustmentHistory(this.value)"><option value="">Select Employee</option></select>
+        </div>
+        <div>
+          <label>Reduce Target By</label>
+          <input type="number" id="adjustAmount" placeholder="Enter amount to reduce" style="width:100%;height:42px;" min="1">
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label>Reason <span style="color:var(--red);">*</span></label>
+        <textarea id="adjustReason" placeholder="Enter reason for target reduction" style="width:100%;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;border:1px solid var(--border);border-radius:8px;resize:vertical;min-height:80px;outline:none;"></textarea>
+      </div>
+      <button class="btn-primary" onclick="saveAdjustment()">Submit Adjustment</button>
+      <div id="adjustHistory" style="margin-top:16px;"></div>
     </div>
   </div>
 
@@ -646,6 +668,15 @@
       const o = document.createElement('option'); o.value = emp.email;
       o.textContent = emp.name + (emp.team ? ' (' + emp.team + ')' : ''); rEmp.appendChild(o);
     });
+    // Populate adjustEmp dropdown (uses email as value)
+    const adjEmp = document.getElementById('adjustEmp');
+    if (adjEmp) {
+      while (adjEmp.options.length > 1) adjEmp.remove(1);
+      allEmployees.filter(e => e.role !== 'Admin').forEach(emp => {
+        const o = document.createElement('option'); o.value = emp.email;
+        o.textContent = emp.name + (emp.team ? ' (' + emp.team + ')' : ''); adjEmp.appendChild(o);
+      });
+    }
     document.getElementById('adminRosterFrom').value = getTodayStr();
     document.getElementById('adminRosterTo').value   = getTodayStr();
   }
@@ -749,10 +780,11 @@
     renderAdminComparisonChart();
   };
 
-  window.renderAdminStats = function() {
+  window.renderAdminStats = async function() {
     const today      = getTodayStr();
     const months     = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('adminStatsMonthLabel').textContent = months[adminStatsMonth] + ' ' + adminStatsYear;
+    const monthKey   = `${adminStatsYear}-${String(adminStatsMonth + 1).padStart(2,'0')}`;
 
     const empFilter  = document.getElementById('statsFilterEmp').value;
     const teamFilter = document.getElementById('statsFilterTeam').value;
@@ -777,29 +809,44 @@
     let teamTarget = 0, teamActual = 0, teamRemaining = 0, teamScore = 0;
     const rows = [], progressItems = [];
 
-    emps.forEach(emp => {
+    for (const emp of emps) {
       const baseTarget = parseInt(emp.target) || 0;
 
-      // Monthly target = daily target × working days in this month
-      // Half Day does NOT reduce monthly target — employee must cover it on other days
-      const monthlyTarget = baseTarget * workingDaysThisMonth;
+      // Fetch target adjustments for this employee
+      let empAdjHistory = [];
+      try {
+        empAdjHistory = await apiFetch('getTargetAdjustments', { email: emp.email, month: monthKey });
+        if (!Array.isArray(empAdjHistory)) empAdjHistory = [];
+      } catch(_) {}
+      const empTotalReduction = empAdjHistory.reduce((s, x) => s + Number(x.reduction || 0), 0);
+
+      const monthlyTarget = Math.max(
+        0,
+        (workingDaysThisMonth * baseTarget) - empTotalReduction
+      );
 
       const empEntries = allEntries.filter(e => e.email === emp.email && e.date >= monthStart && e.date <= monthEnd);
       const workEntries = empEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason||'').trim()));
       const actual = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + (parseInt(e.total)||0), 0);
 
-      // Remaining working days — future calendar days from tomorrow to month end
+      // Remaining working days from tomorrow to month end
       const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-      const futureWorkDays = getEmpWorkingDays(empEntries, holidaySet, tomorrowDs, monthEnd);
-      const remainDays = isCurrentMonth ? { length: futureWorkDays.length } : { length: 0 };
+
+      const remainDays = isCurrentMonth
+        ? getEmpWorkingDays(empEntries, holidaySet, tomorrowDs, monthEnd)
+        : [];
       const remaining  = Math.max(0, monthlyTarget - actual);
       const dailyNeeded = remainDays.length > 0 ? Math.ceil(remaining / remainDays.length) : 0;
 
-      // Score — calendar days × baseTarget = expected (absent/leave days also counted)
-      const calendarDaysTillToday = getEmpWorkingDays(empEntries, holidaySet, monthStart, cutoff).length;
-      const expectedTillToday     = calendarDaysTillToday * baseTarget;
-      const netScore = actual - expectedTillToday;
+      const workDaysTillToday = getEmpWorkingDays(
+        empEntries,
+        holidaySet,
+        monthStart,
+        cutoff
+      );
+      const expected = workDaysTillToday.length * baseTarget;
+      const netScore = actual - expected;
 
       const leaves  = empEntries.filter(e => e.reason === 'Leave').length;
       const satOff  = empEntries.filter(e => e.reason === 'Sat Off').length;
@@ -834,7 +881,7 @@
         </div>
         <div class="progress-bar-outer"><div style="width:${pct}%;height:10px;border-radius:99px;background:${barColor};transition:width .6s ease;"></div></div>
       </div>`);
-    });
+    }
 
     document.getElementById('asTeamTarget').textContent    = teamTarget;
     document.getElementById('asTeamActual').textContent    = teamActual;
@@ -1108,6 +1155,60 @@
     t.className = 'toast show ' + type;
     clearTimeout(t._t); t._t = setTimeout(() => t.className = 'toast', 4000);
   }
+
+  /* ── TARGET ADJUSTMENT ── */
+  let currentMonthKey = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
+
+  window.saveAdjustment = async function() {
+    const email    = document.getElementById('adjustEmp').value;
+    const reduction = Number(document.getElementById('adjustAmount').value || 0);
+    const reason   = document.getElementById('adjustReason').value.trim();
+
+    if (!email)           return alert('Select employee');
+    if (!reduction || reduction <= 0) return alert('Enter valid reduction');
+    if (!reason)          return alert('Enter reason');
+
+    await apiFetch('saveTargetAdjustment', {
+      email,
+      month: currentMonthKey,
+      reduction,
+      reason
+    });
+
+    alert('Adjustment saved');
+
+    document.getElementById('adjustAmount').value = '';
+    document.getElementById('adjustReason').value = '';
+
+    loadAdjustmentHistory(email);
+    renderAdminStats();
+  };
+
+  window.loadAdjustmentHistory = async function(email) {
+    if (!email) return;
+    const history = await apiFetch('getTargetAdjustments', {
+      email,
+      month: currentMonthKey
+    });
+
+    const el = document.getElementById('adjustHistory');
+    if (!el) return;
+
+    if (!Array.isArray(history) || !history.length) {
+      el.innerHTML = '<p style="font-size:13px;color:var(--muted);">No adjustments this month.</p>';
+      return;
+    }
+
+    el.innerHTML = '<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Adjustment History</div>' +
+      history.map(h => `
+        <div class="history-item">
+          <div><strong>Reduced by:</strong> ${h.reduction}</div>
+          <div><strong>Reason:</strong> ${h.reason}</div>
+          <div><strong>By:</strong> ${h.admin}</div>
+          <div style="color:var(--muted);font-size:12px;"><strong>Date:</strong> ${new Date(h.timestamp).toLocaleString('en-IN')}</div>
+        </div>
+      `).join('');
+  };
 
 setInterval(async () => {
   if (currentUser && userDetails) {
