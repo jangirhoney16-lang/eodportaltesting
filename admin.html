@@ -227,7 +227,7 @@
     <div class="card" style="padding:14px 20px;">
       <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:center;">
         <div style="font-size:13px;color:var(--muted);">Working Days This Month: <strong id="adminWorkingDaysCount" style="color:var(--text);font-family:'DM Mono',monospace;">—</strong></div>
-        <div style="font-size:12px;color:var(--muted);">(Total days − Sundays − Holidays)</div>
+        <div style="font-size:12px;color:var(--muted);">(Total days − Sundays − 2 Sat Offs − Holidays)</div>
       </div>
     </div>
 
@@ -445,42 +445,45 @@
     return new Date(y, m-1, d).getDay() === 0;
   }
 
-
-  // Monthly working days = all days minus Sundays minus holidays only
-  // Sat Off / Leave / Absent are NOT deducted — employee decides when to take them
+  // ── KEY FUNCTION: Dynamic working days for any month ──
+  // Formula: Days in month − all Sundays − first 2 Saturdays − holidays in that month
+  // This means monthly target changes every month automatically
   function getMonthlyWorkingDays(year, month, holidaysArr) {
     const holidaySet  = new Set((holidaysArr || []).map(h => h.date));
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    let workingDays   = 0;
+    let workingDays = 0, satCount = 0;
     for (let day = 1; day <= daysInMonth; day++) {
-      const dow = new Date(year, month, day).getDay();
+      const dow = new Date(year, month, day).getDay(); // 0=Sun, 6=Sat
       const ds  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      if (dow === 0) continue;           // Sunday — always off
-      if (holidaySet.has(ds)) continue;  // Company holiday — off
+      if (dow === 0) continue;                                     // All Sundays — skip
+      if (holidaySet.has(ds)) continue;                           // Any holiday — skip
+      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Saturdays = compulsory Sat Off — skip
       workingDays++;
     }
     return workingDays;
   }
 
-  // Expected working days in a range — skips only Sundays and holidays
-  // Roster entries (Leave, Absent) are NOT skipped — they create deficit in net score
+  // Working days in a date range — skips Sundays, first 2 Sats of each month, holidays
+  // Does NOT skip Absent or Leave — those are working days with target, counted in expected
   function getEmpWorkingDays(empEntries, holidaySet, fromDs, toDs) {
+    const satCounts = {};
     return getDaysBetween(fromDs, toDs).filter(d => {
       if (isSunday(d)) return false;
       if (holidaySet.has(d)) return false;
-      return true;
-    });
-  }
-
-  // Remaining working days from tomorrow to end, MINUS already-planned non-working entries
-  // If Rucha has Absent on day 20 and there are 8 days left → remainingDays = 7 → Need/Day goes up
-  const NON_WORKING_ROSTER = ['Sat Off', 'Comp Off', 'Leave', 'Absent', 'Holiday'];
-  function getEmpRemainingDays(empEntries, holidaySet, fromDs, toDs) {
-    return getDaysBetween(fromDs, toDs).filter(d => {
-      if (isSunday(d)) return false;
-      if (holidaySet.has(d)) return false;
+      const [y, m, day] = d.split('-');
+      const dow = new Date(parseInt(y), parseInt(m)-1, parseInt(day)).getDay();
+      if (dow === 6) {
+        const key = y + '-' + m;
+        satCounts[key] = (satCounts[key] || 0) + 1;
+        if (satCounts[key] <= 2) return false; // first 2 Sats = Sat Off
+      }
+      // NOTE: Absent and Leave are NOT skipped — they are working days, target still expected
+      // Only Sat Off / Comp Off / Holiday (roster) genuinely have zero target
       const entry = empEntries.find(e => e.date === d);
-      if (entry && NON_WORKING_ROSTER.includes(String(entry.reason || '').trim())) return false;
+      if (entry) {
+        const r = String(entry.reason || '').trim();
+        if (r === 'Sat Off' || r === 'Comp Off') return false; // These genuinely have no target
+      }
       return true;
     });
   }
@@ -787,15 +790,15 @@
       const workEntries = empEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason||'').trim()));
       const actual = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + (parseInt(e.total)||0), 0);
 
-      // Remaining working days — tomorrow to monthEnd, MINUS planned non-working entries
-      // (if Rucha has Absent on day 20, her remaining days drop → Need/Day goes up)
+      // Remaining working days = tomorrow to monthEnd (pure calendar: Sun/2Sat/Holiday skip)
+      // Absent is NOT subtracted — it was already a working day, now it's a deficit in net score
       const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-      const remainDays  = isCurrentMonth ? getEmpRemainingDays(empEntries, holidaySet, tomorrowDs, monthEnd) : [];
+      const remainDays  = isCurrentMonth ? getEmpWorkingDays(empEntries, holidaySet, tomorrowDs, monthEnd) : [];
       const remaining   = Math.max(0, monthlyTarget - actual);
       const dailyNeeded = remainDays.length > 0 ? Math.ceil(remaining / remainDays.length) : 0;
 
-      // Net Score = actual - expected (expected includes Absent days → shows deficit correctly)
+      // Net Score = actual - expected (expected includes Absent days → deficit shows correctly)
       const workDaysTillToday = getEmpWorkingDays(empEntries, holidaySet, monthStart, cutoff);
       const expected  = workDaysTillToday.length * baseTarget;
       const netScore  = actual - expected;
