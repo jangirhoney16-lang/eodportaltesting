@@ -511,46 +511,46 @@
 
   // ── DYNAMIC WORKING DAYS ──
   // Rules: remove Sundays, first 2 Saturdays of the month (Sat Off), and holidays
-  // Monthly working days = all days minus Sundays minus holidays only
-  // Sat Off / Leave / Absent are NOT deducted — employee decides when to take them
   function getMonthlyWorkingDays(year, month, holidaysArr) {
     const holidaySet  = new Set((holidaysArr || []).map(h => h.date));
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    let workingDays   = 0;
+    let workingDays = 0, satCount = 0;
     for (let day = 1; day <= daysInMonth; day++) {
-      const dow = new Date(year, month, day).getDay();
+      const dow = new Date(year, month, day).getDay(); // 0=Sun, 6=Sat
       const ds  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      if (dow === 0) continue;           // Sunday — always off
-      if (holidaySet.has(ds)) continue;  // Company holiday — off
+      if (dow === 0) continue;                             // Sunday — skip
+      if (holidaySet.has(ds)) continue;                   // Holiday — skip
+      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Saturdays = Sat Off
       workingDays++;
     }
     return workingDays;
   }
 
-  // Working days in a date range — skips only Sundays and holidays
-  // Used for: expected by today calculation
+  // Working days in a date range — skips Sundays, first 2 Sats of each month, holidays
   function getWorkingDays(fromDs, toDs) {
+    // Find first 2 Saturdays of the month (fromDs ke month ka)
+    const parts = fromDs.split('-');
+    const year  = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1;
+    const mm    = String(month + 1).padStart(2, '0');
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstTwoSats = new Set();
+    let satCount = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dow = new Date(year, month, d).getDay();
+      if (dow === 6) {
+        satCount++;
+        if (satCount <= 2) firstTwoSats.add(`${year}-${mm}-${String(d).padStart(2,'0')}`);
+      }
+    }
+    // Count working days — only skip Sundays, first 2 Sats, holidays
+    // Do NOT skip employee roster entries — that causes double minus
     return getDaysBetween(fromDs, toDs).filter(d => {
       const p   = d.split('-');
       const dow = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2])).getDay();
-      if (dow === 0) return false;
-      if (holidays.some(h => h.date === d)) return false;
-      return true;
-    });
-  }
-
-  // Remaining working days from tomorrow to monthEnd, MINUS any already-planned
-  // non-working roster entries in that future range (Absent, Leave, Sat Off, Comp Off)
-  // Example: 8 days left but Rucha has 1 Absent planned → remainingDays = 7
-  const NON_WORKING_ROSTER = ['Sat Off', 'Comp Off', 'Leave', 'Absent', 'Holiday'];
-  function getRemainingWorkingDays(fromDs, toDs, rosterEntries) {
-    return getDaysBetween(fromDs, toDs).filter(d => {
-      const p   = d.split('-');
-      const dow = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2])).getDay();
-      if (dow === 0) return false;
-      if (holidays.some(h => h.date === d)) return false;
-      const entry = rosterEntries.find(e => e.date === d);
-      if (entry && NON_WORKING_ROSTER.includes(String(entry.reason || '').trim())) return false;
+      if (dow === 0) return false;              // Sunday
+      if (firstTwoSats.has(d)) return false;   // First 2 Sat Offs of month
+      if (holidays.some(h => h.date === d)) return false; // Holiday
       return true;
     });
   }
@@ -948,19 +948,15 @@
     const actual       = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + parseInt(e.total), 0);
 
     // Expected by today = working days from monthStart to cutoff × baseTarget
-    // Working days = all days except Sundays & holidays (roster entries NOT deducted from expected)
-    // This means: if Rucha was absent day 15, expected still counts that day → she's in deficit
     const workDaysTillToday = getWorkingDays(monthStart, cutoff);
     const expected           = workDaysTillToday.length * baseTarget;
 
-    // Remaining working days = tomorrow to monthEnd, MINUS already-planned non-working entries
-    // (Sat Off, Leave, Absent, Comp Off in future are deducted — they reduce available days)
+    // Remaining working days = tomorrow to monthEnd using same calendar logic (Sun/2Sat/Holiday skip)
+    // This is pure calendar remaining — does NOT subtract Absent (Absent was already a working day)
     const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-    const remainWorkDays = isCurrentMonth
-      ? getRemainingWorkingDays(tomorrowDs, monthEnd, monthEntries)
-      : [];
-    const remaining   = Math.max(0, monthlyTarget - actual);
+    const remainWorkDays = isCurrentMonth ? getWorkingDays(tomorrowDs, monthEnd) : [];
+    const remaining  = Math.max(0, monthlyTarget - actual);
     const dailyNeeded = remainWorkDays.length > 0 ? Math.ceil(remaining / remainWorkDays.length) : 0;
 
     // Progress
@@ -997,10 +993,11 @@
     document.getElementById('sHalfDay').textContent   = rosterEntries.filter(e => String(e.reason || '').startsWith('Half Day')).length;
     document.getElementById('sAbsent').textContent    = rosterEntries.filter(e => e.reason === 'Absent').length;
 
-    // Net Score = actual done vs what was expected by today
-    // Absent day: expected counts it (target × that day), actual is 0 → deficit correctly shown
-    const netScore = actual - expected;
-    const scores   = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
+    // Score — actual vs expected
+    // Expected includes Absent days (they are working days, target exists)
+    // So if Rucha was absent: expected counts that day → netScore goes negative correctly
+    const netScore  = actual - expected;
+    const scores    = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
     const scoreEl  = document.getElementById('sScoreNum');
     scoreEl.textContent = (netScore >= 0 ? '+' : '') + netScore;
     scoreEl.style.color = netScore >= 0 ? 'var(--green)' : 'var(--red)';
