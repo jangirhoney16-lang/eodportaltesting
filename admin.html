@@ -375,7 +375,7 @@
     messagingSenderId: "665878833615",
     appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyeSVvACdIzIQs_f7YhLfXHGBq-j4pMEgwAbtVVAs6vNBH6Fu8ZX-WjYv15O5ji6YA1hg/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1hdpXMe8UbarstXx98w-Cyi06Vl-32fprqwPkrfLWWwErHlrzHSQUnj85UeOfBvPF9Q/exec";
 
   const ROSTER_TYPES      = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
   const ZERO_TARGET_TYPES = ['Leave','Sat Off','Comp Off','Absent','Holiday'];
@@ -445,25 +445,45 @@
     return new Date(y, m-1, d).getDay() === 0;
   }
 
-  // Working days based on ACTUAL entries — agar Sat Off / Comp Off entry hai to skip
-  // Sunday hamesha skip, Holiday hamesha skip
-  // Absent/Leave = working day (target count hoga)
+  // ── KEY FUNCTION: Dynamic working days for any month ──
+  // Formula: Days in month − all Sundays − first 2 Saturdays − holidays in that month
+  // This means monthly target changes every month automatically
+  function getMonthlyWorkingDays(year, month, holidaysArr) {
+    const holidaySet  = new Set((holidaysArr || []).map(h => h.date));
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    let workingDays = 0, satCount = 0;
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dow = new Date(year, month, day).getDay(); // 0=Sun, 6=Sat
+      const ds  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      if (dow === 0) continue;                                     // All Sundays — skip
+      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Saturdays — skip (before holiday check)
+      if (holidaySet.has(ds)) continue;                           // Holiday — skip
+      workingDays++;
+    }
+    return workingDays;
+  }
+
+  // Working days in a date range (for "expected by today" calc)
+  // Same rules: skip Sundays, first 2 Sats of each month, holidays, roster zero-target entries
   function getEmpWorkingDays(empEntries, holidaySet, fromDs, toDs) {
-    const satOffDays = new Set(empEntries.filter(e => e.reason === 'Sat Off' || e.reason === 'Comp Off').map(e => e.date));
+    const satCounts = {};
     return getDaysBetween(fromDs, toDs).filter(d => {
       if (isSunday(d)) return false;
       if (holidaySet.has(d)) return false;
-      if (satOffDays.has(d)) return false;
+      const [y, m] = d.split('-');
+      const dow    = new Date(parseInt(y), parseInt(m)-1, parseInt(d.split('-')[2])).getDay();
+      if (dow === 6) {
+        const key = y + '-' + m;
+        satCounts[key] = (satCounts[key] || 0) + 1;
+        if (satCounts[key] <= 2) return false; // first 2 Sats = Sat Off
+      }
+      const entry = empEntries.find(e => e.date === d);
+      if (entry) {
+        const r = String(entry.reason || '').trim();
+        if (ZERO_TARGET_TYPES.includes(r)) return false; // leave/absent etc
+      }
       return true;
     });
-  }
-
-  function getMonthlyWorkingDays(year, month, holidaysArr, empEntries) {
-    const mm      = String(month + 1).padStart(2, '0');
-    const fromDs  = `${year}-${mm}-01`;
-    const toDs    = `${year}-${mm}-${String(new Date(year, month+1, 0).getDate()).padStart(2,'0')}`;
-    const hSet    = new Set((holidaysArr || []).map(h => h.date));
-    return getEmpWorkingDays(empEntries || [], hSet, fromDs, toDs).length;
   }
 
   function getEffectiveTarget(base, reason) {
@@ -747,8 +767,8 @@
 
     // ── Dynamic working days for this month ──
     // Same formula as index.html: days − Sundays − 2 Sat Offs − holidays
-    const workingDaysThisMonth = '—'; // varies per employee based on their Sat Off entries
-    document.getElementById('adminWorkingDaysCount').textContent = 'Per employee (based on roster)';
+    const workingDaysThisMonth = getMonthlyWorkingDays(adminStatsYear, adminStatsMonth, holidays);
+    document.getElementById('adminWorkingDaysCount').textContent = workingDaysThisMonth;
 
     let emps = allEmployees.filter(e => e.role !== 'Admin');
     if (empFilter)  emps = emps.filter(e => e.name === empFilter);
@@ -762,24 +782,22 @@
 
       // Monthly target = daily target × working days in this month
       // Half Day does NOT reduce monthly target — employee must cover it on other days
-      const empEntries = allEntries.filter(e => e.email === emp.email && e.date >= monthStart && e.date <= monthEnd);
-      const workingDaysThisMonth = getMonthlyWorkingDays(adminStatsYear, adminStatsMonth, holidays, empEntries);
       const monthlyTarget = baseTarget * workingDaysThisMonth;
 
+      const empEntries = allEntries.filter(e => e.email === emp.email && e.date >= monthStart && e.date <= monthEnd);
       const workEntries = empEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason||'').trim()));
       const actual = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + (parseInt(e.total)||0), 0);
 
-      // Remaining — tomorrow to monthEnd, same entry-based logic
+      // Remaining working days from tomorrow to month end
       const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-      const remainDays  = isCurrentMonth ? getEmpWorkingDays(empEntries, holidaySet, tomorrowDs, monthEnd) : [];
-      const remaining   = Math.max(0, monthlyTarget - actual);
+      const alreadyWorked = workEntries.filter(e => e.date <= cutoff).length;
+      const remainDays = isCurrentMonth ? { length: Math.max(0, workingDaysThisMonth - alreadyWorked) } : { length: 0 };
+      const remaining  = Math.max(0, monthlyTarget - actual);
       const dailyNeeded = remainDays.length > 0 ? Math.ceil(remaining / remainDays.length) : 0;
 
-      // Net Score = actual - expected (Absent counts in expected → deficit dikhega)
-      const workDaysTillToday = getEmpWorkingDays(empEntries, holidaySet, monthStart, cutoff);
-      const expected  = workDaysTillToday.length * baseTarget;
-      const netScore  = actual - expected;
+      const scores   = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
+      const netScore = scores.reduce((s,v) => s + v, 0);
 
       const leaves  = empEntries.filter(e => e.reason === 'Leave').length;
       const satOff  = empEntries.filter(e => e.reason === 'Sat Off').length;
