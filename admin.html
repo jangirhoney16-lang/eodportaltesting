@@ -455,9 +455,9 @@
     for (let day = 1; day <= daysInMonth; day++) {
       const dow = new Date(year, month, day).getDay(); // 0=Sun, 6=Sat
       const ds  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      if (dow === 0) continue;                                     // All Sundays — skip
-      if (holidaySet.has(ds)) continue;                           // Any holiday — skip
-      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Saturdays = compulsory Sat Off — skip
+      if (dow === 0) continue;                                     // Sunday — skip
+      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Sats — skip (count BEFORE holiday check)
+      if (holidaySet.has(ds)) continue;                           // Holiday — skip
       workingDays++;
     }
     return workingDays;
