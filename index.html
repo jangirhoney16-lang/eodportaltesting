@@ -449,7 +449,7 @@
     messagingSenderId: "665878833615",
     appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1hdpXMe8UbarstXx98w-Cyi06Vl-32fprqwPkrfLWWwErHlrzHSQUnj85UeOfBvPF9Q/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyeSVvACdIzIQs_f7YhLfXHGBq-j4pMEgwAbtVVAs6vNBH6Fu8ZX-WjYv15O5ji6YA1hg/exec";
 
   const ROSTER_TYPES      = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
   const ZERO_TARGET_TYPES = ['Leave','Sat Off','Comp Off','Absent','Holiday'];
@@ -518,9 +518,9 @@
     for (let day = 1; day <= daysInMonth; day++) {
       const dow = new Date(year, month, day).getDay(); // 0=Sun, 6=Sat
       const ds  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      if (dow === 0) continue;                             // Sunday — skip
-      if (holidaySet.has(ds)) continue;                   // Holiday — skip
-      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Saturdays = Sat Off
+      if (dow === 0) continue;                                     // Sunday — skip
+      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Sats — skip (count BEFORE holiday check)
+      if (holidaySet.has(ds)) continue;                           // Holiday — skip
       workingDays++;
     }
     return workingDays;
@@ -925,6 +925,8 @@
 
   function renderStats() {
     console.log("renderStats called", userDetails, holidays, myEntries.length);
+    console.log("holidays array:", JSON.stringify(holidays));
+    console.log("holidays count:", holidays.length);
     const today      = getTodayStr();
     const months     = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('statsMonthLabel').textContent = months[statsMonth] + ' ' + statsYear;
