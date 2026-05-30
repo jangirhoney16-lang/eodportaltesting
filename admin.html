@@ -375,7 +375,7 @@
     messagingSenderId: "665878833615",
     appId: "1:665878833615:web:3ef734d845a531b7874aba"
   };
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyeSVvACdIzIQs_f7YhLfXHGBq-j4pMEgwAbtVVAs6vNBH6Fu8ZX-WjYv15O5ji6YA1hg/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx66R4Q0XCq1r3ytNNvbR7TOYLQlD4wqeiLdN3ZNCb1NS1Ava4WxrWBESn3VDnOmbvM4w/exec";
 
   const ROSTER_TYPES      = ['Leave','Sat Off','Comp Off','Half Day','Absent','Holiday'];
   const ZERO_TARGET_TYPES = ['Leave','Sat Off','Comp Off','Absent','Holiday'];
@@ -456,41 +456,86 @@
       const dow = new Date(year, month, day).getDay(); // 0=Sun, 6=Sat
       const ds  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
       if (dow === 0) continue;                                     // All Sundays — skip
-      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Saturdays — skip (before holiday check)
-      if (holidaySet.has(ds)) continue;                           // Holiday — skip
+      if (holidaySet.has(ds)) continue;                           // Any holiday — skip
+      if (dow === 6) { satCount++; if (satCount <= 2) continue; } // First 2 Saturdays = compulsory Sat Off — skip
       workingDays++;
     }
     return workingDays;
   }
 
-  // Working days in a date range (for "expected by today" calc)
-  // Same rules: skip Sundays, first 2 Sats of each month, holidays, roster zero-target entries
-  function getEmpWorkingDays(empEntries, holidaySet, fromDs, toDs) {
-    const satCounts = {};
-    return getDaysBetween(fromDs, toDs).filter(d => {
-      if (isSunday(d)) return false;
-      if (holidaySet.has(d)) return false;
-      const [y, m] = d.split('-');
-      const dow    = new Date(parseInt(y), parseInt(m)-1, parseInt(d.split('-')[2])).getDay();
+  // ── BASE: working days in a date range (Sundays, first 2 Sats, holidays removed) ──
+  function getWorkingDaysInRange(fromDs, toDs) {
+    const parts = fromDs.split('-');
+    const year  = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1;
+    const mm    = String(month + 1).padStart(2, '0');
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstTwoSats = new Set();
+    let satCount = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dow = new Date(year, month, d).getDay();
       if (dow === 6) {
-        const key = y + '-' + m;
-        satCounts[key] = (satCounts[key] || 0) + 1;
-        if (satCounts[key] <= 2) return false; // first 2 Sats = Sat Off
+        satCount++;
+        if (satCount <= 2) firstTwoSats.add(`${year}-${mm}-${String(d).padStart(2,'0')}`);
       }
-      const entry = empEntries.find(e => e.date === d);
-      if (entry) {
-        const r = String(entry.reason || '').trim();
-        if (ZERO_TARGET_TYPES.includes(r)) return false; // leave/absent etc
-      }
+    }
+    return getDaysBetween(fromDs, toDs).filter(d => {
+      const p   = d.split('-');
+      const dow = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2])).getDay();
+      if (dow === 0) return false;
+      if (firstTwoSats.has(d)) return false;
+      if (holidays.some(h => h.date === d)) return false;
       return true;
     });
   }
 
+  // ── PERSONAL working days for employee in a full month (minus Leave & Comp Off) ──
+  function getPersonalWorkingDays(year, month, empEntries) {
+    const globalDays = getMonthlyWorkingDays(year, month, holidays);
+    const mm = String(month + 1).padStart(2, '0');
+    const monthStart = `${year}-${mm}-01`;
+    const monthEnd   = `${year}-${mm}-${String(new Date(year, month + 1, 0).getDate()).padStart(2,'0')}`;
+    const baseWorkingDaySet = new Set(getWorkingDaysInRange(monthStart, monthEnd));
+    const leaveCompOffDays = empEntries.filter(e => {
+      const r = String(e.reason || '').trim();
+      return (r === 'Leave' || r === 'Comp Off') && e.date >= monthStart && e.date <= monthEnd && baseWorkingDaySet.has(e.date);
+    }).length;
+    return Math.max(0, globalDays - leaveCompOffDays);
+  }
+
+  // ── PERSONAL working days from month start UP TO cutoff (minus Leave & Comp Off before cutoff) ──
+  function getPersonalWorkingDaysTillDate(year, month, cutoff, empEntries) {
+    const mm = String(month + 1).padStart(2, '0');
+    const monthStart = `${year}-${mm}-01`;
+    const baseDays = getWorkingDaysInRange(monthStart, cutoff);
+    const baseDaySet = new Set(baseDays);
+    const leaveCompOffCount = empEntries.filter(e => {
+      const r = String(e.reason || '').trim();
+      return (r === 'Leave' || r === 'Comp Off') && e.date >= monthStart && e.date <= cutoff && baseDaySet.has(e.date);
+    }).length;
+    return Math.max(0, baseDays.length - leaveCompOffCount);
+  }
+
+  // ── PERSONAL remaining working days from fromDs to month end (minus future Leave & Comp Off) ──
+  function getPersonalRemainingWorkingDays(year, month, fromDs, empEntries) {
+    const mm = String(month + 1).padStart(2, '0');
+    const monthEnd = `${year}-${mm}-${String(new Date(year, month + 1, 0).getDate()).padStart(2,'0')}`;
+    if (fromDs > monthEnd) return 0;
+    const baseDays = getWorkingDaysInRange(fromDs, monthEnd);
+    const baseDaySet = new Set(baseDays);
+    const futureLeaveCompOff = empEntries.filter(e => {
+      const r = String(e.reason || '').trim();
+      return (r === 'Leave' || r === 'Comp Off') && e.date >= fromDs && e.date <= monthEnd && baseDaySet.has(e.date);
+    }).length;
+    return Math.max(0, baseDays.length - futureLeaveCompOff);
+  }
+
   function getEffectiveTarget(base, reason) {
     const r = String(reason || '').trim();
-    // Half Day = half target for THAT DAY only — does NOT affect monthly target
     if (r === 'Half Day' || r.startsWith('Half Day')) return Math.ceil(base / 2);
-    if (ZERO_TARGET_TYPES.includes(r)) return 0;
+    // Leave, Sat Off, Comp Off, Holiday = 0 (excluded days)
+    // Absent = full target (working day, employee didn't come — must cover)
+    if (r === 'Leave' || r === 'Sat Off' || r === 'Comp Off' || r === 'Holiday') return 0;
     return base;
   }
 
@@ -756,7 +801,6 @@
 
     const empFilter  = document.getElementById('statsFilterEmp').value;
     const teamFilter = document.getElementById('statsFilterTeam').value;
-    const holidaySet = new Set(holidays.map(h => h.date));
 
     const mm         = String(adminStatsMonth + 1).padStart(2,'0');
     const monthStart = `${adminStatsYear}-${mm}-01`;
@@ -765,10 +809,9 @@
     const isCurrentMonth = (adminStatsYear === new Date().getFullYear() && adminStatsMonth === new Date().getMonth());
     const cutoff     = isCurrentMonth ? today : monthEnd;
 
-    // ── Dynamic working days for this month ──
-    // Same formula as index.html: days − Sundays − 2 Sat Offs − holidays
-    const workingDaysThisMonth = getMonthlyWorkingDays(adminStatsYear, adminStatsMonth, holidays);
-    document.getElementById('adminWorkingDaysCount').textContent = workingDaysThisMonth;
+    // Global working days shown in header (same for all, before personal adjustments)
+    const globalWorkingDays = getMonthlyWorkingDays(adminStatsYear, adminStatsMonth, holidays);
+    document.getElementById('adminWorkingDaysCount').textContent = globalWorkingDays;
 
     let emps = allEmployees.filter(e => e.role !== 'Admin');
     if (empFilter)  emps = emps.filter(e => e.name === empFilter);
@@ -777,31 +820,38 @@
     let teamTarget = 0, teamActual = 0, teamRemaining = 0, teamScore = 0;
     const rows = [], progressItems = [];
 
+    // NON_WORK_TYPES: days that are excluded from target and working days
+    const NON_WORK_TYPES = ['Leave', 'Sat Off', 'Comp Off', 'Holiday'];
+
     emps.forEach(emp => {
       const baseTarget = parseInt(emp.target) || 0;
 
-      // Monthly target = daily target × working days in this month
-      // Half Day does NOT reduce monthly target — employee must cover it on other days
-      const monthlyTarget = baseTarget * workingDaysThisMonth;
-
       const empEntries = allEntries.filter(e => e.email === emp.email && e.date >= monthStart && e.date <= monthEnd);
-      const workEntries = empEntries.filter(e => !ROSTER_TYPES.includes(String(e.reason||'').trim()));
+
+      // ── PERSONAL working days = global working days minus this employee's Leave & Comp Off ──
+      const personalWorkingDays = getPersonalWorkingDays(adminStatsYear, adminStatsMonth, empEntries);
+      const monthlyTarget = baseTarget * personalWorkingDays;
+
+      // work entries = everything except Leave, Sat Off, Comp Off, Holiday
+      // Absent IS included — has full deficit, counts as a submitted day
+      const workEntries = empEntries.filter(e => !NON_WORK_TYPES.includes(String(e.reason||'').trim()));
       const actual = workEntries.filter(e => e.date <= cutoff).reduce((s,e) => s + (parseInt(e.total)||0), 0);
 
-      // Remaining working days from tomorrow to month end
+      // ── Remaining working days from tomorrow to month end (personal) ──
       const tomorrow   = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowDs = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
-      const alreadyWorked = workEntries.filter(e => e.date <= cutoff).length;
-      const remainDays = isCurrentMonth ? { length: Math.max(0, workingDaysThisMonth - alreadyWorked) } : { length: 0 };
-      const remaining  = Math.max(0, monthlyTarget - actual);
-      const dailyNeeded = remainDays.length > 0 ? Math.ceil(remaining / remainDays.length) : 0;
+      const remainDaysCount = isCurrentMonth ? getPersonalRemainingWorkingDays(adminStatsYear, adminStatsMonth, tomorrowDs, empEntries) : 0;
 
+      const remaining   = Math.max(0, monthlyTarget - actual);
+      const dailyNeeded = remainDaysCount > 0 ? Math.ceil(remaining / remainDaysCount) : 0;
+
+      // ── Score includes absent entries (they have full negative deficit) ──
       const scores   = workEntries.filter(e => e.date <= cutoff).map(e => getScore(e, baseTarget));
       const netScore = scores.reduce((s,v) => s + v, 0);
 
-      const leaves  = empEntries.filter(e => e.reason === 'Leave').length;
-      const satOff  = empEntries.filter(e => e.reason === 'Sat Off').length;
-      const absent  = empEntries.filter(e => e.reason === 'Absent').length;
+      const leaves  = empEntries.filter(e => String(e.reason||'').trim() === 'Leave').length;
+      const satOff  = empEntries.filter(e => String(e.reason||'').trim() === 'Sat Off').length;
+      const absent  = empEntries.filter(e => String(e.reason||'').trim() === 'Absent').length;
 
       const pct = monthlyTarget > 0 ? Math.min(100, Math.round((actual / monthlyTarget) * 100)) : 0;
       teamTarget    += monthlyTarget;
@@ -815,11 +865,11 @@
       rows.push(`<tr>
         <td><strong>${emp.name}</strong></td>
         <td><span style="color:${teamColor};font-weight:500;">${emp.team}</span></td>
-        <td style="font-family:'DM Mono',monospace;">${workingDaysThisMonth}</td>
+        <td style="font-family:'DM Mono',monospace;">${personalWorkingDays}</td>
         <td style="font-family:'DM Mono',monospace;">${monthlyTarget}</td>
         <td style="font-family:'DM Mono',monospace;font-weight:700;">${actual}</td>
         <td style="font-family:'DM Mono',monospace;color:var(--red);">${remaining}</td>
-        <td style="font-family:'DM Mono',monospace;color:var(--yellow);">${isCurrentMonth ? (remainDays.length > 0 ? dailyNeeded : '✓') : '—'}</td>
+        <td style="font-family:'DM Mono',monospace;color:var(--yellow);">${isCurrentMonth ? (remainDaysCount > 0 ? dailyNeeded : '✓') : '—'}</td>
         <td>${scoreBadge(netScore)}</td>
         <td>${leaves}</td><td>${satOff}</td>
         <td style="color:${absent>0?'var(--red)':'var(--text)'};">${absent}</td>
