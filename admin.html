@@ -872,9 +872,10 @@
     document.getElementById('asTeamTarget').textContent    = teamTarget;
     document.getElementById('asTeamActual').textContent    = teamActual;
     document.getElementById('asTeamRemaining').textContent = teamRemaining;
+    const trueTeamScore = teamActual - teamTarget;
     const tsEl = document.getElementById('asTeamScore');
-    tsEl.textContent = (teamScore >= 0 ? '+' : '') + teamScore;
-    tsEl.style.color = teamScore >= 0 ? 'var(--green)' : 'var(--red)';
+    tsEl.textContent = (trueTeamScore >= 0 ? '+' : '') + trueTeamScore;
+    tsEl.style.color = trueTeamScore >= 0 ? 'var(--green)' : 'var(--red)';
 
     document.getElementById('empStatsBody').innerHTML = rows.length ? rows.join('') : '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--muted);">No data</td></tr>';
     document.getElementById('empProgressBars').innerHTML = progressItems.join('');
