@@ -802,7 +802,7 @@
     if (empFilter)  emps = emps.filter(e => e.name === empFilter);
     if (teamFilter) emps = emps.filter(e => matchTeam(e, teamFilter));
 
-    let teamTarget = 0, teamActual = 0, teamRemaining = 0, teamScore = 0;
+    let teamTarget = 0, teamActual = 0, teamScore = 0;
     const rows = [], progressItems = [];
 
     // NON_WORK_TYPES: days that are excluded from target and working days
@@ -839,9 +839,8 @@
       const absent  = empEntries.filter(e => String(e.reason||'').trim() === 'Absent').length;
 
       const pct = monthlyTarget > 0 ? Math.min(100, Math.round((actual / monthlyTarget) * 100)) : 0;
-      teamTarget    += monthlyTarget;
-      teamActual    += actual;
-      teamRemaining += remaining;
+      teamTarget += monthlyTarget;
+      teamActual += actual;
       teamScore     += netScore;
 
       const teamColor = matchTeam(emp,'technical') ? 'var(--blue)' : matchTeam(emp,'medical') ? 'var(--green)' : 'var(--yellow)';
@@ -869,10 +868,12 @@
       </div>`);
     });
 
+    const trueTeamRemaining = Math.max(0, teamTarget - teamActual);
+    const trueTeamScore     = teamActual - teamTarget;
+
     document.getElementById('asTeamTarget').textContent    = teamTarget;
     document.getElementById('asTeamActual').textContent    = teamActual;
-    document.getElementById('asTeamRemaining').textContent = teamRemaining;
-    const trueTeamScore = teamActual - teamTarget;
+    document.getElementById('asTeamRemaining').textContent = trueTeamRemaining;
     const tsEl = document.getElementById('asTeamScore');
     tsEl.textContent = (trueTeamScore >= 0 ? '+' : '') + trueTeamScore;
     tsEl.style.color = trueTeamScore >= 0 ? 'var(--green)' : 'var(--red)';
